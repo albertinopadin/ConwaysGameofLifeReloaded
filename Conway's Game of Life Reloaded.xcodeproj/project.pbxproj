@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -38,6 +38,14 @@
 		CECAD5502446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CECAD5512446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CECAD5522446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
+		CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
+		CECAD56A244703BB00E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
+		CECAD56B244703BD00E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
+		CECAD56C244703C400E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
+		CECAD56D244703C500E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
+		CECAD56E244703CB00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
+		CECAD56F244703CC00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
+		CECAD570244703CC00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +119,8 @@
 		CECAD53E2446E00D00E07A8B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		CECAD5412446E00D00E07A8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CECAD5432446E00D00E07A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CECAD5662446E05600E07A8B /* ResettableScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResettableScene.swift; sourceTree = "<group>"; };
+		CECAD5682446FB7E00E07A8B /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +175,8 @@
 				CECAD4F72446E00A00E07A8B /* GameScene.sks */,
 				CECAD4F82446E00A00E07A8B /* GameScene.swift */,
 				CECAD4F92446E00C00E07A8B /* Assets.xcassets */,
+				CECAD5662446E05600E07A8B /* ResettableScene.swift */,
+				CECAD5682446FB7E00E07A8B /* Cell.swift */,
 			);
 			path = "Conway's Game of Life Reloaded Shared";
 			sourceTree = "<group>";
@@ -353,7 +365,7 @@
 				};
 			};
 			buildConfigurationList = CECAD4F42446E00A00E07A8B /* Build configuration list for PBXProject "Conway's Game of Life Reloaded" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -435,6 +447,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54B2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */,
+				CECAD56B244703BD00E07A8B /* Cell.swift in Sources */,
 				CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */,
 				CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */,
 			);
@@ -445,6 +459,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54C2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CECAD56E244703CB00E07A8B /* ResettableScene.swift in Sources */,
+				CECAD56C244703C400E07A8B /* Cell.swift in Sources */,
 				CECAD5232446E00D00E07A8B /* ExtensionDelegate.swift in Sources */,
 				CECAD5212446E00D00E07A8B /* InterfaceController.swift in Sources */,
 			);
@@ -455,6 +471,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54D2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CECAD56F244703CC00E07A8B /* ResettableScene.swift in Sources */,
+				CECAD56D244703C500E07A8B /* Cell.swift in Sources */,
 				CECAD52E2446E00D00E07A8B /* GameViewController.swift in Sources */,
 				CECAD52C2446E00D00E07A8B /* AppDelegate.swift in Sources */,
 			);
@@ -465,6 +483,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54E2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CECAD570244703CC00E07A8B /* ResettableScene.swift in Sources */,
+				CECAD56A244703BB00E07A8B /* Cell.swift in Sources */,
 				CECAD53F2446E00D00E07A8B /* GameViewController.swift in Sources */,
 				CECAD53D2446E00D00E07A8B /* AppDelegate.swift in Sources */,
 			);
@@ -587,6 +607,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -639,6 +661,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
