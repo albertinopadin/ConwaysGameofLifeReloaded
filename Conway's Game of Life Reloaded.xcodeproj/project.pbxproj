@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
+		CE7E89EC2447E2010036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
+		CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
+		CE7E89EF2447F83E0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
+		CE7E89F02447F83F0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
+		CE7E89F12447F8550036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
 		CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5012446E00C00E07A8B /* AppDelegate.swift */; };
 		CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5032446E00C00E07A8B /* GameViewController.swift */; };
 		CECAD5072446E00C00E07A8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5052446E00C00E07A8B /* Main.storyboard */; };
@@ -35,9 +41,6 @@
 		CECAD54D2446E00D00E07A8B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD4F82446E00A00E07A8B /* GameScene.swift */; };
 		CECAD54E2446E00D00E07A8B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD4F82446E00A00E07A8B /* GameScene.swift */; };
 		CECAD54F2446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
-		CECAD5502446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
-		CECAD5512446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
-		CECAD5522446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
 		CECAD56A244703BB00E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
 		CECAD56B244703BD00E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
@@ -91,6 +94,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE7E89ED2447F50C0036F64C /* CellGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellGrid.swift; sourceTree = "<group>"; };
 		CECAD4F62446E00A00E07A8B /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		CECAD4F72446E00A00E07A8B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		CECAD4F82446E00A00E07A8B /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -177,6 +181,7 @@
 				CECAD4F92446E00C00E07A8B /* Assets.xcassets */,
 				CECAD5662446E05600E07A8B /* ResettableScene.swift */,
 				CECAD5682446FB7E00E07A8B /* Cell.swift */,
+				CE7E89ED2447F50C0036F64C /* CellGrid.swift */,
 			);
 			path = "Conway's Game of Life Reloaded Shared";
 			sourceTree = "<group>";
@@ -403,7 +408,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CECAD5502446E00D00E07A8B /* Assets.xcassets in Resources */,
 				CECAD5152446E00D00E07A8B /* Interface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -424,7 +428,7 @@
 				CECAD5312446E00D00E07A8B /* Main.storyboard in Resources */,
 				CECAD5452446E00D00E07A8B /* Actions.sks in Resources */,
 				CECAD5342446E00D00E07A8B /* LaunchScreen.storyboard in Resources */,
-				CECAD5512446E00D00E07A8B /* Assets.xcassets in Resources */,
+				CE7E89EC2447E2010036F64C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,7 +438,7 @@
 			files = (
 				CECAD5422446E00D00E07A8B /* Main.storyboard in Resources */,
 				CECAD54A2446E00D00E07A8B /* GameScene.sks in Resources */,
-				CECAD5522446E00D00E07A8B /* Assets.xcassets in Resources */,
+				CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */,
 				CECAD5462446E00D00E07A8B /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -447,6 +451,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54B2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */,
 				CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56B244703BD00E07A8B /* Cell.swift in Sources */,
 				CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */,
@@ -459,6 +464,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54C2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CE7E89F12447F8550036F64C /* CellGrid.swift in Sources */,
 				CECAD56E244703CB00E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56C244703C400E07A8B /* Cell.swift in Sources */,
 				CECAD5232446E00D00E07A8B /* ExtensionDelegate.swift in Sources */,
@@ -471,6 +477,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54D2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CE7E89F02447F83F0036F64C /* CellGrid.swift in Sources */,
 				CECAD56F244703CC00E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56D244703C500E07A8B /* Cell.swift in Sources */,
 				CECAD52E2446E00D00E07A8B /* GameViewController.swift in Sources */,
@@ -483,6 +490,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECAD54E2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CE7E89EF2447F83E0036F64C /* CellGrid.swift in Sources */,
 				CECAD570244703CC00E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56A244703BB00E07A8B /* Cell.swift in Sources */,
 				CECAD53F2446E00D00E07A8B /* GameViewController.swift in Sources */,
