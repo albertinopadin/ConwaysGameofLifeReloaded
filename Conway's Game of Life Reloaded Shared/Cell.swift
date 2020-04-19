@@ -8,6 +8,10 @@
 
 import SpriteKit
 
+#if os(macOS)
+public typealias UIColor = NSColor
+#endif
+
 public class Cell: SKSpriteNode {
     
     public var alive: Bool

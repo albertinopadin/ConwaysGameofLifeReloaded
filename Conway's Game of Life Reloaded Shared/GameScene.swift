@@ -109,11 +109,11 @@ extension GameScene {
 extension GameScene {
 
     override func mouseDown(with event: NSEvent) {
-        
+        cellGrid.spawnLiveCell(at: event.location(in: self))
     }
     
     override func mouseDragged(with event: NSEvent) {
-        
+        cellGrid.spawnLiveCell(at: event.location(in: self))
     }
     
     override func mouseUp(with event: NSEvent) {
