@@ -17,6 +17,8 @@ public class Cell: SKSpriteNode {
     public var alive: Bool
     private var colorNode: SKSpriteNode
     private let colorNodeSizeFraction: CGFloat = 0.9
+    private let aliveColor: UIColor = .green
+    private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
@@ -33,12 +35,12 @@ public class Cell: SKSpriteNode {
     
     public func makeLive() {
         self.alive = true
-        self.colorNode.color = .green
+        self.colorNode.color = aliveColor
     }
     
     public func makeDead() {
         self.alive = false
-        self.colorNode.color = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
+        self.colorNode.color = deadColor
     }
     
     required public init?(coder aDecoder: NSCoder) {
