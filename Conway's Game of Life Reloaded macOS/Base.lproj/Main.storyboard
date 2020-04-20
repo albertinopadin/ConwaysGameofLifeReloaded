@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11134" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11134"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -10,9 +12,9 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="Conway&apos;s Game of Life Reloaded macOS" id="1Xt-HY-uBw">
+                            <menuItem title="Conway's Game of Life Reloaded macOS" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Conway&apos;s Game of Life Reloaded macOS" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="Conway's Game of Life Reloaded macOS" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
                                         <menuItem title="About GameTemplate" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -673,23 +675,91 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Conway_s_Game_of_Life_Reloaded" customModuleProvider="target"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="76" y="-66"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="Conway&apos;s Game of Life Reloaded macOS" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="IQv-IB-iLA">
+                <windowController id="B8D-0N-5wS" customClass="GameWindowController" customModule="Conway_s_Game_of_Life_Reloaded" customModuleProvider="target" sceneMemberID="viewController">
+                    <window key="window" title="Conway's Game of Life Reloaded macOS" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <toolbar key="toolbar" implicitIdentifier="C1C6A62C-B21F-46A6-899B-13568D954FE4" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="x6J-cx-MMG">
+                            <allowedToolbarItems>
+                                <toolbarItem implicitItemIdentifier="280DD1E1-52FF-4EA3-908A-36486FB7A89F" label="" paletteLabel="GenerationsLabel" sizingBehavior="auto" id="WYz-Tk-kgd">
+                                    <nil key="toolTip"/>
+                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Dup-58-WcU">
+                                        <rect key="frame" x="31" y="14" width="37" height="16"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="avc-vN-3BJ">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="57D5E4FE-478F-440F-880B-639A693B3C22" label="Custom View" paletteLabel="Custom View" sizingBehavior="auto" id="rTh-Lu-lNL">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="Ryb-nn-uUh">
+                                        <rect key="frame" x="16" y="14" width="45" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="inline" title="Inline" bezelStyle="inline" alignment="center" borderStyle="border" inset="2" id="JlV-m1-vKV">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                        </buttonCell>
+                                    </button>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="C9A916E0-DACC-42C0-866A-AB831C5BFC80" label="Custom View" paletteLabel="Custom View" sizingBehavior="auto" id="cCn-0K-hc7">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="EAI-oF-jma">
+                                        <rect key="frame" x="0.0" y="14" width="82" height="19"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="roundRect" title="Round Rect" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Nzf-jI-87R">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="controlContent"/>
+                                        </buttonCell>
+                                    </button>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="9D880E95-AC1C-465B-8E24-0FA85EEACCB0" label="" paletteLabel="StartStopButton" sizingBehavior="auto" id="y8j-hO-8IL">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="EBQ-3X-cNs">
+                                        <rect key="frame" x="6" y="14" width="82" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fWt-s7-uiM">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="toggleGameplayWithSender:" target="B8D-0N-5wS" id="IdH-bN-9pJ"/>
+                                        </connections>
+                                    </button>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="C01F0EBE-8216-4275-8A92-F10D0FB09C83" label="Pause" paletteLabel="Pause" tag="-1" id="wSI-aK-Qob"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="KCF-Lh-ejg"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarShowFontsItem" id="W2t-nK-RI6"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="CUB-UB-tNT"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="Oqr-XZ-6st"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="27e-hI-z8i"/>
+                            </allowedToolbarItems>
+                            <defaultToolbarItems>
+                                <toolbarItem reference="Oqr-XZ-6st"/>
+                                <toolbarItem reference="y8j-hO-8IL"/>
+                                <toolbarItem reference="WYz-Tk-kgd"/>
+                            </defaultToolbarItems>
+                        </toolbar>
+                        <connections>
+                            <outlet property="delegate" destination="B8D-0N-5wS" id="2UB-Ds-k71"/>
+                        </connections>
                     </window>
                     <connections>
+                        <outlet property="generationsLabel" destination="Dup-58-WcU" id="lLm-85-lDF"/>
+                        <outlet property="toggleGameplayButton" destination="EBQ-3X-cNs" id="mrH-H3-Tgz"/>
                         <segue destination="XfG-lQ-9wD" kind="relationship" relationship="window.shadowedContentViewController" id="cq2-FE-JQM"/>
                     </connections>
                 </windowController>
@@ -697,10 +767,10 @@
             </objects>
             <point key="canvasLocation" x="75" y="250"/>
         </scene>
-        <!--View Controller-->
+        <!--Game View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="GameViewController" customModuleProvider="target"  sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="GameViewController" customModule="Conway_s_Game_of_Life_Reloaded" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl" customClass="SKView">
                         <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                         <autoresizingMask key="autoresizingMask"/>

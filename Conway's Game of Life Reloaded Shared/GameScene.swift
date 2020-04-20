@@ -19,6 +19,9 @@ class GameScene: SKScene {
     
     var dScale: Int = 23
     
+    var gameRunning: Bool = false
+    var gameDelegate: GameSceneDelegate?
+    
     class func newGameScene() -> GameScene {
         // Load 'GameScene.sks' as an SKScene.
         guard let scene = GameScene(fileNamed: "GameScene") else {
@@ -69,10 +72,15 @@ class GameScene: SKScene {
             previousTime = currentTime
         }
         
-        if currentTime - previousTime >= updateInterval {
-            cellGrid.updateCells()
+        if gameRunning && currentTime - previousTime >= updateInterval {
+            let generation = cellGrid.updateCells()
             previousTime = currentTime
+            gameDelegate?.setGeneration(generation)
         }
+    }
+    
+    func toggleGameplay() {
+        gameRunning.toggle()
     }
 }
 

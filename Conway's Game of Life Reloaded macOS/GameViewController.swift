@@ -10,22 +10,27 @@ import Cocoa
 import SpriteKit
 import GameplayKit
 
-class GameViewController: NSViewController {
 
+class GameViewController: NSViewController, GameWindowDelegate {
+    var gameScene: GameScene!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let scene = GameScene.newGameScene()
+        gameScene = GameScene.newGameScene()
         
         // Present the scene
         let skView = self.view as! SKView
-        skView.presentScene(scene)
+        skView.presentScene(gameScene)
         
         skView.ignoresSiblingOrder = true
         
         skView.showsFPS = true
         skView.showsNodeCount = true
     }
+    
+    func toggleGameplay() {
+        gameScene.toggleGameplay()
+    }
 
 }
-

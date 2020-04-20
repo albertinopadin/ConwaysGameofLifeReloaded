@@ -13,6 +13,9 @@
 		CE7E89EF2447F83E0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
 		CE7E89F02447F83F0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
 		CE7E89F12447F8550036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
+		CE7E89F3244D94FC0036F64C /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F2244D94FC0036F64C /* GameWindowController.swift */; };
+		CE7E89F5244D9EE80036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
+		CE7E89F7244D9F0D0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
 		CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5012446E00C00E07A8B /* AppDelegate.swift */; };
 		CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5032446E00C00E07A8B /* GameViewController.swift */; };
 		CECAD5072446E00C00E07A8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5052446E00C00E07A8B /* Main.storyboard */; };
@@ -95,6 +98,9 @@
 
 /* Begin PBXFileReference section */
 		CE7E89ED2447F50C0036F64C /* CellGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellGrid.swift; sourceTree = "<group>"; };
+		CE7E89F2244D94FC0036F64C /* GameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
+		CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowDelegate.swift; sourceTree = "<group>"; };
+		CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSceneDelegate.swift; sourceTree = "<group>"; };
 		CECAD4F62446E00A00E07A8B /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		CECAD4F72446E00A00E07A8B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		CECAD4F82446E00A00E07A8B /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -182,6 +188,8 @@
 				CECAD5662446E05600E07A8B /* ResettableScene.swift */,
 				CECAD5682446FB7E00E07A8B /* Cell.swift */,
 				CE7E89ED2447F50C0036F64C /* CellGrid.swift */,
+				CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */,
+				CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */,
 			);
 			path = "Conway's Game of Life Reloaded Shared";
 			sourceTree = "<group>";
@@ -246,6 +254,7 @@
 			children = (
 				CECAD53C2446E00D00E07A8B /* AppDelegate.swift */,
 				CECAD53E2446E00D00E07A8B /* GameViewController.swift */,
+				CE7E89F2244D94FC0036F64C /* GameWindowController.swift */,
 				CECAD5402446E00D00E07A8B /* Main.storyboard */,
 				CECAD5432446E00D00E07A8B /* Info.plist */,
 			);
@@ -489,12 +498,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7E89F5244D9EE80036F64C /* GameWindowDelegate.swift in Sources */,
+				CE7E89F7244D9F0D0036F64C /* GameSceneDelegate.swift in Sources */,
 				CECAD54E2446E00D00E07A8B /* GameScene.swift in Sources */,
 				CE7E89EF2447F83E0036F64C /* CellGrid.swift in Sources */,
 				CECAD570244703CC00E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56A244703BB00E07A8B /* Cell.swift in Sources */,
 				CECAD53F2446E00D00E07A8B /* GameViewController.swift in Sources */,
 				CECAD53D2446E00D00E07A8B /* AppDelegate.swift in Sources */,
+				CE7E89F3244D94FC0036F64C /* GameWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

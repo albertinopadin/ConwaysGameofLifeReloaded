@@ -13,6 +13,8 @@ class CellGrid {
     var cellWidth: CGFloat = 23.0
     var cellHeight: CGFloat = 23.0
     
+    var generation: UInt64 = 0
+    
     init(xDimension: Int, yDimension: Int) {
         grid = makeGrid(xDimension: xDimension, yDimension: yDimension)
     }
@@ -49,7 +51,7 @@ class CellGrid {
     // 3) Any live cell with more than three live neighbors dies (overpopulation)
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
-    func updateCells() {
+    func updateCells() -> UInt64 {
         // First do a deep copy of cell grid:
         let prevGenGrid = self.deepCopyCellArray(originalGrid: self.grid)
         
@@ -85,6 +87,9 @@ class CellGrid {
                 }
             }
         }
+        
+        generation += 1
+        return generation
     }
     
     func deepCopyCellArray(originalGrid: [[Cell]]) -> [[Cell]] {
@@ -183,5 +188,7 @@ class CellGrid {
                 }
             }
         }
+        
+        generation = 0
     }
 }
