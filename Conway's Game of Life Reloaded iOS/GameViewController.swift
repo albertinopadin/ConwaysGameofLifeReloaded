@@ -10,20 +10,39 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, GameSceneDelegate {
+    var gameScene: GameScene!
+    let pauseString = "Pause"
+    let runString = "Run"
+    @IBOutlet weak var generationsLabel: UIBarButtonItem!
+    @IBOutlet weak var toggleGameplayButton: UIBarButtonItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let scene = GameScene.newGameScene()
+        gameScene = GameScene.newGameScene()
+        gameScene.gameDelegate = self
 
         // Present the scene
         let skView = self.view as! SKView
-        skView.presentScene(scene)
+        skView.presentScene(gameScene)
         
         skView.ignoresSiblingOrder = true
         skView.showsFPS = true
         skView.showsNodeCount = true
+    }
+    
+    @IBAction func toggleGameplay(sender: UIBarButtonItem) {
+        gameScene.toggleGameplay()
+        if toggleGameplayButton.title == runString {
+            toggleGameplayButton.title = pauseString
+        } else {
+            toggleGameplayButton.title = runString
+        }
+    }
+    
+    func setGeneration(_ generation: UInt64) {
+        generationsLabel.title = "\(generation)"
     }
 
     override var shouldAutorotate: Bool {

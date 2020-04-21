@@ -16,6 +16,12 @@
 		CE7E89F3244D94FC0036F64C /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F2244D94FC0036F64C /* GameWindowController.swift */; };
 		CE7E89F5244D9EE80036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
 		CE7E89F7244D9F0D0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
+		CE7E89F8244E4E2A0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
+		CE7E89F9244E4E310036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
+		CE7E89FA244E4E560036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
+		CE7E89FB244E4E570036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
+		CE7E89FC244E4E5C0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
+		CE7E89FD244E4E5D0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
 		CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5012446E00C00E07A8B /* AppDelegate.swift */; };
 		CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5032446E00C00E07A8B /* GameViewController.swift */; };
 		CECAD5072446E00C00E07A8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5052446E00C00E07A8B /* Main.storyboard */; };
@@ -459,7 +465,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7E89F9244E4E310036F64C /* GameWindowDelegate.swift in Sources */,
 				CECAD54B2446E00D00E07A8B /* GameScene.swift in Sources */,
+				CE7E89F8244E4E2A0036F64C /* GameSceneDelegate.swift in Sources */,
 				CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */,
 				CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56B244703BD00E07A8B /* Cell.swift in Sources */,
@@ -472,10 +480,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7E89FA244E4E560036F64C /* GameWindowDelegate.swift in Sources */,
 				CECAD54C2446E00D00E07A8B /* GameScene.swift in Sources */,
 				CE7E89F12447F8550036F64C /* CellGrid.swift in Sources */,
 				CECAD56E244703CB00E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56C244703C400E07A8B /* Cell.swift in Sources */,
+				CE7E89FC244E4E5C0036F64C /* GameSceneDelegate.swift in Sources */,
 				CECAD5232446E00D00E07A8B /* ExtensionDelegate.swift in Sources */,
 				CECAD5212446E00D00E07A8B /* InterfaceController.swift in Sources */,
 			);
@@ -485,10 +495,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7E89FB244E4E570036F64C /* GameWindowDelegate.swift in Sources */,
 				CECAD54D2446E00D00E07A8B /* GameScene.swift in Sources */,
 				CE7E89F02447F83F0036F64C /* CellGrid.swift in Sources */,
 				CECAD56F244703CC00E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56D244703C500E07A8B /* Cell.swift in Sources */,
+				CE7E89FD244E4E5D0036F64C /* GameSceneDelegate.swift in Sources */,
 				CECAD52E2446E00D00E07A8B /* GameViewController.swift in Sources */,
 				CECAD52C2446E00D00E07A8B /* AppDelegate.swift in Sources */,
 			);
