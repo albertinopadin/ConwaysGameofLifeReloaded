@@ -32,5 +32,8 @@ class GameViewController: NSViewController, GameWindowDelegate {
     func toggleGameplay() {
         gameScene.toggleGameplay()
     }
-
+    
+    func resetGame() {
+        gameScene.resetGame()
+    }
 }

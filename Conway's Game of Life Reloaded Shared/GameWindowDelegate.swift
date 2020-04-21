@@ -8,4 +8,5 @@
 
 public protocol GameWindowDelegate {
     func toggleGameplay()
+    func resetGame()
 }

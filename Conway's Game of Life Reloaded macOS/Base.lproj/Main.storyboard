@@ -741,6 +741,20 @@
                                     </button>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="C01F0EBE-8216-4275-8A92-F10D0FB09C83" label="Pause" paletteLabel="Pause" tag="-1" id="wSI-aK-Qob"/>
+                                <toolbarItem implicitItemIdentifier="87D9E88F-1452-488C-93D8-F8DE3ACE25C7" label="" paletteLabel="Reset" sizingBehavior="auto" id="xes-86-ZN2">
+                                    <nil key="toolTip"/>
+                                    <button key="view" verticalHuggingPriority="750" id="apV-dR-HXo">
+                                        <rect key="frame" x="0.0" y="14" width="82" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Reset" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wXj-Ik-xYw">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="resetGameWithSender:" target="B8D-0N-5wS" id="Ee6-zk-hyV"/>
+                                        </connections>
+                                    </button>
+                                </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="KCF-Lh-ejg"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarShowFontsItem" id="W2t-nK-RI6"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="CUB-UB-tNT"/>
@@ -751,6 +765,8 @@
                                 <toolbarItem reference="Oqr-XZ-6st"/>
                                 <toolbarItem reference="y8j-hO-8IL"/>
                                 <toolbarItem reference="WYz-Tk-kgd"/>
+                                <toolbarItem reference="27e-hI-z8i"/>
+                                <toolbarItem reference="xes-86-ZN2"/>
                             </defaultToolbarItems>
                         </toolbar>
                         <connections>

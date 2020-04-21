@@ -41,6 +41,13 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         }
     }
     
+    @IBAction func resetGame(sender: NSButton) {
+        gameViewController?.resetGame()
+        if toggleGameplayButton.title == pauseString {
+            toggleGameplayButton.title = runString
+        }
+    }
+    
     func setGeneration(_ generation: UInt64) {
         generationsLabel.stringValue = "\(generation)"
     }

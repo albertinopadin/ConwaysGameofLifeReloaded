@@ -82,6 +82,12 @@ class GameScene: SKScene {
     func toggleGameplay() {
         gameRunning.toggle()
     }
+    
+    func resetGame() {
+        gameRunning = false
+        cellGrid.reset()
+        gameDelegate?.setGeneration(0)
+    }
 }
 
 #if os(iOS) || os(tvOS)
@@ -117,15 +123,23 @@ extension GameScene {
 extension GameScene {
 
     override func mouseDown(with event: NSEvent) {
-        cellGrid.spawnLiveCell(at: event.location(in: self))
+        if isMouseEventInsideView(event: event) {
+            cellGrid.spawnLiveCell(at: event.location(in: self))
+        }
     }
     
     override func mouseDragged(with event: NSEvent) {
-        cellGrid.spawnLiveCell(at: event.location(in: self))
+        if isMouseEventInsideView(event: event) {
+            cellGrid.spawnLiveCell(at: event.location(in: self))
+        }
     }
     
     override func mouseUp(with event: NSEvent) {
         
+    }
+    
+    func isMouseEventInsideView(event: NSEvent) -> Bool {
+        return self.view?.hitTest(event.locationInWindow) != nil
     }
 
 }

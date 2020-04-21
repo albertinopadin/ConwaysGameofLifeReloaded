@@ -25,6 +25,12 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem title="0" id="qJ2-26-n7l"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="hWT-bU-5Om"/>
+                                    <barButtonItem title="Reset" id="9ef-Yx-Chh">
+                                        <connections>
+                                            <action selector="resetGameWithSender:" destination="BV1-FR-VrT" id="Asy-Ck-jwz"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                         </subviews>
