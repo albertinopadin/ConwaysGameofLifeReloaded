@@ -19,6 +19,9 @@ class CellGrid {
         grid = makeGrid(xDimension: xDimension, yDimension: yDimension)
     }
     
+    // TODO: Figure out how to refactor this method to:
+    //       1. Create arbitrary sized grids
+    //       2. Start at a certain zoom level and be able to zoom in and out
     func makeGrid(xDimension: Int, yDimension: Int) -> [[Cell]] {
         var newGrid = [[Cell]]()
         for x in 0...xDimension {

@@ -726,8 +726,10 @@
                                         </buttonCell>
                                     </button>
                                 </toolbarItem>
-                                <toolbarItem implicitItemIdentifier="9D880E95-AC1C-465B-8E24-0FA85EEACCB0" label="" paletteLabel="StartStopButton" sizingBehavior="auto" id="y8j-hO-8IL">
+                                <toolbarItem implicitItemIdentifier="9D880E95-AC1C-465B-8E24-0FA85EEACCB0" label="" paletteLabel="StartStopButton" id="y8j-hO-8IL">
                                     <nil key="toolTip"/>
+                                    <size key="minSize" width="85" height="32"/>
+                                    <size key="maxSize" width="90" height="32"/>
                                     <button key="view" verticalHuggingPriority="750" id="EBQ-3X-cNs">
                                         <rect key="frame" x="6" y="14" width="82" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -760,10 +762,24 @@
                                 <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="CUB-UB-tNT"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="Oqr-XZ-6st"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="27e-hI-z8i"/>
+                                <toolbarItem implicitItemIdentifier="E0014EF4-DA35-43A1-A716-A9BD085EA4FD" label="" paletteLabel="GenTextLabel" sizingBehavior="auto" id="czy-gx-OVn">
+                                    <nil key="toolTip"/>
+                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="F8b-8E-xIK">
+                                        <rect key="frame" x="0.0" y="14" width="79" height="16"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Generation:" id="YQ8-2b-smX">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="Oqr-XZ-6st"/>
                                 <toolbarItem reference="y8j-hO-8IL"/>
+                                <toolbarItem reference="27e-hI-z8i"/>
+                                <toolbarItem reference="czy-gx-OVn"/>
                                 <toolbarItem reference="WYz-Tk-kgd"/>
                                 <toolbarItem reference="27e-hI-z8i"/>
                                 <toolbarItem reference="xes-86-ZN2"/>
