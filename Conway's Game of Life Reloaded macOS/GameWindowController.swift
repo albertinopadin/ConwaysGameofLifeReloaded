@@ -12,6 +12,7 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     var gameViewController: GameViewController?
     let pauseString = "Pause"
     let runString = "Run"
+    let defaultSliderValue: CGFloat = 50.0
     @IBOutlet weak var generationsLabel: NSTextField!
     @IBOutlet weak var toggleGameplayButton: NSButton!
     
@@ -39,6 +40,15 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         } else {
             toggleGameplayButton.title = runString
         }
+    }
+    
+    @IBAction func setZoom(sender: NSSlider) {
+        let zoom = convertSliderValueToZoom(CGFloat(sender.floatValue))
+        gameViewController?.setZoom(zoom)
+    }
+    
+    func convertSliderValueToZoom(_ value: CGFloat) -> CGFloat {
+        return value/defaultSliderValue
     }
     
     @IBAction func resetGame(sender: NSButton) {

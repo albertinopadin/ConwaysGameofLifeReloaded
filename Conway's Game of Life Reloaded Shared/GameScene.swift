@@ -21,6 +21,7 @@ class GameScene: SKScene {
     
     var gameRunning: Bool = false
     var gameDelegate: GameSceneDelegate?
+    let cameraNode = SKCameraNode()
     
     class func newGameScene() -> GameScene {
         // Load 'GameScene.sks' as an SKScene.
@@ -31,14 +32,25 @@ class GameScene: SKScene {
 
         // Set the scale mode to scale to fit the window
         scene.scaleMode = .aspectFill
-
         return scene
     }
     
     func setUpScene() {
+        setUpCamera()
         (xDimension, yDimension) = initDimensionsBasedOnDeviceViewport()
         cellGrid = CellGrid(xDimension: xDimension, yDimension: yDimension)
         addCellGridToScene(cellGrid: cellGrid.grid)
+    }
+    
+    func setUpCamera() {
+        cameraNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        self.addChild(cameraNode)
+        self.camera = cameraNode
+    }
+    
+    func setZoom(_ zoom: CGFloat) {
+        print("Setting camera scale to: \(zoom)")
+        cameraNode.setScale(zoom)
     }
     
     func initDimensionsBasedOnDeviceViewport() -> (Int, Int) {

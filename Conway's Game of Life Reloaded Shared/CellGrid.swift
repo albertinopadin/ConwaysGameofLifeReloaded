@@ -16,13 +16,29 @@ class CellGrid {
     var generation: UInt64 = 0
     
     init(xDimension: Int, yDimension: Int) {
-        grid = makeGrid(xDimension: xDimension, yDimension: yDimension)
+        grid = makeVisibleGrid(xDimension: xDimension, yDimension: yDimension)
     }
     
     // TODO: Figure out how to refactor this method to:
     //       1. Create arbitrary sized grids
     //       2. Start at a certain zoom level and be able to zoom in and out
-    func makeGrid(xDimension: Int, yDimension: Int) -> [[Cell]] {
+//    func makeGrid(xCells: Int, yCells: Int, xDimension: Int, yDimension: Int, zoomLevel: CGFloat) -> [[Cell]] {
+//        var newGrid = makeVisibleGrid(xDimension: xDimension, yDimension: yDimension)
+//        let visibleCellsX = newGrid.count
+//        let visibleCellsY = newGrid[0].count
+//        
+//        if xCells > visibleCellsX {
+//            
+//        }
+//        
+//        if yCells > visibleCellsY {
+//            
+//        }
+//        
+//        return newGrid
+//    }
+    
+    func makeVisibleGrid(xDimension: Int, yDimension: Int) -> [[Cell]] {
         var newGrid = [[Cell]]()
         for x in 0...xDimension {
             newGrid.append([Cell]())    // Create new Cell array for this xz

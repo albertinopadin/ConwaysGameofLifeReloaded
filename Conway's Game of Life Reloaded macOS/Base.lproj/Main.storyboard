@@ -728,7 +728,7 @@
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="9D880E95-AC1C-465B-8E24-0FA85EEACCB0" label="" paletteLabel="StartStopButton" id="y8j-hO-8IL">
                                     <nil key="toolTip"/>
-                                    <size key="minSize" width="85" height="32"/>
+                                    <size key="minSize" width="82" height="32"/>
                                     <size key="maxSize" width="90" height="32"/>
                                     <button key="view" verticalHuggingPriority="750" id="EBQ-3X-cNs">
                                         <rect key="frame" x="6" y="14" width="82" height="32"/>
@@ -774,6 +774,39 @@
                                         </textFieldCell>
                                     </textField>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="13C13FFA-8DF1-412B-A048-F4B28FD563BB" label="Custom View" paletteLabel="Custom View" sizingBehavior="auto" id="0WQ-JE-gZE">
+                                    <nil key="toolTip"/>
+                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JQl-Nc-1W3">
+                                        <rect key="frame" x="20" y="14" width="37" height="16"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="7hO-Em-l57">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="A2EFABE9-44C2-488E-B1FD-C3C5A66A0BAE" label="Custom View" paletteLabel="Custom View" sizingBehavior="auto" id="XQL-wd-SBU">
+                                    <nil key="toolTip"/>
+                                    <stepper key="view" horizontalHuggingPriority="750" verticalHuggingPriority="750" id="Aa1-Yh-Lol">
+                                        <rect key="frame" x="29" y="14" width="19" height="27"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="Wie-K9-W5L"/>
+                                    </stepper>
+                                </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="E86D8DD3-B25F-4319-9FD7-515FAB759843" label="" paletteLabel="Zoom" id="yyB-vW-Tuz">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="36" height="23"/>
+                                    <size key="maxSize" width="200" height="23"/>
+                                    <slider key="view" verticalHuggingPriority="750" id="1J4-rv-f7x">
+                                        <rect key="frame" x="1" y="14" width="36" height="23"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <sliderCell key="cell" continuous="YES" state="on" alignment="left" minValue="1" maxValue="500" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="f5X-uP-OzI"/>
+                                        <connections>
+                                            <action selector="setZoomWithSender:" target="B8D-0N-5wS" id="QaT-lr-njD"/>
+                                        </connections>
+                                    </slider>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="Oqr-XZ-6st"/>
@@ -782,6 +815,7 @@
                                 <toolbarItem reference="czy-gx-OVn"/>
                                 <toolbarItem reference="WYz-Tk-kgd"/>
                                 <toolbarItem reference="27e-hI-z8i"/>
+                                <toolbarItem reference="yyB-vW-Tuz"/>
                                 <toolbarItem reference="xes-86-ZN2"/>
                             </defaultToolbarItems>
                         </toolbar>

@@ -33,6 +33,10 @@ class GameViewController: NSViewController, GameWindowDelegate {
         gameScene.toggleGameplay()
     }
     
+    func setZoom(_ zoom: CGFloat) {
+        gameScene.setZoom(zoom)
+    }
+    
     func resetGame() {
         gameScene.resetGame()
     }
