@@ -48,8 +48,11 @@ class GameScene: SKScene {
         self.camera = cameraNode
     }
     
+    func getZoom() -> CGFloat {
+        return cameraNode.xScale
+    }
+    
     func setZoom(_ zoom: CGFloat) {
-        print("Setting camera scale to: \(zoom)")
         cameraNode.setScale(zoom)
     }
     

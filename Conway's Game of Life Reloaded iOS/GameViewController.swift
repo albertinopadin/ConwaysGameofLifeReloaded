@@ -14,6 +14,8 @@ class GameViewController: UIViewController, GameSceneDelegate {
     var gameScene: GameScene!
     let pauseString = "Pause"
     let runString = "Run"
+    let pinchGestureRecognizer = UIPinchGestureRecognizer()
+    var previousZoomScale = CGFloat()
     @IBOutlet weak var generationsLabel: UIBarButtonItem!
     @IBOutlet weak var toggleGameplayButton: UIBarButtonItem!
 
@@ -30,6 +32,22 @@ class GameViewController: UIViewController, GameSceneDelegate {
         skView.ignoresSiblingOrder = true
         skView.showsFPS = true
         skView.showsNodeCount = true
+        
+        setUpPinchGestureRecognizer()
+    }
+    
+    func setUpPinchGestureRecognizer() {
+        pinchGestureRecognizer.addTarget(self, action: #selector(pinchGestureAction(_:)))
+        self.view.addGestureRecognizer(pinchGestureRecognizer)
+    }
+    
+    @objc func pinchGestureAction(_ sender: UIPinchGestureRecognizer) {
+        if sender.state == .began {
+            previousZoomScale = gameScene.getZoom()
+        }
+        
+        let relativeZoom = previousZoomScale * 1/sender.scale
+        gameScene.setZoom(relativeZoom)
     }
     
     @IBAction func toggleGameplay(sender: UIBarButtonItem) {
