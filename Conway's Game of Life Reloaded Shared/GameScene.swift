@@ -38,7 +38,8 @@ class GameScene: SKScene {
     func setUpScene() {
         setUpCamera()
         (xDimension, yDimension) = initDimensionsBasedOnDeviceViewport()
-        cellGrid = CellGrid(xDimension: xDimension, yDimension: yDimension)
+//        cellGrid = CellGrid(xDimension: xDimension, yDimension: yDimension)
+        cellGrid = CellGrid(xDimension: xDimension, yDimension: yDimension, xCells: 100, yCells: 100, zoomLevel: 1.0)
         addCellGridToScene(cellGrid: cellGrid.grid)
     }
     
