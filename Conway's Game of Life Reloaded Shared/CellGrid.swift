@@ -145,34 +145,32 @@ class CellGrid {
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
     func updateCells() -> UInt64 {
-        // First do a deep copy of cell grid:
-        let prevGenGrid = self.deepCopyCellArray(originalGrid: self.grid)
+        // Get array with number of live neighbor number in corresponding same indices as cells in grid:
+        let liveNeighbors = getArrayOfLiveNeighbors(grid: grid)
         
         // Iterate through the current grid, updating the next gen grid accordingly:
-        for x in 0..<self.grid.count {
-            for y in 0..<self.grid.first!.count {
-                let numberOfLiveNeighbors = self.getNumberOfLiveNeighbors(x: x, y: y, grid: prevGenGrid)
-                let currentGenCell = self.grid[x][y]
-                let prevGenCell = prevGenGrid[x][y]
+        for x in 0..<grid.count {
+            for y in 0..<grid.first!.count {
+                let numberOfLiveNeighbors = liveNeighbors[x][y]
+                let cell = grid[x][y]
                 
                 switch numberOfLiveNeighbors {
                 case _ where numberOfLiveNeighbors < 2:
-                    if prevGenCell.alive {
-                        // Cell dies
-                        currentGenCell.makeDead()
+                    if cell.alive {
+                        cell.makeDead()
                     }
                     
                 case 2:
                     break
                     
                 case 3:
-                    if !prevGenCell.alive {
-                        currentGenCell.makeLive()
+                    if !cell.alive {
+                        cell.makeLive()
                     }
                     
                 case _ where numberOfLiveNeighbors > 3:
-                    if prevGenCell.alive {
-                        currentGenCell.makeDead()
+                    if cell.alive {
+                        cell.makeDead()
                     }
                     
                 default:
@@ -183,6 +181,21 @@ class CellGrid {
         
         generation += 1
         return generation
+    }
+    
+    func getArrayOfLiveNeighbors(grid: [[Cell]]) -> [[Int]] {
+        var liveNeighbors = [[Int]]()
+        let xCount = grid.count
+        let yCount = grid.first!.count
+        for x in 0..<xCount {
+            var cellColumn = [Int]()
+            for y in 0..<yCount {
+                let numLiveNeighbors = getNumberOfLiveNeighbors(x: x, y: y, grid: grid)
+                cellColumn.append(numLiveNeighbors)
+            }
+            liveNeighbors.append(cellColumn)
+        }
+        return liveNeighbors
     }
     
     func deepCopyCellArray(originalGrid: [[Cell]]) -> [[Cell]] {
@@ -248,29 +261,29 @@ class CellGrid {
         
         let x = Int(at.x / cellWidth)
         let y = Int(at.y / cellHeight)
-        
-        let touchedCell = self.grid[x][y]
+
+        let touchedCell = grid[x][y]
         if !touchedCell.alive {
             touchedCell.makeLive()
         }
         
         // TODO: Implement this the O(1) way
         // For now will just be a loop:
-        //        for x in 0...xDimension {
-        //            for y in 0...yDimension {
-        //                let nthCell = self.grid[x][y]
-        //                if nthCell.frame.contains(at) {
-        //                    if !nthCell.alive {
-        //                        nthCell.makeLive()
-        //                    }
-        //
-        //                    print("Indices of touch: \(x, y)")
-        //
-        //                    // Break out of loop as we already found cell that contains the point:
-        //                    break
-        //                }
-        //            }
-        //        }
+//        let xLen = grid.count
+//        let yLen = grid[0].count
+//        for x in 0..<xLen {
+//            for y in 0..<yLen {
+//                let nthCell = grid[x][y]
+//                if nthCell.frame.contains(at) {
+//                    if !nthCell.alive {
+//                        nthCell.makeLive()
+//                    }
+//
+//                    // Break out of loop as we already found cell that contains the point:
+//                    break
+//                }
+//            }
+//        }
     }
     
     func reset() {
