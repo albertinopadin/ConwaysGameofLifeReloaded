@@ -12,7 +12,7 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     var gameViewController: GameViewController?
     let pauseString = "Pause"
     let runString = "Run"
-    let defaultSliderValue: CGFloat = 50.0
+    let defaultSliderValue: CGFloat = 300.0
     @IBOutlet weak var generationsLabel: NSTextField!
     @IBOutlet weak var toggleGameplayButton: NSButton!
     
@@ -48,7 +48,11 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     }
     
     func convertSliderValueToZoom(_ value: CGFloat) -> CGFloat {
-        return value/defaultSliderValue
+        return defaultSliderValue/value
+    }
+    
+    @IBAction func setSpeed(sender: NSSlider) {
+        gameViewController?.setSpeed(sender.doubleValue)
     }
     
     @IBAction func resetGame(sender: NSButton) {

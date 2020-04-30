@@ -59,6 +59,10 @@ class GameScene: SKScene {
         cameraNode.setScale(zoom)
     }
     
+    func setSpeed(_ speed: Double) {
+        updateInterval = 1/speed
+    }
+    
     func getVisibleCellsXYBasedOnDeviceViewport(cellSize: CGFloat) -> (Int, Int) {
         let xCells = Int(self.frame.size.width / cellSize)
         let yCells = Int(self.frame.size.height / cellSize)

@@ -37,6 +37,10 @@ class GameViewController: NSViewController, GameWindowDelegate {
         gameScene.setZoom(zoom)
     }
     
+    func setSpeed(_ speed: Double) {
+        gameScene.setSpeed(speed)
+    }
+    
     func resetGame() {
         gameScene.resetGame()
     }
