@@ -15,118 +15,28 @@ enum Orientation {
 
 class CellGrid {
     var grid = [[Cell]]()    // 2D Array to hold the cells
-    var cellWidth: CGFloat = 23.0
-    var cellHeight: CGFloat = 23.0
+    var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
     
-    
-    init(xDimension: Int, yDimension: Int) {
-        grid = makeVisibleGrid(xDimension: xDimension, yDimension: yDimension)
+    init(xCells: Int, yCells: Int, cellSize: CGFloat) {
+        self.cellSize = cellSize
+        grid = makeGrid(xCells: xCells, yCells: yCells)
     }
     
-    init(xDimension: Int, yDimension: Int, xCells: Int, yCells: Int, zoomLevel: CGFloat) {
-        grid = makeGrid(xCells: xCells,
-                        yCells: yCells,
-                        xDimension: xDimension,
-                        yDimension: yDimension,
-                        zoomLevel: zoomLevel)
-    }
-    
-    func makeGrid(xCells: Int, yCells: Int, xDimension: Int, yDimension: Int, zoomLevel: CGFloat) -> [[Cell]] {
-        var newGrid = makeVisibleGrid(xDimension: xDimension, yDimension: yDimension)
-        let visibleCellsX = newGrid.count
-        let visibleCellsY = newGrid[0].count
-
-        if xCells > visibleCellsX {
-            let overflowCells = xCells - visibleCellsX
-            let leftOverflow = Int(overflowCells/2)
-            let rightOverflow = overflowCells - leftOverflow
-            
-            // Insert cells to the left:
-            for x in 0..<leftOverflow {
-                var cellsLeft = [Cell]()
-                for y in 0..<visibleCellsY {
-                    let xIter = -x - 1
-                    let cellFrame = CGRect(x: cellMiddle(iteration: xIter, length: cellWidth),
-                                           y: cellMiddle(iteration: y, length: cellHeight),
-                                           width: cellWidth,
-                                           height: cellHeight)
-                    cellsLeft.append(Cell(frame: cellFrame))
-                }
-                newGrid.append(cellsLeft)
-            }
-            
-            // Insert cells to the right:
-            for x in 0..<rightOverflow {
-                var cellsRight = [Cell]()
-                for y in 0..<visibleCellsY {
-                    let xIter = visibleCellsX + x
-                    let cellFrame = CGRect(x: cellMiddle(iteration: xIter, length: cellWidth),
-                                           y: cellMiddle(iteration: y, length: cellHeight),
-                                           width: cellWidth,
-                                           height: cellHeight)
-                    cellsRight.append(Cell(frame: cellFrame))
-                }
-                newGrid.append(cellsRight)
-            }
-        }
-        
-        
-        if yCells > visibleCellsY {
-            let totalCellsX = newGrid.count
-            let overflowCells = yCells - visibleCellsY
-            let topOverflow = Int(overflowCells/2)
-            let bottomOverflow = overflowCells - topOverflow
-            
-            // Insert cells at top:
-            for y in 0..<topOverflow {
-                var cellsTop = [Cell]()
-                for x in 0..<totalCellsX {
-                    let xIter = -Int((xCells - visibleCellsX)/2) + x
-                    let yIter = -y - 1
-                    let cellFrame = CGRect(x: cellMiddle(iteration: xIter, length: cellWidth),
-                                           y: cellMiddle(iteration: yIter, length: cellHeight),
-                                           width: cellWidth,
-                                           height: cellHeight)
-                    cellsTop.append(Cell(frame: cellFrame))
-                }
-                newGrid.append(cellsTop)
-            }
-            
-            // Insert cells at bottom:
-            for y in 0..<bottomOverflow {
-                var cellsBottom = [Cell]()
-                for x in 0..<totalCellsX {
-                    let xIter = -Int((xCells - visibleCellsX)/2) + x
-                    let yIter = visibleCellsY + y
-                    let cellFrame = CGRect(x: cellMiddle(iteration: xIter, length: cellWidth),
-                                           y: cellMiddle(iteration: yIter, length: cellHeight),
-                                           width: cellWidth,
-                                           height: cellHeight)
-                    cellsBottom.append(Cell(frame: cellFrame))
-                }
-                newGrid.append(cellsBottom)
-            }
-        }
-        
-        return newGrid
-    }
-    
-    func makeVisibleGrid(xDimension: Int, yDimension: Int) -> [[Cell]] {
+    func makeGrid(xCells: Int, yCells: Int) -> [[Cell]] {
         var newGrid = [[Cell]]()
-        for x in 0...xDimension {
-            newGrid.append([Cell]())    // Create new Cell array for this xz
-            for y in 0...yDimension {
+        for x in 0..<xCells {
+            newGrid.append([Cell]())
+            for y in 0..<yCells {
                 // The x and y coords are not at the edge of the cell; instead they are the center of it.
                 // This can create confusion when attempting to position cells!
-                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellWidth),
-                                       y: cellMiddle(iteration: y, length: cellHeight),
-                                       width: cellWidth,
-                                       height: cellHeight)
+                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize),
+                                       y: cellMiddle(iteration: y, length: cellSize),
+                                       width: cellSize,
+                                       height: cellSize)
                 newGrid[x].append(Cell(frame: cellFrame))
             }
         }
-        
         return newGrid
     }
     
@@ -248,8 +158,8 @@ class CellGrid {
     }
 
     func getGridIndicesFromPoint(at: CGPoint) -> (x: Int, y: Int) {
-        let xIndex = Int(at.x / cellWidth)
-        let yIndex = Int(at.y / cellHeight)
+        let xIndex = Int(at.x / cellSize)
+        let yIndex = Int(at.y / cellSize)
         
         return (xIndex, yIndex)
     }
@@ -259,8 +169,8 @@ class CellGrid {
         // Find the cell that contains the touch point and make it live:
         //        let (x, y) = self.getGridIndicesFromPoint(at: at)
         
-        let x = Int(at.x / cellWidth)
-        let y = Int(at.y / cellHeight)
+        let x = Int(at.x / cellSize)
+        let y = Int(at.y / cellSize)
 
         let touchedCell = grid[x][y]
         if !touchedCell.alive {
@@ -284,6 +194,22 @@ class CellGrid {
 //                }
 //            }
 //        }
+    }
+    
+    func getPointDimensions() -> (CGFloat, CGFloat) {
+        return (getPointWidth(), getPointHeight())
+    }
+    
+    func getPointWidth() -> CGFloat {
+        return CGFloat(grid.count) * cellSize
+    }
+    
+    func getPointHeight() -> CGFloat {
+        guard let gridY = grid.first else {
+            return 0
+        }
+        
+        return CGFloat(gridY.count) * cellSize
     }
     
     func reset() {

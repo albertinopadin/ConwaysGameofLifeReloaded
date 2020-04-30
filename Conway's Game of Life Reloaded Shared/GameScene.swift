@@ -14,10 +14,12 @@ class GameScene: SKScene {
     var previousTime: TimeInterval!
 
     // Need to initialize on sceneDidLoad!!!
-    var xDimension: Int = 0
-    var yDimension: Int = 0
+    var xCellsViz: Int = 0
+    var yCellsViz: Int = 0
     
-    var dScale: Int = 23
+    let defaultCellSize: CGFloat = 23.0
+    let defaultXCells: Int = 200
+    let defaultYCells: Int = 200
     
     var gameRunning: Bool = false
     var gameDelegate: GameSceneDelegate?
@@ -37,9 +39,10 @@ class GameScene: SKScene {
     
     func setUpScene() {
         setUpCamera()
-        (xDimension, yDimension) = initDimensionsBasedOnDeviceViewport()
-        cellGrid = CellGrid(xDimension: xDimension, yDimension: yDimension, xCells: 200, yCells: 200, zoomLevel: 1.0)
+        (xCellsViz, yCellsViz) = getVisibleCellsXYBasedOnDeviceViewport(cellSize: defaultCellSize)
+        cellGrid = CellGrid(xCells: defaultXCells, yCells: defaultYCells, cellSize: defaultCellSize)
         addCellGridToScene(cellGrid: cellGrid.grid)
+        positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
     }
     
     func setUpCamera() {
@@ -56,10 +59,15 @@ class GameScene: SKScene {
         cameraNode.setScale(zoom)
     }
     
-    func initDimensionsBasedOnDeviceViewport() -> (Int, Int) {
-        let xDim = Int(self.frame.size.width / CGFloat(dScale))
-        let yDim = Int(self.frame.size.height / CGFloat(dScale))
-        return (xDim, yDim)
+    func getVisibleCellsXYBasedOnDeviceViewport(cellSize: CGFloat) -> (Int, Int) {
+        let xCells = Int(self.frame.size.width / cellSize)
+        let yCells = Int(self.frame.size.height / cellSize)
+        return (xCells, yCells)
+    }
+    
+    func positionCameraAtCenter(camera: SKCameraNode, grid: CellGrid) {
+        let (gridX, gridY) = grid.getPointDimensions()
+        camera.position = CGPoint(x: gridX / 2, y: gridY / 2)
     }
     
     #if os(watchOS)
