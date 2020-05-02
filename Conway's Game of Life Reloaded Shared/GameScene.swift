@@ -25,6 +25,7 @@ class GameScene: SKScene {
     var gameDelegate: GameSceneDelegate?
     let cameraNode = SKCameraNode()
     
+    
     class func newGameScene() -> GameScene {
         // Load 'GameScene.sks' as an SKScene.
         guard let scene = GameScene(fileNamed: "GameScene") else {
@@ -94,12 +95,11 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        
         if previousTime == nil {
             previousTime = currentTime
         }
         
-        if gameRunning && currentTime - previousTime >= updateInterval {
+        if gameRunning && (currentTime - previousTime >= updateInterval) {
             let generation = cellGrid.updateCells()
             previousTime = currentTime
             gameDelegate?.setGeneration(generation)

@@ -14,13 +14,24 @@ enum Orientation {
 }
 
 class CellGrid {
+    var xCount = 0
+    var yCount = 0
     var grid = [[Cell]]()    // 2D Array to hold the cells
+    var liveNeighbors = [[Int]]()
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
+        xCount = xCells
+        yCount = yCells
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
+        liveNeighbors = initLiveNeighborsArray(x: xCells, y: yCells)
+    }
+    
+    func initLiveNeighborsArray(x: Int, y: Int) -> [[Int]] {
+        let innerLoopRepeatedValue = [Int](repeating: 0, count: y)
+        return [[Int]](repeating: innerLoopRepeatedValue, count: x)
     }
     
     func makeGrid(xCells: Int, yCells: Int) -> [[Cell]] {
@@ -48,19 +59,26 @@ class CellGrid {
         return (CGFloat(iteration) * length) + length/2
     }
     
+    func updateCells() -> UInt64 {
+        // Get array with number of live neighbor number in corresponding same indices as cells in grid:
+        let liveNeighbors = getArrayOfLiveNeighbors(grid: grid)
+        return updateCells(liveNeighbors: liveNeighbors)
+    }
+    
     // Update cells using Conway's Rules of Life:
     // 1) Any live cell with fewer than two live neighbors dies (underpopulation)
     // 2) Any live cell with two or three live neighbors lives on to the next generation
     // 3) Any live cell with more than three live neighbors dies (overpopulation)
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
-    func updateCells() -> UInt64 {
-        // Get array with number of live neighbor number in corresponding same indices as cells in grid:
-        let liveNeighbors = getArrayOfLiveNeighbors(grid: grid)
-        
+    func updateCells(liveNeighbors: [[Int]]) -> UInt64 {
         // Iterate through the current grid, updating the next gen grid accordingly:
-        for x in 0..<grid.count {
-            for y in 0..<grid.first!.count {
+        let xCount = grid.count
+        let yCount = grid.first!.count
+        
+        let _ = DispatchQueue.global(qos: .userInteractive)
+        DispatchQueue.concurrentPerform(iterations: xCount) { x in
+            for y in 0..<yCount {
                 let numberOfLiveNeighbors = liveNeighbors[x][y]
                 let cell = grid[x][y]
                 
@@ -94,16 +112,10 @@ class CellGrid {
     }
     
     func getArrayOfLiveNeighbors(grid: [[Cell]]) -> [[Int]] {
-        var liveNeighbors = [[Int]]()
-        let xCount = grid.count
-        let yCount = grid.first!.count
         for x in 0..<xCount {
-            var cellColumn = [Int]()
             for y in 0..<yCount {
-                let numLiveNeighbors = getNumberOfLiveNeighbors(x: x, y: y, grid: grid)
-                cellColumn.append(numLiveNeighbors)
+                liveNeighbors[x][y] = getNumberOfLiveNeighbors(x: x, y: y, grid: grid)
             }
-            liveNeighbors.append(cellColumn)
         }
         return liveNeighbors
     }
