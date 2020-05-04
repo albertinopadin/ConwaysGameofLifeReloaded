@@ -8,10 +8,6 @@
 
 import SpriteKit
 
-enum Orientation {
-    case Horizontal
-    case Vertical
-}
 
 class CellGrid {
     var xCount = 0
@@ -26,12 +22,8 @@ class CellGrid {
         yCount = yCells
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
-        liveNeighbors = initLiveNeighborsArray(x: xCells, y: yCells)
-    }
-    
-    func initLiveNeighborsArray(x: Int, y: Int) -> [[Int]] {
-        let innerLoopRepeatedValue = [Int](repeating: 0, count: y)
-        return [[Int]](repeating: innerLoopRepeatedValue, count: x)
+        setNeighborsForAllCellsInGrid()
+        liveNeighbors = [[Int]](repeating: [Int](repeating: 0, count: yCount), count: xCount)
     }
     
     func makeGrid(xCells: Int, yCells: Int) -> [[Cell]] {
@@ -59,10 +51,65 @@ class CellGrid {
         return (CGFloat(iteration) * length) + length/2
     }
     
-    func updateCells() -> UInt64 {
-        // Get array with number of live neighbor number in corresponding same indices as cells in grid:
-        let liveNeighbors = getArrayOfLiveNeighbors(grid: grid)
-        return updateCells(liveNeighbors: liveNeighbors)
+    private func setNeighborsForAllCellsInGrid() {
+        for x in 0..<xCount {
+            for y in 0..<yCount {
+                grid[x][y].neighbors = getCellNeighbors(x: x, y: y)
+            }
+        }
+    }
+    
+    private func getCellNeighbors(x: Int, y: Int) -> [Cell] {
+        var neighbors = [Cell]()
+        
+        // Get the neighbors:
+        let leftX   = x - 1
+        let rightX  = x + 1
+        let topY    = y + 1
+        let bottomY = y - 1
+        
+        let leftNeighbor        = leftX > -1 ? grid[leftX][y] : nil
+        let upperLeftNeighbor   = leftX > -1 && topY < (grid.first?.count)! ? grid[leftX][topY] : nil
+        let upperNeighbor       = topY < (grid.first?.count)! ? grid[x][topY] : nil
+        let upperRightNeighbor  = rightX < grid.count && topY < (grid.first?.count)! ? grid[rightX][topY] : nil
+        let rightNeighbor       = rightX < grid.count ? grid[rightX][y] : nil
+        let lowerRightNeighbor  = rightX < grid.count && bottomY > -1 ? grid[rightX][bottomY] : nil
+        let lowerNeighbor       = bottomY > -1 ? grid[x][bottomY] : nil
+        let lowerLeftNeighbor   = leftX > -1 && bottomY > -1 ? grid[leftX][bottomY] : nil
+        
+        if let left_n = leftNeighbor {
+            neighbors.append(left_n)
+        }
+        
+        if let upper_left_n = upperLeftNeighbor {
+            neighbors.append(upper_left_n)
+        }
+        
+        if let upper_n = upperNeighbor {
+            neighbors.append(upper_n)
+        }
+        
+        if let upper_right_n = upperRightNeighbor {
+            neighbors.append(upper_right_n)
+        }
+        
+        if let right_n = rightNeighbor {
+            neighbors.append(right_n)
+        }
+        
+        if let lower_right_n = lowerRightNeighbor {
+            neighbors.append(lower_right_n)
+        }
+        
+        if let lower_n = lowerNeighbor {
+            neighbors.append(lower_n)
+        }
+        
+        if let lower_left_n = lowerLeftNeighbor {
+            neighbors.append(lower_left_n)
+        }
+        
+        return neighbors
     }
     
     // Update cells using Conway's Rules of Life:
@@ -71,16 +118,19 @@ class CellGrid {
     // 3) Any live cell with more than three live neighbors dies (overpopulation)
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
-    func updateCells(liveNeighbors: [[Int]]) -> UInt64 {
+    func updateCells() -> UInt64 {
         // Iterate through the current grid, updating the next gen grid accordingly:
         let xCount = grid.count
         let yCount = grid.first!.count
+//        updateLiveNeighborsGrid()
+        updateLastGenLiveNeighbors()
         
         let _ = DispatchQueue.global(qos: .userInteractive)
         DispatchQueue.concurrentPerform(iterations: xCount) { x in
             for y in 0..<yCount {
-                let numberOfLiveNeighbors = liveNeighbors[x][y]
+//                let numberOfLiveNeighbors = liveNeighbors[x][y]
                 let cell = grid[x][y]
+                let numberOfLiveNeighbors = cell.lastGenLiveNeighbors
                 
                 switch numberOfLiveNeighbors {
                 case _ where numberOfLiveNeighbors < 2:
@@ -111,13 +161,23 @@ class CellGrid {
         return generation
     }
     
-    func getArrayOfLiveNeighbors(grid: [[Cell]]) -> [[Int]] {
+    func updateLiveNeighborsGrid() {
         for x in 0..<xCount {
             for y in 0..<yCount {
-                liveNeighbors[x][y] = getNumberOfLiveNeighbors(x: x, y: y, grid: grid)
+                let cell = grid[x][y]
+                liveNeighbors[x][y] = cell.neighbors.filter({$0.alive}).count
             }
         }
-        return liveNeighbors
+    }
+    
+    func updateLastGenLiveNeighbors() {
+        let _ = DispatchQueue.global(qos: .userInteractive)
+        DispatchQueue.concurrentPerform(iterations: xCount) { x in
+            for y in 0..<yCount {
+                let cell = grid[x][y]
+                cell.lastGenLiveNeighbors = cell.neighbors.filter({$0.alive}).count
+            }
+        }
     }
     
     func deepCopyCellArray(originalGrid: [[Cell]]) -> [[Cell]] {
@@ -130,43 +190,17 @@ class CellGrid {
             
             // Deep copy of cell objects:
             for originalCell in cellArray {
-                copyGrid[cellRowIndex].append(Cell(frame: originalCell.frame,
-                                                   alive: originalCell.alive,
-                                                   color: originalCell.color))
+                let copyCell = Cell(frame: originalCell.frame, alive: originalCell.alive, color: originalCell.color)
+                var copyNeighbors = [Cell]()
+                for ogNeighbor in originalCell.neighbors {
+                    copyNeighbors.append(Cell(frame: ogNeighbor.frame, alive: ogNeighbor.alive, color: ogNeighbor.color))
+                }
+                copyCell.neighbors = copyNeighbors
+                copyGrid[cellRowIndex].append(copyCell)
             }
         }
         
         return copyGrid
-    }
-        
-    func getNumberOfLiveNeighbors(x: Int, y: Int, grid: [[Cell]]) -> Int {
-        // Get the neighbors:
-        let leftX   = x - 1
-        let rightX  = x + 1
-        let topY    = y + 1
-        let bottomY = y - 1
-        
-        let leftNeighbor        = leftX > -1 ? grid[leftX][y] : nil
-        let upperLeftNeighbor   = leftX > -1 && topY < (grid.first?.count)! ? grid[leftX][topY] : nil
-        let upperNeighbor       = topY < (grid.first?.count)! ? grid[x][topY] : nil
-        let upperRightNeighbor  = rightX < grid.count && topY < (grid.first?.count)! ? grid[rightX][topY] : nil
-        let rightNeighbor       = rightX < grid.count ? grid[rightX][y] : nil
-        let lowerRightNeighbor  = rightX < grid.count && bottomY > -1 ? grid[rightX][bottomY] : nil
-        let lowerNeighbor       = bottomY > -1 ? grid[x][bottomY] : nil
-        let lowerLeftNeighbor   = leftX > -1 && bottomY > -1 ? grid[leftX][bottomY] : nil
-        
-        var numLiveNeighbors = 0
-        // ... There's got to be a better way...
-        if let lf_n = leftNeighbor { if lf_n.alive { numLiveNeighbors += 1 } }
-        if let ul_n = upperLeftNeighbor { if ul_n.alive { numLiveNeighbors += 1 } }
-        if let u_n = upperNeighbor { if u_n.alive { numLiveNeighbors += 1 } }
-        if let ur_n = upperRightNeighbor { if ur_n.alive { numLiveNeighbors += 1 } }
-        if let r_n = rightNeighbor { if r_n.alive { numLiveNeighbors += 1 } }
-        if let lwr_n = lowerRightNeighbor { if lwr_n.alive { numLiveNeighbors += 1 } }
-        if let lw_n = lowerNeighbor { if lw_n.alive { numLiveNeighbors += 1 } }
-        if let lwl_n = lowerLeftNeighbor { if lwl_n.alive { numLiveNeighbors += 1 } }
-        
-        return numLiveNeighbors
     }
 
     func getGridIndicesFromPoint(at: CGPoint) -> (x: Int, y: Int) {

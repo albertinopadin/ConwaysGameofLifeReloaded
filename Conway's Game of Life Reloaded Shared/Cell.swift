@@ -15,13 +15,17 @@ public typealias UIColor = NSColor
 public class Cell: SKSpriteNode {
     
     public var alive: Bool
+    public var neighbors: [Cell]
+    public var lastGenLiveNeighbors: Int = 0
     private var colorNode: SKSpriteNode
+    
     private let colorNodeSizeFraction: CGFloat = 0.9
     private let aliveColor: UIColor = .green
     private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
+        self.neighbors = [Cell]()
         self.colorNode = SKSpriteNode(color: color,
                                       size: CGSize(width: frame.size.width * colorNodeSizeFraction,
                                                    height: frame.size.height * colorNodeSizeFraction))
