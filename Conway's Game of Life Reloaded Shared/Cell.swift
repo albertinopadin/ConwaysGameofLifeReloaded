@@ -47,6 +47,10 @@ public class Cell: SKSpriteNode {
         self.colorNode.color = deadColor
     }
     
+    public func updateLastGenLiveNeigbors() {
+        lastGenLiveNeighbors = neighbors.filter({$0.alive}).count
+    }
+    
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
