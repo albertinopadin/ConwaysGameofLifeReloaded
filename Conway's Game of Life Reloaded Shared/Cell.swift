@@ -12,7 +12,7 @@ import SpriteKit
 public typealias UIColor = NSColor
 #endif
 
-public class Cell: SKSpriteNode {
+public final class Cell: SKSpriteNode {
     
     public var alive: Bool
     public var neighbors: ContiguousArray<Cell>

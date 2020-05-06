@@ -883,6 +883,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Albertino.Conway-s-Game-of-Life-Reloaded";
 				PRODUCT_NAME = "Conway's Game of Life Reloaded";
 				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;

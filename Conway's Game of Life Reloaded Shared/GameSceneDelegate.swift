@@ -6,6 +6,6 @@
 //  Copyright © 2020 Albertino Padin. All rights reserved.
 //
 
-public protocol GameSceneDelegate {
+public protocol GameSceneDelegate: class {
     func setGeneration(_ generation: UInt64)
 }

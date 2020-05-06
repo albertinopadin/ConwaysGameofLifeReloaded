@@ -9,7 +9,7 @@
 import SpriteKit
 
 
-class CellGrid {
+final class CellGrid {
     var xCount = 0
     var yCount = 0
     var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
@@ -130,26 +130,26 @@ class CellGrid {
             for y in 0..<yCount {
                 let cell = grid[x][y]
                 let numberOfLiveNeighbors = cell.lastGenLiveNeighbors
-                
+
                 switch numberOfLiveNeighbors {
                 case _ where numberOfLiveNeighbors < 2:
                     if cell.alive {
                         cell.makeDead()
                     }
-                    
+
                 case 2:
                     break
-                    
+
                 case 3:
                     if !cell.alive {
                         cell.makeLive()
                     }
-                    
+
                 case _ where numberOfLiveNeighbors > 3:
                     if cell.alive {
                         cell.makeDead()
                     }
-                    
+
                 default:
                     break
                 }
