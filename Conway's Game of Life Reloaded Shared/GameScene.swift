@@ -85,7 +85,7 @@ class GameScene: SKScene {
     }
     #endif
     
-    func addCellGridToScene(cellGrid: [[Cell]]) {
+    func addCellGridToScene(cellGrid: ContiguousArray<ContiguousArray<Cell>>) {
         for cellArray in cellGrid {
             for cell in cellArray {
                 self.addChild(cell)

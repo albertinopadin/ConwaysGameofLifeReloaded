@@ -15,7 +15,7 @@ public typealias UIColor = NSColor
 public class Cell: SKSpriteNode {
     
     public var alive: Bool
-    public var neighbors: [Cell]
+    public var neighbors: ContiguousArray<Cell>
     public var lastGenLiveNeighbors: Int = 0
     private var colorNode: SKSpriteNode
     
@@ -25,7 +25,7 @@ public class Cell: SKSpriteNode {
     
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
-        self.neighbors = [Cell]()
+        self.neighbors = ContiguousArray<Cell>()
         self.colorNode = SKSpriteNode(color: color,
                                       size: CGSize(width: frame.size.width * colorNodeSizeFraction,
                                                    height: frame.size.height * colorNodeSizeFraction))

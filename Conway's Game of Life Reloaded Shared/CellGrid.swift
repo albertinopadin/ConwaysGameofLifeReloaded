@@ -12,7 +12,7 @@ import SpriteKit
 class CellGrid {
     var xCount = 0
     var yCount = 0
-    var grid = [[Cell]]()    // 2D Array to hold the cells
+    var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
     var liveNeighbors = [[Int]]()
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
@@ -23,13 +23,14 @@ class CellGrid {
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
-        liveNeighbors = [[Int]](repeating: [Int](repeating: 0, count: yCount), count: xCount)
+//        liveNeighbors = [[Int]](repeating: [Int](repeating: 0, count: yCount), count: xCount)
     }
     
-    func makeGrid(xCells: Int, yCells: Int) -> [[Cell]] {
-        var newGrid = [[Cell]]()
+    func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
+        let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        let newGridRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
+        var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
         for x in 0..<xCells {
-            newGrid.append([Cell]())
             for y in 0..<yCells {
                 // The x and y coords are not at the edge of the cell; instead they are the center of it.
                 // This can create confusion when attempting to position cells!
@@ -37,7 +38,7 @@ class CellGrid {
                                        y: cellMiddle(iteration: y, length: cellSize),
                                        width: cellSize,
                                        height: cellSize)
-                newGrid[x].append(Cell(frame: cellFrame))
+                newGrid[x][y] = Cell(frame: cellFrame)
             }
         }
         return newGrid
@@ -59,8 +60,8 @@ class CellGrid {
         }
     }
     
-    private func getCellNeighbors(x: Int, y: Int) -> [Cell] {
-        var neighbors = [Cell]()
+    private func getCellNeighbors(x: Int, y: Int) -> ContiguousArray<Cell> {
+        var neighbors = ContiguousArray<Cell>()
         
         // Get the neighbors:
         let leftX   = x - 1
@@ -177,18 +178,18 @@ class CellGrid {
         }
     }
     
-    func deepCopyCellArray(originalGrid: [[Cell]]) -> [[Cell]] {
-        var copyGrid = [[Cell]]()
+    func deepCopyCellArray(originalGrid: ContiguousArray<ContiguousArray<Cell>>) -> ContiguousArray<ContiguousArray<Cell>> {
+        var copyGrid = ContiguousArray<ContiguousArray<Cell>>()
         // Need to find a fast way to deep copy array of objects;
         // For now will use for loop:
         for cellArray in originalGrid {
-            copyGrid.append([Cell]())
+            copyGrid.append(ContiguousArray<Cell>())
             let cellRowIndex = copyGrid.count - 1
             
             // Deep copy of cell objects:
             for originalCell in cellArray {
                 let copyCell = Cell(frame: originalCell.frame, alive: originalCell.alive, color: originalCell.color)
-                var copyNeighbors = [Cell]()
+                var copyNeighbors = ContiguousArray<Cell>()
                 for ogNeighbor in originalCell.neighbors {
                     copyNeighbors.append(Cell(frame: ogNeighbor.frame, alive: ogNeighbor.alive, color: ogNeighbor.color))
                 }
