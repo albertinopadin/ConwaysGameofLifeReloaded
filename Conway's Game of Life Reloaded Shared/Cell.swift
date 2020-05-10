@@ -8,51 +8,51 @@
 
 import SpriteKit
 import RxSwift
+import RxRelay
 
 #if os(macOS)
 public typealias UIColor = NSColor
 #endif
 
-struct BoolSeq {
-    var oldValue: Bool = false
-    var newValue: Bool = false
-}
-
 public final class Cell: SKSpriteNode {
-    
     public var alive: Bool
     public var liveNeighbors: Int = 0
+    private let aliveRelay = BehaviorRelay<Bool>(value: false)
+    public var isAlive: Observable<Bool> { return aliveRelay.asObservable() }
+    private let disposeBag = DisposeBag()
     public var neighbors = ContiguousArray<Cell>() {
         willSet {
             for n in newValue {
                 _ = n.isAlive.scan([], accumulator: { lastSlice, newValue in
                     return Array(lastSlice + [newValue]).suffix(2)
-                }).subscribe(onNext: { [weak self] slice in
+                }).subscribe(onNext: { [unowned self] slice in
                     let oldValue = slice.first!
                     let newValue = slice.last!
-                    if !oldValue && newValue {
-                        self!.liveNeighbors += 1
-                    } else if oldValue && !newValue {
-                        self!.liveNeighbors -= 1
+                    if Cell.becameAlive(alivePrevious: oldValue, aliveCurrent: newValue) {
+                        self.liveNeighbors += 1
+                    } else if Cell.becameDead(alivePrevious: oldValue, aliveCurrent: newValue) {
+                        self.liveNeighbors -= 1
                     }
                 }).disposed(by: disposeBag)
             }
         }
     }
-    public var lastGenLiveNeighbors: Int = 0
-    private var colorNode: SKSpriteNode
     
+    private static func becameAlive(alivePrevious: Bool, aliveCurrent: Bool) -> Bool {
+        return !alivePrevious && aliveCurrent
+    }
+    
+    private static func becameDead(alivePrevious: Bool, aliveCurrent: Bool) -> Bool {
+        return alivePrevious && !aliveCurrent
+    }
+    
+    private var colorNode: SKSpriteNode
     private let colorNodeSizeFraction: CGFloat = 0.9
     private let aliveColor: UIColor = .green
     private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     
-    private let aliveVariable = Variable<Bool>(false)
-    var isAlive: Observable<Bool> { return aliveVariable.asObservable() }
-    let disposeBag = DisposeBag()
-    
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
-//        neighbors = ContiguousArray<Cell>()
         colorNode = SKSpriteNode(color: color,
                                  size: CGSize(width: frame.size.width * colorNodeSizeFraction,
                                               height: frame.size.height * colorNodeSizeFraction))
@@ -66,17 +66,13 @@ public final class Cell: SKSpriteNode {
     public func makeLive() {
         alive = true
         colorNode.color = aliveColor
-        aliveVariable.value = true
+        aliveRelay.accept(true)
     }
     
     public func makeDead() {
         alive = false
         colorNode.color = deadColor
-        aliveVariable.value = false
-    }
-    
-    public func updateLastGenLiveNeigbors() {
-        lastGenLiveNeighbors = neighbors.filter({$0.alive}).count
+        aliveRelay.accept(false)
     }
     
     required public init?(coder aDecoder: NSCoder) {

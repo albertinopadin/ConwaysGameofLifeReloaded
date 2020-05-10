@@ -123,14 +123,12 @@ final class CellGrid {
         // Iterate through the current grid, updating the next gen grid accordingly:
         let xCount = grid.count
         let yCount = grid.first!.count
-//        updateLastGenLiveNeighbors()
         updateLiveNeighborsGrid()
         
         let _ = DispatchQueue.global(qos: .userInteractive)
         DispatchQueue.concurrentPerform(iterations: xCount) { x in
             for y in 0..<yCount {
                 let cell = grid[x][y]
-//                let numberOfLiveNeighbors = cell.lastGenLiveNeighbors
                 let numberOfLiveNeighbors = liveNeighbors[x][y]
 
                 switch numberOfLiveNeighbors {
@@ -167,15 +165,6 @@ final class CellGrid {
             for y in 0..<yCount {
                 let cell = grid[x][y]
                 liveNeighbors[x][y] = cell.liveNeighbors
-            }
-        }
-    }
-    
-    func updateLastGenLiveNeighbors() {
-        let _ = DispatchQueue.global(qos: .userInteractive)
-        DispatchQueue.concurrentPerform(iterations: xCount) { x in
-            for y in 0..<yCount {
-                grid[x][y].updateLastGenLiveNeigbors()
             }
         }
     }
