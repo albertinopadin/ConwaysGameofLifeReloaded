@@ -7,15 +7,38 @@
 //
 
 import SpriteKit
+import RxSwift
 
 #if os(macOS)
 public typealias UIColor = NSColor
 #endif
 
+struct BoolSeq {
+    var oldValue: Bool = false
+    var newValue: Bool = false
+}
+
 public final class Cell: SKSpriteNode {
     
     public var alive: Bool
-    public var neighbors: ContiguousArray<Cell>
+    public var liveNeighbors: Int = 0
+    public var neighbors = ContiguousArray<Cell>() {
+        willSet {
+            for n in newValue {
+                _ = n.isAlive.scan([], accumulator: { lastSlice, newValue in
+                    return Array(lastSlice + [newValue]).suffix(2)
+                }).subscribe(onNext: { [weak self] slice in
+                    let oldValue = slice.first!
+                    let newValue = slice.last!
+                    if !oldValue && newValue {
+                        self!.liveNeighbors += 1
+                    } else if oldValue && !newValue {
+                        self!.liveNeighbors -= 1
+                    }
+                }).disposed(by: disposeBag)
+            }
+        }
+    }
     public var lastGenLiveNeighbors: Int = 0
     private var colorNode: SKSpriteNode
     
@@ -23,28 +46,33 @@ public final class Cell: SKSpriteNode {
     private let aliveColor: UIColor = .green
     private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     
+    private let aliveVariable = Variable<Bool>(false)
+    var isAlive: Observable<Bool> { return aliveVariable.asObservable() }
+    let disposeBag = DisposeBag()
+    
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
-        self.neighbors = ContiguousArray<Cell>()
-        self.colorNode = SKSpriteNode(color: color,
-                                      size: CGSize(width: frame.size.width * colorNodeSizeFraction,
-                                                   height: frame.size.height * colorNodeSizeFraction))
-        self.colorNode.position = CGPoint.zero
+//        neighbors = ContiguousArray<Cell>()
+        colorNode = SKSpriteNode(color: color,
+                                 size: CGSize(width: frame.size.width * colorNodeSizeFraction,
+                                              height: frame.size.height * colorNodeSizeFraction))
+        colorNode.position = CGPoint.zero
         
         super.init(texture: nil, color: .black, size: frame.size)
-        self.position = frame.origin
-        self.addChild(self.colorNode)
-        
+        position = frame.origin
+        self.addChild(colorNode)
     }
     
     public func makeLive() {
-        self.alive = true
-        self.colorNode.color = aliveColor
+        alive = true
+        colorNode.color = aliveColor
+        aliveVariable.value = true
     }
     
     public func makeDead() {
-        self.alive = false
-        self.colorNode.color = deadColor
+        alive = false
+        colorNode.color = deadColor
+        aliveVariable.value = false
     }
     
     public func updateLastGenLiveNeigbors() {

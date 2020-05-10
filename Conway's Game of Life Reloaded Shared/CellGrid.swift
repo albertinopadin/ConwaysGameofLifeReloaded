@@ -23,7 +23,7 @@ final class CellGrid {
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
-//        liveNeighbors = [[Int]](repeating: [Int](repeating: 0, count: yCount), count: xCount)
+        liveNeighbors = [[Int]](repeating: [Int](repeating: 0, count: yCount), count: xCount)
     }
     
     func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
@@ -123,13 +123,15 @@ final class CellGrid {
         // Iterate through the current grid, updating the next gen grid accordingly:
         let xCount = grid.count
         let yCount = grid.first!.count
-        updateLastGenLiveNeighbors()
+//        updateLastGenLiveNeighbors()
+        updateLiveNeighborsGrid()
         
         let _ = DispatchQueue.global(qos: .userInteractive)
         DispatchQueue.concurrentPerform(iterations: xCount) { x in
             for y in 0..<yCount {
                 let cell = grid[x][y]
-                let numberOfLiveNeighbors = cell.lastGenLiveNeighbors
+//                let numberOfLiveNeighbors = cell.lastGenLiveNeighbors
+                let numberOfLiveNeighbors = liveNeighbors[x][y]
 
                 switch numberOfLiveNeighbors {
                 case _ where numberOfLiveNeighbors < 2:
@@ -164,7 +166,7 @@ final class CellGrid {
         for x in 0..<xCount {
             for y in 0..<yCount {
                 let cell = grid[x][y]
-                liveNeighbors[x][y] = cell.neighbors.filter({$0.alive}).count
+                liveNeighbors[x][y] = cell.liveNeighbors
             }
         }
     }

@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Conway&apos;s Game of Life Reloaded.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>
