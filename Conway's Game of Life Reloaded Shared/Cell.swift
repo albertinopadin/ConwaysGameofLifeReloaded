@@ -22,18 +22,22 @@ public final class Cell: SKSpriteNode {
     private let disposeBag = DisposeBag()
     public var neighbors = ContiguousArray<Cell>() {
         willSet {
-            for n in newValue {
-                _ = n.isAlive.scan([], accumulator: { lastSlice, newValue in
-                    return Array(lastSlice + [newValue]).suffix(2)
-                }).subscribe(onNext: { [unowned self] slice in
-                    let oldValue = slice.first!
-                    let newValue = slice.last!
-                    if Cell.becameAlive(alivePrevious: oldValue, aliveCurrent: newValue) {
-                        self.liveNeighbors += 1
-                    } else if Cell.becameDead(alivePrevious: oldValue, aliveCurrent: newValue) {
-                        self.liveNeighbors -= 1
-                    }
-                }).disposed(by: disposeBag)
+            DispatchQueue.global(qos: .userInteractive).async {
+                for n in newValue {
+                    _ = n.isAlive.subscribeOn(CurrentThreadScheduler.instance
+                    ).observeOn(CurrentThreadScheduler.instance
+                    ).scan([], accumulator: { lastSlice, newValue in
+                        return Array(lastSlice + [newValue]).suffix(2)
+                    }).subscribe(onNext: { [unowned self] slice in
+                        let oldValue = slice.first!
+                        let newValue = slice.last!
+                        if Cell.becameAlive(alivePrevious: oldValue, aliveCurrent: newValue) {
+                            self.liveNeighbors += 1
+                        } else if Cell.becameDead(alivePrevious: oldValue, aliveCurrent: newValue) {
+                            self.liveNeighbors -= 1
+                        }
+                    }).disposed(by: self.disposeBag)
+                }
             }
         }
     }
