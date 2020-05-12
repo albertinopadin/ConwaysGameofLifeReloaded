@@ -13,13 +13,12 @@ public typealias UIColor = NSColor
 #endif
 
 public final class Cell: SKSpriteNode {
-    
     public var alive: Bool
     public var neighbors: ContiguousArray<Cell>
     public var lastGenLiveNeighbors: Int = 0
     private var colorNode: SKSpriteNode
     
-    private let colorNodeSizeFraction: CGFloat = 0.9
+    private let colorNodeSizeFraction: CGFloat = 0.92
     private let aliveColor: UIColor = .green
     private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     
@@ -48,7 +47,7 @@ public final class Cell: SKSpriteNode {
     }
     
     public func updateLastGenLiveNeigbors() {
-        lastGenLiveNeighbors = neighbors.filter({$0.alive}).count
+        lastGenLiveNeighbors = neighbors.filter({ $0.alive }).count
     }
     
     required public init?(coder aDecoder: NSCoder) {
