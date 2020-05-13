@@ -16,8 +16,6 @@ public final class Cell: SKSpriteNode {
     public var alive: Bool
     public var neighbors: ContiguousArray<Cell>
     public var lastGenLiveNeighbors: Int = 0
-    private var colorNode: SKSpriteNode
-    
     private let colorNodeSizeFraction: CGFloat = 0.92
     private let aliveColor: UIColor = .green
     private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
@@ -25,25 +23,22 @@ public final class Cell: SKSpriteNode {
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
         self.neighbors = ContiguousArray<Cell>()
-        self.colorNode = SKSpriteNode(color: color,
-                                      size: CGSize(width: frame.size.width * colorNodeSizeFraction,
-                                                   height: frame.size.height * colorNodeSizeFraction))
-        self.colorNode.position = CGPoint.zero
-        
-        super.init(texture: nil, color: .black, size: frame.size)
+        super.init(texture: nil,
+                   color: color,
+                   size: CGSize(width: frame.size.width * colorNodeSizeFraction,
+                                height: frame.size.height * colorNodeSizeFraction))
         self.position = frame.origin
-        self.addChild(self.colorNode)
         
     }
     
     public func makeLive() {
         self.alive = true
-        self.colorNode.color = aliveColor
+        self.color = aliveColor
     }
     
     public func makeDead() {
         self.alive = false
-        self.colorNode.color = deadColor
+        self.color = deadColor
     }
     
     public func updateLastGenLiveNeigbors() {
