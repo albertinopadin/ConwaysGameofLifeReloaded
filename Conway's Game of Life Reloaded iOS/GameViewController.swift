@@ -32,6 +32,8 @@ class GameViewController: UIViewController, GameSceneDelegate {
         skView.ignoresSiblingOrder = true
         skView.showsFPS = true
         skView.showsNodeCount = true
+        skView.showsDrawCount = true
+        skView.ignoresSiblingOrder = true
         
         setUpPinchGestureRecognizer()
     }
