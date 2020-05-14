@@ -28,6 +28,7 @@ public final class Cell: SKSpriteNode {
                    size: CGSize(width: frame.size.width * colorNodeSizeFraction,
                                 height: frame.size.height * colorNodeSizeFraction))
         self.position = frame.origin
+        self.blendMode = .replace
     }
     
     public func makeLive() {
