@@ -27,6 +27,8 @@ class GameViewController: NSViewController, GameWindowDelegate {
         
         skView.showsFPS = true
         skView.showsNodeCount = true
+        skView.showsDrawCount = true
+        skView.ignoresSiblingOrder = true
     }
     
     func toggleGameplay() {
