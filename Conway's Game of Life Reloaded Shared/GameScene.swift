@@ -123,13 +123,13 @@ extension GameScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
-            cellGrid.spawnLiveCell(at: t.location(in: self))
+            cellGrid.touchedCell(at: t.location(in: self))
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
-            cellGrid.spawnLiveCell(at: t.location(in: self))
+            cellGrid.touchedCell(at: t.location(in: self))
         }
     }
     
@@ -151,13 +151,13 @@ extension GameScene {
 
     override func mouseDown(with event: NSEvent) {
         if isMouseEventInsideView(event: event) {
-            cellGrid.spawnLiveCell(at: event.location(in: self))
+            cellGrid.touchedCell(at: event.location(in: self))
         }
     }
     
     override func mouseDragged(with event: NSEvent) {
         if isMouseEventInsideView(event: event) {
-            cellGrid.spawnLiveCell(at: event.location(in: self))
+            cellGrid.touchedCell(at: event.location(in: self))
         }
     }
     

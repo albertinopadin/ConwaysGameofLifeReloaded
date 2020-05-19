@@ -20,6 +20,14 @@ public final class Cell: SKSpriteNode {
     private let aliveColor: UIColor = .green
     private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     
+    private let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
+    private let colorDeadAction = SKAction.colorize(with: UIColor(red: 0.16,
+                                                                  green: 0.15,
+                                                                  blue: 0.30,
+                                                                  alpha: 1.0),
+                                                    colorBlendFactor: 1.0,
+                                                    duration: 0.3)
+    
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
         self.neighbors = ContiguousArray<Cell>()
@@ -31,14 +39,26 @@ public final class Cell: SKSpriteNode {
         self.blendMode = .replace
     }
     
-    public func makeLive() {
+    public func makeLive(touched: Bool = false) {
         self.alive = true
-        self.color = aliveColor
+        if touched {
+            self.run(colorAliveAction) {
+                self.color = self.aliveColor
+            }
+        } else {
+            self.color = aliveColor
+        }
     }
     
-    public func makeDead() {
+    public func makeDead(touched: Bool = false) {
         self.alive = false
-        self.color = deadColor
+        if touched {
+            self.run(colorDeadAction) {
+                self.color = self.deadColor
+            }
+        } else {
+            self.color = deadColor
+        }
     }
     
     public func updateLastGenLiveNeigbors() {
