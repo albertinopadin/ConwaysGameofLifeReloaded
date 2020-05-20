@@ -141,7 +141,6 @@ extension GameScene {
         
     }
     
-   
 }
 #endif
 
@@ -161,8 +160,16 @@ extension GameScene {
         }
     }
     
-    override func mouseUp(with event: NSEvent) {
-        
+    override func rightMouseDown(with event: NSEvent) {
+        if isMouseEventInsideView(event: event) {
+            cellGrid.touchedCell(at: event.location(in: self), withAltAction: true)
+        }
+    }
+    
+    override func rightMouseDragged(with event: NSEvent) {
+        if isMouseEventInsideView(event: event) {
+            cellGrid.touchedCell(at: event.location(in: self), withAltAction: true)
+        }
     }
     
     func isMouseEventInsideView(event: NSEvent) -> Bool {

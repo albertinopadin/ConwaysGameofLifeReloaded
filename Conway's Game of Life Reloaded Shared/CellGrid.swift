@@ -209,7 +209,7 @@ final class CellGrid {
     }
         
     // TODO: Fix index out of bounds bug here:
-    func touchedCell(at: CGPoint) {
+    func touchedCell(at: CGPoint, withAltAction: Bool = false) {
         // Find the cell that contains the touch point and make it live:
         //        let (x, y) = self.getGridIndicesFromPoint(at: at)
         
@@ -217,8 +217,12 @@ final class CellGrid {
         let y = Int(at.y / cellSize)
 
         let touchedCell = grid[x][y]
-        if !touchedCell.alive {
+        if !withAltAction && !touchedCell.alive {
             touchedCell.makeLive(touched: true)
+        }
+        
+        if withAltAction && touchedCell.alive {
+            touchedCell.makeDead(touched: true)
         }
         
         // TODO: Implement this the O(1) way

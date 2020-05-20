@@ -42,9 +42,7 @@ public final class Cell: SKSpriteNode {
     public func makeLive(touched: Bool = false) {
         self.alive = true
         if touched {
-            self.run(colorAliveAction) {
-                self.color = self.aliveColor
-            }
+            self.run(colorAliveAction) { self.color = self.aliveColor }
         } else {
             self.color = aliveColor
         }
@@ -53,9 +51,7 @@ public final class Cell: SKSpriteNode {
     public func makeDead(touched: Bool = false) {
         self.alive = false
         if touched {
-            self.run(colorDeadAction) {
-                self.color = self.deadColor
-            }
+            self.run(colorDeadAction) { self.color = self.deadColor }
         } else {
             self.color = deadColor
         }
