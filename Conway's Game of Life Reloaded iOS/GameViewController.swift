@@ -10,7 +10,7 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController, GameSceneDelegate {
+class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresentationControllerDelegate {
     var gameScene: GameScene!
     let pauseString = "Pause"
     let runString = "Run"
@@ -68,6 +68,25 @@ class GameViewController: UIViewController, GameSceneDelegate {
         }
     }
     
+    @IBAction func presentSpeedPopover(sender: UIBarButtonItem) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let speedVC = storyboard.instantiateViewController(identifier: "speedViewController") as! SpeedViewController
+        speedVC.delegate = self
+        speedVC.modalPresentationStyle = .popover
+        speedVC.popoverPresentationController?.permittedArrowDirections = .up
+        speedVC.popoverPresentationController?.sourceView = self.view
+        let buttonView = sender.value(forKey: "view") as? UIView
+        speedVC.popoverPresentationController?.sourceRect = buttonView!.frame
+        speedVC.popoverPresentationController?.delegate = self
+        self.present(speedVC, animated: true) {
+            
+        }
+    }
+    
+    func setSpeed(_ speed: Double) {
+        gameScene.setSpeed(speed)
+    }
+    
     func setGeneration(_ generation: UInt64) {
         generationsLabel.title = "\(generation)"
     }
@@ -85,6 +104,14 @@ class GameViewController: UIViewController, GameSceneDelegate {
     }
 
     override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
+    func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
         return true
     }
 }

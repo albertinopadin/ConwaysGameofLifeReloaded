@@ -58,6 +58,7 @@
 		CECAD56E244703CB00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
 		CECAD56F244703CC00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
 		CECAD570244703CC00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
+		CED7FB7F248E444D00BDB0F4 /* SpeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED7FB7E248E444D00BDB0F4 /* SpeedViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,7 @@
 		CECAD5432446E00D00E07A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CECAD5662446E05600E07A8B /* ResettableScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResettableScene.swift; sourceTree = "<group>"; };
 		CECAD5682446FB7E00E07A8B /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
+		CED7FB7E248E444D00BDB0F4 /* SpeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,6 +219,7 @@
 			children = (
 				CECAD5012446E00C00E07A8B /* AppDelegate.swift */,
 				CECAD5032446E00C00E07A8B /* GameViewController.swift */,
+				CED7FB7E248E444D00BDB0F4 /* SpeedViewController.swift */,
 				CECAD5052446E00C00E07A8B /* Main.storyboard */,
 				CECAD5082446E00C00E07A8B /* LaunchScreen.storyboard */,
 				CECAD50B2446E00C00E07A8B /* Info.plist */,
@@ -471,6 +474,7 @@
 				CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */,
 				CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56B244703BD00E07A8B /* Cell.swift in Sources */,
+				CED7FB7F248E444D00BDB0F4 /* SpeedViewController.swift in Sources */,
 				CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */,
 				CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */,
 			);

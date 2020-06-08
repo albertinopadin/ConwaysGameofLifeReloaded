@@ -8,4 +8,5 @@
 
 public protocol GameSceneDelegate: class {
     func setGeneration(_ generation: UInt64)
+    func setSpeed(_ speed: Double)
 }
