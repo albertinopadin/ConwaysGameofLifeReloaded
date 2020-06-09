@@ -16,9 +16,11 @@ class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresenta
     let runString = "Run"
     let pinchGestureRecognizer = UIPinchGestureRecognizer()
     var previousZoomScale = CGFloat()
+    let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+    var speedVC: SpeedViewController?
     @IBOutlet weak var generationsLabel: UIBarButtonItem!
     @IBOutlet weak var toggleGameplayButton: UIBarButtonItem!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,6 +38,13 @@ class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresenta
         skView.ignoresSiblingOrder = true
         
         setUpPinchGestureRecognizer()
+        setUpSpeedViewController()
+    }
+    
+    func setUpSpeedViewController() {
+        speedVC = mainStoryboard.instantiateViewController(identifier: "speedViewController") as? SpeedViewController
+        speedVC?.delegate = self
+        speedVC?.modalPresentationStyle = .popover
     }
     
     func setUpPinchGestureRecognizer() {
@@ -69,16 +78,12 @@ class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresenta
     }
     
     @IBAction func presentSpeedPopover(sender: UIBarButtonItem) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let speedVC = storyboard.instantiateViewController(identifier: "speedViewController") as! SpeedViewController
-        speedVC.delegate = self
-        speedVC.modalPresentationStyle = .popover
-        speedVC.popoverPresentationController?.permittedArrowDirections = .up
-        speedVC.popoverPresentationController?.sourceView = self.view
-        let buttonView = sender.value(forKey: "view") as? UIView
-        speedVC.popoverPresentationController?.sourceRect = buttonView!.frame
-        speedVC.popoverPresentationController?.delegate = self
-        self.present(speedVC, animated: true) {
+        speedVC?.popoverPresentationController?.permittedArrowDirections = .up
+        speedVC?.popoverPresentationController?.sourceView = self.view
+        speedVC?.popoverPresentationController?.delegate = self
+        let speedButtonView = sender.value(forKey: "view") as? UIView
+        speedVC?.popoverPresentationController?.sourceRect = speedButtonView!.frame
+        self.present(speedVC!, animated: true) {
             
         }
     }
