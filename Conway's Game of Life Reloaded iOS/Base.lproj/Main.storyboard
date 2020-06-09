@@ -65,13 +65,13 @@
         <scene sceneID="vmF-Wt-E5F">
             <objects>
                 <viewController storyboardIdentifier="speedViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="6t5-lH-zNi" customClass="SpeedViewController" customModule="Conway_s_Game_of_Life_Reloaded" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="KbF-gm-6gt">
+                    <view key="view" clipsSubviews="YES" contentMode="scaleToFill" id="KbF-gm-6gt">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="4" minValue="0.20000000000000001" maxValue="60" translatesAutoresizingMaskIntoConstraints="NO" id="yk1-Nd-vXi">
+                            <slider opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="4" minValue="0.20000000000000001" maxValue="60" translatesAutoresizingMaskIntoConstraints="NO" id="yk1-Nd-vXi">
                                 <rect key="frame" x="18" y="44" width="378" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <connections>
                                     <action selector="setSpeed:" destination="6t5-lH-zNi" eventType="valueChanged" id="ENx-4E-hQd"/>
                                 </connections>
