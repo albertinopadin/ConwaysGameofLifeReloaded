@@ -83,9 +83,8 @@ class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresenta
         speedVC?.popoverPresentationController?.delegate = self
         let speedButtonView = sender.value(forKey: "view") as? UIView
         speedVC?.popoverPresentationController?.sourceRect = speedButtonView!.frame
-        self.present(speedVC!, animated: true) {
-            
-        }
+        speedVC?.preferredContentSize = CGSize(width: self.view.frame.width, height: 100.0)
+        self.present(speedVC!, animated: true) { }
     }
     
     func setSpeed(_ speed: Double) {
