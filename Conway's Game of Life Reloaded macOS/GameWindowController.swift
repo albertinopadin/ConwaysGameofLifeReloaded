@@ -51,8 +51,12 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         return defaultSliderValue/value
     }
     
+    func setSpeed(_ speed: Double) {
+         gameViewController?.setSpeed(speed)
+    }
+    
     @IBAction func setSpeed(sender: NSSlider) {
-        gameViewController?.setSpeed(sender.doubleValue)
+       setSpeed(sender.doubleValue)
     }
     
     @IBAction func resetGame(sender: NSButton) {

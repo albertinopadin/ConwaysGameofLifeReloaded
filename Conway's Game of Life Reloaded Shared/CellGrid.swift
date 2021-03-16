@@ -244,6 +244,17 @@ final class CellGrid {
 //        }
     }
     
+    // To create spaceships:
+    func createPattern(with points: [CGPoint]) {
+        for p in points {
+            let x = Int(p.x / cellSize)
+            let y = Int(p.y / cellSize)
+
+            let touchedCell = grid[x][y]
+            touchedCell.makeLive()
+        }
+    }
+    
     func getPointDimensions() -> (CGFloat, CGFloat) {
         return (getPointWidth(), getPointHeight())
     }

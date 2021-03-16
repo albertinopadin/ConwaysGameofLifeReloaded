@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE57E6A42600CD940014CE14 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
 		CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CE7E89EC2447E2010036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
@@ -104,6 +105,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceshipFactory.swift; sourceTree = "<group>"; };
 		CE7E89ED2447F50C0036F64C /* CellGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellGrid.swift; sourceTree = "<group>"; };
 		CE7E89F2244D94FC0036F64C /* GameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
 		CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowDelegate.swift; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 				CE7E89ED2447F50C0036F64C /* CellGrid.swift */,
 				CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */,
 				CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */,
+				CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */,
 			);
 			path = "Conway's Game of Life Reloaded Shared";
 			sourceTree = "<group>";
@@ -475,6 +478,7 @@
 				CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */,
 				CECAD56B244703BD00E07A8B /* Cell.swift in Sources */,
 				CED7FB7F248E444D00BDB0F4 /* SpeedViewController.swift in Sources */,
+				CE57E6A42600CD940014CE14 /* SpaceshipFactory.swift in Sources */,
 				CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */,
 				CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */,
 			);
