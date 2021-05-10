@@ -69,4 +69,8 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     func setGeneration(_ generation: UInt64) {
         generationsLabel.stringValue = "\(generation)"
     }
+    
+    @IBAction func toggleSpaceshipMode(sender: NSButton) {
+        gameViewController?.toggleSpaceshipMode()
+    }
 }

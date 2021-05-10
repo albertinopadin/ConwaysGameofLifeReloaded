@@ -16,6 +16,7 @@ final class CellGrid {
     var liveNeighbors = [[Int]]()
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
+    var spaceshipFactory: SpaceshipFactory?
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
@@ -24,6 +25,7 @@ final class CellGrid {
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
 //        liveNeighbors = [[Int]](repeating: [Int](repeating: 0, count: yCount), count: xCount)
+        spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
     
     func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
@@ -282,5 +284,10 @@ final class CellGrid {
         }
         
         generation = 0
+    }
+    
+    func placeSquare(at point: CGPoint) {
+        let squarePoints = spaceshipFactory!.createSquare(at: point)
+        createPattern(with: squarePoints)
     }
 }

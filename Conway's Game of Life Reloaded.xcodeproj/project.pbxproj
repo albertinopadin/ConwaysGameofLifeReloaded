@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE185B5C264924F3008FD4A9 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
 		CE57E6A42600CD940014CE14 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
 		CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CE7E89EC2447E2010036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
@@ -518,6 +519,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE185B5C264924F3008FD4A9 /* SpaceshipFactory.swift in Sources */,
 				CE7E89F5244D9EE80036F64C /* GameWindowDelegate.swift in Sources */,
 				CE7E89F7244D9F0D0036F64C /* GameSceneDelegate.swift in Sources */,
 				CECAD54E2446E00D00E07A8B /* GameScene.swift in Sources */,

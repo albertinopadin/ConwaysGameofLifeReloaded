@@ -46,4 +46,8 @@ class GameViewController: NSViewController, GameWindowDelegate {
     func resetGame() {
         gameScene.resetGame()
     }
+    
+    func toggleSpaceshipMode() {
+        gameScene.toggleSpaceshipMode()
+    }
 }
