@@ -15,6 +15,7 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     let defaultSliderValue: CGFloat = 300.0
     @IBOutlet weak var generationsLabel: NSTextField!
     @IBOutlet weak var toggleGameplayButton: NSButton!
+    @IBOutlet weak var spaceshipButton: NSPopUpButton!
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -31,6 +32,14 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         generationsLabel.stringValue = "0"
         gameViewController = self.contentViewController as? GameViewController
         gameViewController?.gameScene.gameDelegate = self
+        spaceshipButton.removeAllItems()
+        spaceshipButton.addItems(withTitles: getSpaceshipTitles())
+        spaceshipButton.selectItem(at: 0)
+    }
+    
+    
+    func getSpaceshipTitles() -> [String] {
+        return ["None", "Square"]
     }
     
     @IBAction func toggleGameplay(sender: NSButton) {
@@ -70,7 +79,12 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         generationsLabel.stringValue = "\(generation)"
     }
     
-    @IBAction func toggleSpaceshipMode(sender: NSButton) {
-        gameViewController?.toggleSpaceshipMode()
+    @IBAction func spaceshipSelectionDidChange(_ sender: NSPopUpButton) {
+        // This is very stupid, but I'll change it later:
+        if sender.selectedItem == spaceshipButton.item(at: 0) {
+            gameViewController?.toggleSpaceshipMode()
+        } else {
+            gameViewController?.toggleSpaceshipMode()
+        }
     }
 }

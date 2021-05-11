@@ -24,6 +24,7 @@ public final class SpaceshipFactory {
 //    }
     
     public func createSquare(at point: CGPoint) -> [CGPoint] {
+        // Actually, need to get current cell user clicked in to properly place square...
         let topLeft  = CGPoint(x: point.x - self.cellSize, y: point.y - self.cellSize)
         let topRight = CGPoint(x: point.x + self.cellSize, y: point.y - self.cellSize)
         let botLeft  = CGPoint(x: point.x - self.cellSize, y: point.y + self.cellSize)
