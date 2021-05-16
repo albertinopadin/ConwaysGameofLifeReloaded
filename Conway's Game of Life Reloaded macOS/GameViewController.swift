@@ -47,7 +47,7 @@ class GameViewController: NSViewController, GameWindowDelegate {
         gameScene.resetGame()
     }
     
-    func toggleSpaceshipMode() {
-        gameScene.toggleSpaceshipMode()
+    func setSpaceshipType(type: SpaceshipType) {
+        gameScene.setSpaceshipType(type: type)
     }
 }

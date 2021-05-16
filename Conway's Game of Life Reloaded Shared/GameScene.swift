@@ -25,7 +25,7 @@ class GameScene: SKScene {
     var gameDelegate: GameSceneDelegate?
     let cameraNode = SKCameraNode()
     
-    var spaceshipMode: Bool = false
+    var spaceshipType: SpaceshipType = .None
     
     
     class func newGameScene() -> GameScene {
@@ -118,8 +118,8 @@ class GameScene: SKScene {
         gameDelegate?.setGeneration(0)
     }
     
-    func toggleSpaceshipMode() {
-        spaceshipMode.toggle()
+    func setSpaceshipType(type: SpaceshipType) {
+        spaceshipType = type
     }
 }
 
@@ -156,9 +156,9 @@ extension GameScene {
 
     override func mouseDown(with event: NSEvent) {
         if isMouseEventInsideView(event: event) {
-            if spaceshipMode {
+            if spaceshipType != .None {
                 // Perhaps should put this in mouseUp action if that exists:
-                cellGrid.placeSquare(at: event.location(in: self))
+                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
                 cellGrid.touchedCell(at: event.location(in: self))
             }
@@ -167,7 +167,7 @@ extension GameScene {
     
     override func mouseDragged(with event: NSEvent) {
         if isMouseEventInsideView(event: event) {
-            if spaceshipMode {
+            if spaceshipType != .None {
                 // What makes sense to do here? Is there a mouseUp action?
             } else {
                 cellGrid.touchedCell(at: event.location(in: self))

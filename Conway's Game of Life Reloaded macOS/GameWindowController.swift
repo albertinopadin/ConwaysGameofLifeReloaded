@@ -39,7 +39,7 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     
     
     func getSpaceshipTitles() -> [String] {
-        return ["None", "Square"]
+        return ["None", "Square", "Glider"]
     }
     
     @IBAction func toggleGameplay(sender: NSButton) {
@@ -80,11 +80,12 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     }
     
     @IBAction func spaceshipSelectionDidChange(_ sender: NSPopUpButton) {
-        // This is very stupid, but I'll change it later:
         if sender.selectedItem == spaceshipButton.item(at: 0) {
-            gameViewController?.toggleSpaceshipMode()
+            gameViewController?.setSpaceshipType(type: .None)
+        } else if sender.selectedItem == spaceshipButton.item(at: 1) {
+            gameViewController?.setSpaceshipType(type: .Square)
         } else {
-            gameViewController?.toggleSpaceshipMode()
+            gameViewController?.setSpaceshipType(type: .Glider)
         }
     }
 }

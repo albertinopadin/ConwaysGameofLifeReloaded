@@ -286,8 +286,9 @@ final class CellGrid {
         generation = 0
     }
     
-    func placeSquare(at point: CGPoint) {
-        let squarePoints = spaceshipFactory!.createSquare(at: point)
-        createPattern(with: squarePoints)
+    func placeSpaceship(at point: CGPoint, type: SpaceshipType) {
+        let spaceshipPoints = spaceshipFactory!.createSpaceship(at: point, type: type)
+        createPattern(with: spaceshipPoints)
     }
+    
 }
