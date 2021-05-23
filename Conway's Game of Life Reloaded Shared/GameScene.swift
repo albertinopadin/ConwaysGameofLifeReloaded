@@ -153,12 +153,20 @@ extension GameScene {
 #if os(OSX)
 // Mouse-based event handling
 extension GameScene {
+    override func mouseMoved(with event: NSEvent) {
+        print("Mouse Moved!")
+        if isMouseEventInsideView(event: event) {
+            if spaceshipType != .None {
+                cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
+            }
+        }
+    }
 
     override func mouseDown(with event: NSEvent) {
         if isMouseEventInsideView(event: event) {
             if spaceshipType != .None {
                 // Perhaps should put this in mouseUp action if that exists:
-                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
+//                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
                 cellGrid.touchedCell(at: event.location(in: self))
             }
@@ -166,11 +174,21 @@ extension GameScene {
     }
     
     override func mouseDragged(with event: NSEvent) {
+        print("Mouse Dragged!")
         if isMouseEventInsideView(event: event) {
             if spaceshipType != .None {
                 // What makes sense to do here? Is there a mouseUp action?
+                cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
                 cellGrid.touchedCell(at: event.location(in: self))
+            }
+        }
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        if isMouseEventInsideView(event: event) {
+            if spaceshipType != .None {
+                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
             }
         }
     }

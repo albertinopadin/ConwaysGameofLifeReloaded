@@ -18,6 +18,8 @@ final class CellGrid {
     var generation: UInt64 = 0
     var spaceshipFactory: SpaceshipFactory?
     
+    var shadowed = [Cell]()
+    
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
@@ -257,6 +259,26 @@ final class CellGrid {
         }
     }
     
+    func resetShadowed() {
+        for cell in shadowed {
+            cell.color = .blue
+        }
+        shadowed.removeAll()
+    }
+    
+    func shadowPattern(with points: [CGPoint]) {
+        for p in points {
+            let x = Int(p.x / cellSize)
+            let y = Int(p.y / cellSize)
+
+            let cell = grid[x][y]
+            if !cell.alive {
+                cell.makeShadow()
+                shadowed.append(cell)
+            }
+        }
+    }
+    
     func getPointDimensions() -> (CGFloat, CGFloat) {
         return (getPointWidth(), getPointHeight())
     }
@@ -286,7 +308,14 @@ final class CellGrid {
         generation = 0
     }
     
+    func shadowSpaceship(at point: CGPoint, type: SpaceshipType) {
+        resetShadowed()
+        let spaceshipPoints = spaceshipFactory!.createSpaceship(at: point, type: type)
+        shadowPattern(with: spaceshipPoints)
+    }
+    
     func placeSpaceship(at point: CGPoint, type: SpaceshipType) {
+        resetShadowed()
         let spaceshipPoints = spaceshipFactory!.createSpaceship(at: point, type: type)
         createPattern(with: spaceshipPoints)
     }
