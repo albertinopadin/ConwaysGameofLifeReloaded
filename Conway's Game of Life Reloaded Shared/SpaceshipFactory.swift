@@ -20,17 +20,19 @@ public enum SpaceshipType {
 
 public final class SpaceshipFactory {
     private let cellSize: CGFloat
+    private let shapeFactory: ShapeFactory
     
     public init(cellSize: CGFloat) {
         // TODO: Need cell dimensions to properly place the points
         //       relative to one another.
         self.cellSize = cellSize
+        self.shapeFactory = ShapeFactory(cellSize: cellSize)
     }
     
     public func createSpaceship(at point: CGPoint, type: SpaceshipType) -> [CGPoint] {
         switch type {
         case .Square:
-            return createSquare(at: point)
+            return shapeFactory.createSquare(at: point)
         case .Glider:
             return createGlider(at: point)
         default:
@@ -47,12 +49,4 @@ public final class SpaceshipFactory {
         return [top, right, bottom, bottomLeft, bottomRight]
     }
     
-    public func createSquare(at point: CGPoint) -> [CGPoint] {
-        // Actually, need to get current cell user clicked in to properly place square...
-        let topLeft  = CGPoint(x: point.x - self.cellSize/2, y: point.y - self.cellSize/2)
-        let topRight = CGPoint(x: point.x + self.cellSize/2, y: point.y - self.cellSize/2)
-        let botLeft  = CGPoint(x: point.x - self.cellSize/2, y: point.y + self.cellSize/2)
-        let botRight = CGPoint(x: point.x + self.cellSize/2, y: point.y + self.cellSize/2)
-        return [topLeft, topRight, botLeft, botRight]
-    }
 }

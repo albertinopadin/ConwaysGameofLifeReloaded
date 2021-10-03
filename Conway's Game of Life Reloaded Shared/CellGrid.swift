@@ -320,4 +320,23 @@ final class CellGrid {
         createPattern(with: spaceshipPoints)
     }
     
+    // TODO: Would be fun to randomize cell states as a starting condition,
+    //       and see what happens.
+    func randomState() {
+        if !self.grid.isEmpty {
+            for cellArray in self.grid {
+                for cell in cellArray {
+                    // Using Bool.random() will result in (on average), half the cells to be alive.
+                    // Perhaps this is too much - may have to use a diff probability.
+                    // Maybe - have the probability as configurable parameter so that user can set it.
+                    if Bool.random() {
+                        cell.makeLive()
+                    }
+                }
+            }
+        }
+        
+        generation = 0
+    }
+    
 }

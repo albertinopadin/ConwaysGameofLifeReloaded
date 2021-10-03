@@ -75,6 +75,13 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         }
     }
     
+    @IBAction func randomizeGame(sender: NSButton) {
+        gameViewController?.randomizeGame()
+        if toggleGameplayButton.title == pauseString {
+            toggleGameplayButton.title = runString
+        }
+    }
+    
     func setGeneration(_ generation: UInt64) {
         generationsLabel.stringValue = "\(generation)"
     }

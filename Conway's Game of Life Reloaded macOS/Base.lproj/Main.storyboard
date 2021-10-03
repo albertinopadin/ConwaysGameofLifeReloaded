@@ -867,11 +867,28 @@
                                         </connections>
                                     </popUpButton>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="97E43F74-0E82-4EDE-9BD7-0C7DC3CF11DC" label="" paletteLabel="Randomize" id="dsg-8R-f1d">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="102" height="43"/>
+                                    <size key="maxSize" width="102" height="43"/>
+                                    <button key="view" verticalHuggingPriority="750" id="45Y-fD-3NF">
+                                        <rect key="frame" x="0.0" y="14" width="102" height="43"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Random" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QZt-dW-8rL">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="randomizeGameWithSender:" target="B8D-0N-5wS" id="lxm-ey-fgg"/>
+                                        </connections>
+                                    </button>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="Oqr-XZ-6st"/>
                                 <toolbarItem reference="y8j-hO-8IL"/>
                                 <toolbarItem reference="xes-86-ZN2"/>
+                                <toolbarItem reference="dsg-8R-f1d"/>
                                 <toolbarItem reference="27e-hI-z8i"/>
                                 <toolbarItem reference="czy-gx-OVn"/>
                                 <toolbarItem reference="WYz-Tk-kgd"/>

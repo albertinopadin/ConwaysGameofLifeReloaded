@@ -118,6 +118,13 @@ class GameScene: SKScene {
         gameDelegate?.setGeneration(0)
     }
     
+    func randomizeGame() {
+        gameRunning = false
+        cellGrid.reset()
+        cellGrid.randomState()
+        gameDelegate?.setGeneration(0)
+    }
+    
     func setSpaceshipType(type: SpaceshipType) {
         spaceshipType = type
     }

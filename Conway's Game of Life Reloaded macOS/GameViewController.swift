@@ -47,6 +47,10 @@ class GameViewController: NSViewController, GameWindowDelegate {
         gameScene.resetGame()
     }
     
+    func randomizeGame() {
+        gameScene.randomizeGame()
+    }
+    
     func setSpaceshipType(type: SpaceshipType) {
         gameScene.setSpaceshipType(type: type)
     }
