@@ -76,7 +76,9 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
     }
     
     @IBAction func randomizeGame(sender: NSButton) {
-        gameViewController?.randomizeGame()
+        // TODO: make this user-configurable:
+        let liveProbability = 0.15
+        gameViewController?.randomizeGame(liveProbability: liveProbability)
         if toggleGameplayButton.title == pauseString {
             toggleGameplayButton.title = runString
         }

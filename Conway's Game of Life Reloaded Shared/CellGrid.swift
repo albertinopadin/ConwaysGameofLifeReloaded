@@ -322,21 +322,35 @@ final class CellGrid {
     
     // TODO: Would be fun to randomize cell states as a starting condition,
     //       and see what happens.
-    func randomState() {
-        if !self.grid.isEmpty {
-            for cellArray in self.grid {
-                for cell in cellArray {
-                    // Using Bool.random() will result in (on average), half the cells to be alive.
-                    // Perhaps this is too much - may have to use a diff probability.
-                    // Maybe - have the probability as configurable parameter so that user can set it.
-                    if Bool.random() {
-                        cell.makeLive()
+    func randomState(liveProbability: Double) {
+        reset()
+        if liveProbability == 1.0 {
+            makeAllLive()
+        } else {
+            if liveProbability > 0.0 {
+                let liveProb = liveProbability*100
+                if !self.grid.isEmpty {
+                    for cellArray in self.grid {
+                        for cell in cellArray {
+                            let randInt = Double.random(in: 0...100)
+                            if randInt <= liveProb {
+                                cell.makeLive()
+                            }
+                        }
                     }
                 }
             }
         }
-        
-        generation = 0
+    }
+    
+    func makeAllLive() {
+        if !self.grid.isEmpty {
+            for cellArray in self.grid {
+                for cell in cellArray {
+                    cell.makeLive()
+                }
+            }
+        }
     }
     
 }
