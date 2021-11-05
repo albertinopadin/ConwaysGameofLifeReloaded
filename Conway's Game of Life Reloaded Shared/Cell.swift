@@ -15,7 +15,8 @@ public typealias UIColor = NSColor
 public final class Cell: SKSpriteNode {
     public var alive: Bool
     public var neighbors: ContiguousArray<Cell>
-    public var lastGenLiveNeighbors: Int = 0
+    public var liveNeighbors: Int = 0
+    public var lastLiveNeighbors: Int = 0
     private let colorNodeSizeFraction: CGFloat = 0.92
     private let aliveColor: UIColor = .green
     private let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
@@ -42,24 +43,48 @@ public final class Cell: SKSpriteNode {
     
     public func makeLive(touched: Bool = false) {
         self.alive = true
+        self.neighbors.forEach {
+            $0.neighborLive()
+        }
+        
         if touched {
-            self.run(colorAliveAction) { self.color = self.aliveColor }
+            self.run(self.colorAliveAction) { self.color = self.aliveColor }
         } else {
-            self.color = aliveColor
+            self.color = self.aliveColor
         }
     }
     
     public func makeDead(touched: Bool = false) {
         self.alive = false
+        self.neighbors.forEach {
+            $0.neighborDied()
+        }
+        
         if touched {
-            self.run(colorDeadAction) { self.color = self.deadColor }
+            self.run(self.colorDeadAction) { self.color = self.deadColor }
         } else {
-            self.color = deadColor
+            self.color = self.deadColor
         }
     }
     
-    public func updateLastGenLiveNeigbors() {
-        lastGenLiveNeighbors = neighbors.filter({ $0.alive }).count
+    public func updateLastGenLiveNeighbors() {
+        liveNeighbors = neighbors.filter({ $0.alive }).count
+    }
+    
+    public func neighborLive() {
+        if liveNeighbors < 8 {
+            liveNeighbors += 1
+        }
+    }
+    
+    public func neighborDied() {
+        if liveNeighbors > 0 {
+            liveNeighbors -= 1
+        }
+    }
+    
+    public func snapshotLiveNeighbors() {
+        lastLiveNeighbors = liveNeighbors
     }
     
     public func makeShadow() {

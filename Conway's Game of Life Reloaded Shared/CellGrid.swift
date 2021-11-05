@@ -10,10 +10,9 @@ import SpriteKit
 
 
 final class CellGrid {
-    var xCount = 0
-    var yCount = 0
+    let xCount: Int
+    let yCount: Int
     var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
-    var liveNeighbors = [[Int]]()
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
     var spaceshipFactory: SpaceshipFactory?
@@ -26,7 +25,6 @@ final class CellGrid {
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
-//        liveNeighbors = [[Int]](repeating: [Int](repeating: 0, count: yCount), count: xCount)
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
     
@@ -124,38 +122,40 @@ final class CellGrid {
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
     func updateCells() -> UInt64 {
-        // Iterate through the current grid, updating the next gen grid accordingly:
-        let xCount = grid.count
-        let yCount = grid.first!.count
-        updateLastGenLiveNeighbors()
+        snapshotLiveNeighbors()
         
         let _ = DispatchQueue.global(qos: .userInteractive)
-        DispatchQueue.concurrentPerform(iterations: xCount) { x in
-            for y in 0..<yCount {
-                let cell = grid[x][y]
-                let numberOfLiveNeighbors = cell.lastGenLiveNeighbors
+        
+        // Sometimes doing concurrentPerform on the inner loop is more performant than on the outer loop
+        // from: https://eon.codes/blog/2019/12/21/Concurrent-perform/
+        DispatchQueue.global().async {
+            for x in 0..<self.xCount {
+                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                    let cell = self.grid[x][y]
+                    let numberOfLiveNeighbors = cell.lastLiveNeighbors
 
-                switch numberOfLiveNeighbors {
-                case _ where numberOfLiveNeighbors < 2:
-                    if cell.alive {
-                        cell.makeDead()
+                    switch numberOfLiveNeighbors {
+                    case _ where numberOfLiveNeighbors < 2:
+                        if cell.alive {
+                            cell.makeDead()
+                        }
+
+                    case 2:
+                        break
+
+                    case 3:
+                        if !cell.alive {
+                            cell.makeLive()
+                        }
+
+                    case _ where numberOfLiveNeighbors > 3:
+                        if cell.alive {
+                            cell.makeDead()
+                        }
+
+                    default:
+                        break
                     }
-
-                case 2:
-                    break
-
-                case 3:
-                    if !cell.alive {
-                        cell.makeLive()
-                    }
-
-                case _ where numberOfLiveNeighbors > 3:
-                    if cell.alive {
-                        cell.makeDead()
-                    }
-
-                default:
-                    break
                 }
             }
         }
@@ -164,20 +164,53 @@ final class CellGrid {
         return generation
     }
     
-    func updateLiveNeighborsGrid() {
-        for x in 0..<xCount {
-            for y in 0..<yCount {
-                let cell = grid[x][y]
-                liveNeighbors[x][y] = cell.neighbors.filter({$0.alive}).count
+    func snapshotLiveNeighbors() {
+        let _ = DispatchQueue.global(qos: .userInteractive)
+        DispatchQueue.global().sync {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                for y in 0..<self.yCount {
+                    self.grid[x][y].snapshotLiveNeighbors()
+                }
             }
         }
     }
     
+//    func updateLiveNeighborsGrid() {
+//        for x in 0..<xCount {
+//            for y in 0..<yCount {
+//                let cell = grid[x][y]
+//                liveNeighbors[x][y] = cell.liveNeighbors
+//            }
+//        }
+//
+//        // Won't work because arrays aren't thread-safe in Swift...
+////        DispatchQueue.global().sync {
+////            for x in 0..<self.xCount {
+////                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+////                    self.liveNeighbors[x][y] = self.grid[x][y].liveNeighbors
+////                }
+////            }
+////        }
+//    }
+    
+    // TODO: This method seems pretty hot, how to make it more efficient?
     func updateLastGenLiveNeighbors() {
-        let _ = DispatchQueue.global(qos: .userInteractive)
-        DispatchQueue.concurrentPerform(iterations: xCount) { x in
-            for y in 0..<yCount {
-                grid[x][y].updateLastGenLiveNeigbors()
+//        let _ = DispatchQueue.global(qos: .userInteractive)
+        
+        // Works correctly now BECAUSE it's blocking the main thread...
+//        DispatchQueue.global().sync {
+//            for x in 0..<self.xCount {
+//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                    self.grid[x][y].updateLastGenLiveNeigbors()
+//                }
+//            }
+//        }
+        
+        DispatchQueue.global().sync {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                for y in 0..<self.yCount {
+                    self.grid[x][y].updateLastGenLiveNeighbors()
+                }
             }
         }
     }
