@@ -124,37 +124,16 @@ final class CellGrid {
     func updateCells() -> UInt64 {
         snapshotLiveNeighbors()
         
-        let _ = DispatchQueue.global(qos: .userInteractive)
-        
         // Sometimes doing concurrentPerform on the inner loop is more performant than on the outer loop
         // from: https://eon.codes/blog/2019/12/21/Concurrent-perform/
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .userInteractive).async {
             for x in 0..<self.xCount {
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     let cell = self.grid[x][y]
-                    let numberOfLiveNeighbors = cell.lastLiveNeighbors
-
-                    switch numberOfLiveNeighbors {
-                    case _ where numberOfLiveNeighbors < 2:
-                        if cell.alive {
-                            cell.makeDead()
-                        }
-
-                    case 2:
-                        break
-
-                    case 3:
-                        if !cell.alive {
-                            cell.makeLive()
-                        }
-
-                    case _ where numberOfLiveNeighbors > 3:
-                        if cell.alive {
-                            cell.makeDead()
-                        }
-
-                    default:
-                        break
+                    if cell.shouldLive {
+                        cell.makeLive()
+                    } else if cell.shouldDie {
+                        cell.makeDead()
                     }
                 }
             }
@@ -165,8 +144,7 @@ final class CellGrid {
     }
     
     func snapshotLiveNeighbors() {
-        let _ = DispatchQueue.global(qos: .userInteractive)
-        DispatchQueue.global().sync {
+        DispatchQueue.global(qos: .userInteractive).sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 for y in 0..<self.yCount {
                     self.grid[x][y].snapshotLiveNeighbors()

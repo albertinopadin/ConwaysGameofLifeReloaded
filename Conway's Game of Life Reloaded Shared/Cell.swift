@@ -14,6 +14,8 @@ public typealias UIColor = NSColor
 
 public final class Cell: SKSpriteNode {
     public var alive: Bool
+    public var shouldLive: Bool
+    public var shouldDie: Bool
     public var neighbors: ContiguousArray<Cell>
     public var liveNeighbors: Int = 0
     public var lastLiveNeighbors: Int = 0
@@ -32,6 +34,8 @@ public final class Cell: SKSpriteNode {
     
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.alive = alive
+        self.shouldLive = false
+        self.shouldDie = false
         self.neighbors = ContiguousArray<Cell>()
         super.init(texture: nil,
                    color: color,
@@ -42,10 +46,11 @@ public final class Cell: SKSpriteNode {
     }
     
     public func makeLive(touched: Bool = false) {
-        self.alive = true
-        self.neighbors.forEach {
+        alive = true
+        neighbors.forEach {
             $0.neighborLive()
         }
+        resetShould()
         
         if touched {
             self.run(self.colorAliveAction) { self.color = self.aliveColor }
@@ -55,10 +60,11 @@ public final class Cell: SKSpriteNode {
     }
     
     public func makeDead(touched: Bool = false) {
-        self.alive = false
-        self.neighbors.forEach {
+        alive = false
+        neighbors.forEach {
             $0.neighborDied()
         }
+        resetShould()
         
         if touched {
             self.run(self.colorDeadAction) { self.color = self.deadColor }
@@ -83,8 +89,45 @@ public final class Cell: SKSpriteNode {
         }
     }
     
+    func shouldBeLive() {
+        shouldLive = true
+        shouldDie = false
+    }
+    
+    func shouldBeDead() {
+        shouldDie = true
+        shouldLive = false
+    }
+    
+    func resetShould() {
+        shouldLive = false
+        shouldDie = false
+    }
+    
     public func snapshotLiveNeighbors() {
         lastLiveNeighbors = liveNeighbors
+        switch lastLiveNeighbors {
+        case _ where lastLiveNeighbors < 2:
+            if alive {
+                shouldBeDead()
+            }
+
+        case 2:
+            break
+
+        case 3:
+            if !alive {
+                shouldBeLive()
+            }
+
+        case _ where lastLiveNeighbors > 3:
+            if alive {
+                shouldBeDead()
+            }
+
+        default:
+            break
+        }
     }
     
     public func makeShadow() {
