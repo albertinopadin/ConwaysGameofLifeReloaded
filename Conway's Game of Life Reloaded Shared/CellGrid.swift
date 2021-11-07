@@ -239,12 +239,10 @@ final class CellGrid {
     
     func reset() {
         // Reset the game to initial state with no cells alive:
-        if !self.grid.isEmpty {
-            DispatchQueue.main.async {
-                for x in 0..<self.xCount {
-                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                        self.grid[x][y].makeDead()
-                    }
+        DispatchQueue.global(qos: .userInteractive).sync {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                    self.grid[x][y].makeDead()
                 }
             }
         }
@@ -272,15 +270,13 @@ final class CellGrid {
             makeAllLive()
         } else {
             if liveProbability > 0.0 {
-                let liveProb = liveProbability*100
-                if !self.grid.isEmpty {
-                     DispatchQueue.main.async {
-                        for x in 0..<self.xCount {
-                            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                                let randInt = Double.random(in: 0...100)
-                                if randInt <= liveProb {
-                                    self.grid[x][y].makeLive()
-                                }
+                let liveProb = Int(liveProbability*100)
+                DispatchQueue.global(qos: .userInteractive).sync {
+                    DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                        DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                            let randInt = Int.random(in: 0...100)
+                            if randInt <= liveProb {
+                                self.grid[x][y].makeLive()
                             }
                         }
                     }
@@ -290,12 +286,10 @@ final class CellGrid {
     }
     
     func makeAllLive() {
-        if !self.grid.isEmpty {
-            DispatchQueue.main.async {
-                for x in 0..<self.xCount {
-                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                        self.grid[x][y].makeLive()
-                    }
+        DispatchQueue.global(qos: .userInteractive).sync {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                    self.grid[x][y].makeLive()
                 }
             }
         }
