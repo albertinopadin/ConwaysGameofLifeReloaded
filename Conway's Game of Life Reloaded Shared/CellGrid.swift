@@ -121,26 +121,27 @@ final class CellGrid {
     // 3) Any live cell with more than three live neighbors dies (overpopulation)
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
-    func updateCells() -> UInt64 {
+    @inlinable func updateCells() -> UInt64 {
         // Prepare update:
         DispatchQueue.global(qos: .userInteractive).sync {
-            for x in 0..<self.xCount {
-            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].prepareUpdate()
                 }
             }
         }
-        
+
         // Update
-        // Sometimes doing concurrentPerform on the inner loop is more performant than on the outer loop
-        // from: https://eon.codes/blog/2019/12/21/Concurrent-perform/
+        // Doing concurrentPerform on both inner and outer loops doubles FPS:
         DispatchQueue.global(qos: .userInteractive).async {
-            for x in 0..<self.xCount {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].update()
                 }
             }
         }
+        
+        // TODO: hitting weird bug where sometimes gliders will 'explode' or 'disintegrate'...
         
         generation += 1
         return generation
@@ -239,9 +240,11 @@ final class CellGrid {
     func reset() {
         // Reset the game to initial state with no cells alive:
         if !self.grid.isEmpty {
-            for cellArray in self.grid {
-                for cell in cellArray {
-                    cell.makeDead()
+            DispatchQueue.main.async {
+                for x in 0..<self.xCount {
+                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                        self.grid[x][y].makeDead()
+                    }
                 }
             }
         }
@@ -271,11 +274,13 @@ final class CellGrid {
             if liveProbability > 0.0 {
                 let liveProb = liveProbability*100
                 if !self.grid.isEmpty {
-                    for cellArray in self.grid {
-                        for cell in cellArray {
-                            let randInt = Double.random(in: 0...100)
-                            if randInt <= liveProb {
-                                cell.makeLive()
+                     DispatchQueue.main.async {
+                        for x in 0..<self.xCount {
+                            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                                let randInt = Double.random(in: 0...100)
+                                if randInt <= liveProb {
+                                    self.grid[x][y].makeLive()
+                                }
                             }
                         }
                     }
@@ -286,9 +291,11 @@ final class CellGrid {
     
     func makeAllLive() {
         if !self.grid.isEmpty {
-            for cellArray in self.grid {
-                for cell in cellArray {
-                    cell.makeLive()
+            DispatchQueue.main.async {
+                for x in 0..<self.xCount {
+                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                        self.grid[x][y].makeLive()
+                    }
                 }
             }
         }
