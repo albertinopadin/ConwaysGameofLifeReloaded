@@ -122,98 +122,28 @@ final class CellGrid {
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
     func updateCells() -> UInt64 {
-        snapshotLiveNeighbors()
+        // Prepare update:
+        DispatchQueue.global(qos: .userInteractive).sync {
+            for x in 0..<self.xCount {
+            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                    self.grid[x][y].prepareUpdate()
+                }
+            }
+        }
         
+        // Update
         // Sometimes doing concurrentPerform on the inner loop is more performant than on the outer loop
         // from: https://eon.codes/blog/2019/12/21/Concurrent-perform/
         DispatchQueue.global(qos: .userInteractive).async {
             for x in 0..<self.xCount {
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    let cell = self.grid[x][y]
-                    if cell.shouldLive {
-                        cell.makeLive()
-                    } else if cell.shouldDie {
-                        cell.makeDead()
-                    }
+                    self.grid[x][y].update()
                 }
             }
         }
         
         generation += 1
         return generation
-    }
-    
-    func snapshotLiveNeighbors() {
-        DispatchQueue.global(qos: .userInteractive).sync {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                for y in 0..<self.yCount {
-                    self.grid[x][y].snapshotLiveNeighbors()
-                }
-            }
-        }
-    }
-    
-//    func updateLiveNeighborsGrid() {
-//        for x in 0..<xCount {
-//            for y in 0..<yCount {
-//                let cell = grid[x][y]
-//                liveNeighbors[x][y] = cell.liveNeighbors
-//            }
-//        }
-//
-//        // Won't work because arrays aren't thread-safe in Swift...
-////        DispatchQueue.global().sync {
-////            for x in 0..<self.xCount {
-////                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-////                    self.liveNeighbors[x][y] = self.grid[x][y].liveNeighbors
-////                }
-////            }
-////        }
-//    }
-    
-    // TODO: This method seems pretty hot, how to make it more efficient?
-    func updateLastGenLiveNeighbors() {
-//        let _ = DispatchQueue.global(qos: .userInteractive)
-        
-        // Works correctly now BECAUSE it's blocking the main thread...
-//        DispatchQueue.global().sync {
-//            for x in 0..<self.xCount {
-//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                    self.grid[x][y].updateLastGenLiveNeigbors()
-//                }
-//            }
-//        }
-        
-        DispatchQueue.global().sync {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                for y in 0..<self.yCount {
-                    self.grid[x][y].updateLastGenLiveNeighbors()
-                }
-            }
-        }
-    }
-    
-    func deepCopyCellArray(originalGrid: ContiguousArray<ContiguousArray<Cell>>) -> ContiguousArray<ContiguousArray<Cell>> {
-        var copyGrid = ContiguousArray<ContiguousArray<Cell>>()
-        // Need to find a fast way to deep copy array of objects;
-        // For now will use for loop:
-        for cellArray in originalGrid {
-            copyGrid.append(ContiguousArray<Cell>())
-            let cellRowIndex = copyGrid.count - 1
-            
-            // Deep copy of cell objects:
-            for originalCell in cellArray {
-                let copyCell = Cell(frame: originalCell.frame, alive: originalCell.alive, color: originalCell.color)
-                var copyNeighbors = ContiguousArray<Cell>()
-                for ogNeighbor in originalCell.neighbors {
-                    copyNeighbors.append(Cell(frame: ogNeighbor.frame, alive: ogNeighbor.alive, color: ogNeighbor.color))
-                }
-                copyCell.neighbors = copyNeighbors
-                copyGrid[cellRowIndex].append(copyCell)
-            }
-        }
-        
-        return copyGrid
     }
 
     func getGridIndicesFromPoint(at: CGPoint) -> (x: Int, y: Int) {
@@ -232,11 +162,11 @@ final class CellGrid {
         let y = Int(at.y / cellSize)
 
         let touchedCell = grid[x][y]
-        if !withAltAction && !touchedCell.alive {
+        if !withAltAction && !touchedCell.alive() {
             touchedCell.makeLive(touched: true)
         }
         
-        if withAltAction && touchedCell.alive {
+        if withAltAction && touchedCell.alive() {
             touchedCell.makeDead(touched: true)
         }
         
@@ -283,7 +213,7 @@ final class CellGrid {
             let y = Int(p.y / cellSize)
 
             let cell = grid[x][y]
-            if !cell.alive {
+            if !cell.alive() {
                 cell.makeShadow()
                 shadowed.append(cell)
             }

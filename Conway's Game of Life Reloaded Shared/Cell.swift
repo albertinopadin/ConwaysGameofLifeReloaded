@@ -12,10 +12,14 @@ import SpriteKit
 public typealias UIColor = NSColor
 #endif
 
+enum CellState {
+    case Live, Dead
+}
+
 public final class Cell: SKSpriteNode {
-    public var alive: Bool
-    public var shouldLive: Bool
-    public var shouldDie: Bool
+    var currentState: CellState
+    var nextState: CellState
+    
     public var neighbors: ContiguousArray<Cell>
     public var liveNeighbors: Int = 0
     public var lastLiveNeighbors: Int = 0
@@ -33,9 +37,8 @@ public final class Cell: SKSpriteNode {
                                                     duration: 0.3)
     
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
-        self.alive = alive
-        self.shouldLive = false
-        self.shouldDie = false
+        self.currentState = alive ? .Live: .Dead
+        self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
         super.init(texture: nil,
                    color: color,
@@ -46,11 +49,11 @@ public final class Cell: SKSpriteNode {
     }
     
     public func makeLive(touched: Bool = false) {
-        alive = true
+        currentState = .Live
         neighbors.forEach {
             $0.neighborLive()
         }
-        resetShould()
+        resetNextState()
         
         if touched {
             self.run(self.colorAliveAction) { self.color = self.aliveColor }
@@ -60,11 +63,11 @@ public final class Cell: SKSpriteNode {
     }
     
     public func makeDead(touched: Bool = false) {
-        alive = false
+        currentState = .Dead
         neighbors.forEach {
             $0.neighborDied()
         }
-        resetShould()
+        resetNextState()
         
         if touched {
             self.run(self.colorDeadAction) { self.color = self.deadColor }
@@ -73,9 +76,17 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    public func updateLastGenLiveNeighbors() {
-        liveNeighbors = neighbors.filter({ $0.alive }).count
+    public func alive() -> Bool {
+        return currentState == .Live
     }
+    
+    func resetNextState() {
+        nextState = currentState
+    }
+    
+//    public func updateLastGenLiveNeighbors() {
+//        liveNeighbors = neighbors.filter({ $0.alive() }).count
+//    }
     
     public func neighborLive() {
         if liveNeighbors < 8 {
@@ -89,44 +100,40 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    func shouldBeLive() {
-        shouldLive = true
-        shouldDie = false
-    }
-    
-    func shouldBeDead() {
-        shouldDie = true
-        shouldLive = false
-    }
-    
-    func resetShould() {
-        shouldLive = false
-        shouldDie = false
-    }
-    
-    public func snapshotLiveNeighbors() {
+    public func prepareUpdate() {
         lastLiveNeighbors = liveNeighbors
         switch lastLiveNeighbors {
         case _ where lastLiveNeighbors < 2:
-            if alive {
-                shouldBeDead()
+            if alive() {
+                nextState = .Dead
             }
 
         case 2:
             break
 
         case 3:
-            if !alive {
-                shouldBeLive()
+            if !alive() {
+                nextState = .Live
             }
 
         case _ where lastLiveNeighbors > 3:
-            if alive {
-                shouldBeDead()
+            if alive() {
+                nextState = .Dead
             }
 
         default:
             break
+        }
+    }
+    
+    public func update() {
+        if currentState != nextState {
+            switch nextState {
+            case .Live:
+                makeLive()
+            case .Dead:
+                makeDead()
+            }
         }
     }
     
