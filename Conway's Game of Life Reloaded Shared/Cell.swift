@@ -46,6 +46,7 @@ public final class Cell: SKSpriteNode {
                                 height: frame.size.height * colorNodeSizeFraction))
         self.position = frame.origin
         self.blendMode = .replace
+        self.physicsBody?.isDynamic = false
     }
     
     @inlinable public func makeLive(touched: Bool = false) {
@@ -76,21 +77,21 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    public func alive() -> Bool {
+    @inlinable public func alive() -> Bool {
         return currentState == .Live
     }
     
-    public func resetNextState() {
+    @inlinable public func resetNextState() {
         nextState = currentState
     }
     
-    public func neighborLive() {
+    @inlinable public func neighborLive() {
         if liveNeighbors < 8 {
             liveNeighbors += 1
         }
     }
     
-    public func neighborDied() {
+    @inlinable public func neighborDied() {
         if liveNeighbors > 0 {
             liveNeighbors -= 1
         }
@@ -133,7 +134,7 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    public func makeShadow() {
+    @inlinable public func makeShadow() {
         self.color = shadowColor
     }
     
