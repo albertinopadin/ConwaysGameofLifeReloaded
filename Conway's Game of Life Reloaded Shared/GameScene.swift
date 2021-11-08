@@ -37,6 +37,9 @@ class GameScene: SKScene {
 
         // Set the scale mode to scale to fit the window
         scene.scaleMode = .aspectFill
+//        scene.blendMode = .replace
+//        scene.shouldRasterize = true
+//        scene.physicsBody?.isDynamic = false
         return scene
     }
     
@@ -95,6 +98,7 @@ class GameScene: SKScene {
         }
     }
     
+    // Called every 16ms, or every 8ms on ProMotion devices:
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         if previousTime == nil {
@@ -107,6 +111,10 @@ class GameScene: SKScene {
             gameDelegate?.setGeneration(generation)
         }
     }
+    
+//    override func didFinishUpdate() {
+//        cellGrid.prepareUpdateCells()
+//    }
     
     func toggleGameplay() {
         gameRunning.toggle()

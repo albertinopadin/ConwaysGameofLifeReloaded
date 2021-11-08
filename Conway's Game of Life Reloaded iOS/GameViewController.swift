@@ -31,7 +31,6 @@ class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresenta
         let skView = self.view as! SKView
         skView.presentScene(gameScene)
         
-        skView.ignoresSiblingOrder = true
         skView.showsFPS = true
         skView.showsNodeCount = true
         skView.showsDrawCount = true
