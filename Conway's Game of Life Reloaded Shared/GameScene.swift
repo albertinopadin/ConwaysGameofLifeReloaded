@@ -47,7 +47,7 @@ class GameScene: SKScene {
         setUpCamera()
         (xCellsViz, yCellsViz) = getVisibleCellsXYBasedOnDeviceViewport(cellSize: defaultCellSize)
         cellGrid = CellGrid(xCells: defaultXCells, yCells: defaultYCells, cellSize: defaultCellSize)
-        addCellGridToScene(cellGrid: cellGrid.grid)
+        addCellGridToScene(grid: cellGrid.grid)
         positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
     }
     
@@ -90,8 +90,8 @@ class GameScene: SKScene {
     }
     #endif
     
-    func addCellGridToScene(cellGrid: ContiguousArray<ContiguousArray<Cell>>) {
-        for cellArray in cellGrid {
+    func addCellGridToScene(grid: ContiguousArray<ContiguousArray<Cell>>) {
+        for cellArray in grid {
             for cell in cellArray {
                 self.addChild(cell)
             }
