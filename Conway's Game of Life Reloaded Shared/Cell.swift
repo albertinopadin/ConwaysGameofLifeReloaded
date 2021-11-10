@@ -16,62 +16,51 @@ public enum CellState {
     case Live, Dead
 }
 
-public final class Cell: SKSpriteNode {
+//public struct Cell {
+public class Cell {
     public var currentState: CellState
     public var nextState: CellState
-    
     public var neighbors: ContiguousArray<Cell>
     public var liveNeighbors: Int = 0
-//    public var lastLiveNeighbors: Int = 0
-    public let colorNodeSizeFraction: CGFloat = 0.92
-    public let aliveColor: UIColor = .green
-    public let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
-    public let shadowColor: UIColor = .darkGray
+    public let column: Int
+    public let row: Int
     
-    public let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
-    public let colorDeadAction = SKAction.colorize(with: UIColor(red: 0.16,
-                                                                  green: 0.15,
-                                                                  blue: 0.30,
-                                                                  alpha: 1.0),
-                                                    colorBlendFactor: 1.0,
-                                                    duration: 0.3)
-    
-    public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
+    public init(column: Int, row: Int, alive: Bool = false) {
+        self.column = column
+        self.row = row
         self.currentState = alive ? .Live: .Dead
         self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
-        super.init(texture: nil,
-                   color: color,
-                   size: CGSize(width: frame.size.width * colorNodeSizeFraction,
-                                height: frame.size.height * colorNodeSizeFraction))
-        self.position = frame.origin
-        self.blendMode = .replace
-        self.colorBlendFactor = 1
-        self.physicsBody?.isDynamic = false
     }
     
     @inlinable public func makeLive(touched: Bool = false) {
         currentState = .Live
         neighbors.forEach { $0.neighborLive() }
+//        for (index, _) in neighbors.enumerated() {
+//            neighbors[index].neighborLive()
+//        }
         resetNextState()
         
-        if touched {
-            self.run(self.colorAliveAction) { self.color = self.aliveColor }
-        } else {
-            self.color = self.aliveColor
-        }
+//        if touched {
+//            self.run(self.colorAliveAction) { self.color = self.aliveColor }
+//        } else {
+//            self.color = self.aliveColor
+//        }
     }
     
     @inlinable public func makeDead(touched: Bool = false) {
         currentState = .Dead
         neighbors.forEach { $0.neighborDied() }
+//        for (index, _) in neighbors.enumerated() {
+//            neighbors[index].neighborDied()
+//        }
         resetNextState()
         
-        if touched {
-            self.run(self.colorDeadAction) { self.color = self.deadColor }
-        } else {
-            self.color = self.deadColor
-        }
+//        if touched {
+//            self.run(self.colorDeadAction) { self.color = self.deadColor }
+//        } else {
+//            self.color = self.deadColor
+//        }
     }
     
     @inlinable public func alive() -> Bool {
@@ -122,7 +111,7 @@ public final class Cell: SKSpriteNode {
     }
     
     @inlinable public func update() {
-        if currentState != nextState {
+        if needsUpdate() {
             switch nextState {
             case .Live:
                 makeLive()
@@ -132,11 +121,12 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    @inlinable public func makeShadow() {
-        self.color = shadowColor
+    @inlinable public func needsUpdate() -> Bool {
+        return currentState != nextState
     }
     
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+//    @inlinable public mutating func makeShadow() {
+//        self.color = shadowColor
+//    }
+    
 }

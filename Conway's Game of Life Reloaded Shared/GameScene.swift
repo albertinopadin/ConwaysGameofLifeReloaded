@@ -46,9 +46,11 @@ class GameScene: SKScene {
     func setUpScene() {
         setUpCamera()
         (xCellsViz, yCellsViz) = getVisibleCellsXYBasedOnDeviceViewport(cellSize: defaultCellSize)
-        cellGrid = CellGrid(xCells: defaultXCells, yCells: defaultYCells, cellSize: defaultCellSize)
-        addCellGridToScene(grid: cellGrid.grid)
-        positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
+        cellGrid = CellGrid(xCells: defaultXCells,
+                            yCells: defaultYCells,
+                            cellSize: defaultCellSize)
+        addTileMapToScene(tileMap: cellGrid.tileMap)
+//        positionCameraAtCenter(camera: cameraNode, grid: cellGrid.grid)
     }
     
     func setUpCamera() {
@@ -75,9 +77,14 @@ class GameScene: SKScene {
         return (xCells, yCells)
     }
     
-    func positionCameraAtCenter(camera: SKCameraNode, grid: CellGrid) {
-        let (gridX, gridY) = grid.getPointDimensions()
-        camera.position = CGPoint(x: gridX / 2, y: gridY / 2)
+//    func positionCameraAtCenter(camera: SKCameraNode, grid: CellGrid) {
+//        let (gridX, gridY) = grid.getPointDimensions()
+//        camera.position = CGPoint(x: gridX / 2, y: gridY / 2)
+//    }
+    
+    func positionCameraAtCenter(camera: SKCameraNode, grid: SKTileMapNode) {
+        let gridSize = grid.mapSize
+        camera.position = CGPoint(x: gridSize.width / 2, y: gridSize.height / 2)
     }
     
     #if os(watchOS)
@@ -90,12 +97,8 @@ class GameScene: SKScene {
     }
     #endif
     
-    func addCellGridToScene(grid: ContiguousArray<ContiguousArray<Cell>>) {
-        for cellArray in grid {
-            for cell in cellArray {
-                self.addChild(cell)
-            }
-        }
+    func addTileMapToScene(tileMap: SKTileMapNode) {
+        self.addChild(tileMap)
     }
     
     // Called every 16ms, or every 8ms on ProMotion devices:
@@ -106,7 +109,7 @@ class GameScene: SKScene {
         }
         
         if gameRunning && (currentTime - previousTime >= updateInterval) {
-            let generation = cellGrid.updateCells()
+            let generation = cellGrid.update()
             previousTime = currentTime
             gameDelegate?.setGeneration(generation)
         }

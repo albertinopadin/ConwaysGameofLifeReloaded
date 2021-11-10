@@ -15,11 +15,18 @@ final class CellGrid {
     let quarterCountX: Int
     let quarterCountY: Int
     var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
+    var tileMap = SKTileMapNode()
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
     var spaceshipFactory: SpaceshipFactory?
     
     var shadowed = [Cell]()
+    
+    let tileSet = SKTileSet(named: "Sample Grid Tile Set")!
+    let liveGroup: SKTileGroup
+    let deadGroup: SKTileGroup
+    
+    var toggle: Bool = false
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
@@ -27,24 +34,30 @@ final class CellGrid {
         quarterCountX = xCount / 4
         quarterCountY = yCount / 4
         self.cellSize = cellSize
+        
+        // Set up tile map:
+        let tileSize = CGSize(width: cellSize, height: cellSize)
+        tileSet.defaultTileSize = tileSize
+        liveGroup = tileSet.tileGroups.first(where: { $0.name == "Live" })!
+        deadGroup = tileSet.tileGroups.first(where: { $0.name == "Dead" })!
+        tileMap = SKTileMapNode(tileSet: tileSet, columns: xCount, rows: yCount, tileSize: tileSize)
+        tileMap.enableAutomapping = true
+        tileMap.fill(with: deadGroup)
+        
+        spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
+        
+        // Set up cell grid to back the tile map:
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
-        spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
     
     func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
-        let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        let initialCell = Cell(column: 0, row: 0)
         let newGridRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
         var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
         for x in 0..<xCells {
             for y in 0..<yCells {
-                // The x and y coords are not at the edge of the cell; instead they are the center of it.
-                // This can create confusion when attempting to position cells!
-                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize),
-                                       y: cellMiddle(iteration: y, length: cellSize),
-                                       width: cellSize,
-                                       height: cellSize)
-                newGrid[x][y] = Cell(frame: cellFrame)
+                newGrid[x][y] = Cell(column: x, row: y)
             }
         }
         return newGrid
@@ -68,13 +81,13 @@ final class CellGrid {
     
     private func getCellNeighbors(x: Int, y: Int) -> ContiguousArray<Cell> {
         var neighbors = ContiguousArray<Cell>()
-        
+
         // Get the neighbors:
         let leftX   = x - 1
         let rightX  = x + 1
         let topY    = y + 1
         let bottomY = y - 1
-        
+
         let leftNeighbor        = leftX > -1 ? grid[leftX][y] : nil
         let upperLeftNeighbor   = leftX > -1 && topY < (grid.first?.count)! ? grid[leftX][topY] : nil
         let upperNeighbor       = topY < (grid.first?.count)! ? grid[x][topY] : nil
@@ -83,40 +96,48 @@ final class CellGrid {
         let lowerRightNeighbor  = rightX < grid.count && bottomY > -1 ? grid[rightX][bottomY] : nil
         let lowerNeighbor       = bottomY > -1 ? grid[x][bottomY] : nil
         let lowerLeftNeighbor   = leftX > -1 && bottomY > -1 ? grid[leftX][bottomY] : nil
-        
+
         if let left_n = leftNeighbor {
             neighbors.append(left_n)
         }
-        
+
         if let upper_left_n = upperLeftNeighbor {
             neighbors.append(upper_left_n)
         }
-        
+
         if let upper_n = upperNeighbor {
             neighbors.append(upper_n)
         }
-        
+
         if let upper_right_n = upperRightNeighbor {
             neighbors.append(upper_right_n)
         }
-        
+
         if let right_n = rightNeighbor {
             neighbors.append(right_n)
         }
-        
+
         if let lower_right_n = lowerRightNeighbor {
             neighbors.append(lower_right_n)
         }
-        
+
         if let lower_n = lowerNeighbor {
             neighbors.append(lower_n)
         }
-        
+
         if let lower_left_n = lowerLeftNeighbor {
             neighbors.append(lower_left_n)
         }
-        
+
         return neighbors
+    }
+    
+    @inlinable func makeTileLive(column: Int, row: Int) {
+        tileMap.setTileGroup(liveGroup, forColumn: column, row: row)
+    }
+    
+    @inlinable func makeTileDead(column: Int, row: Int) {
+        tileMap.setTileGroup(deadGroup, forColumn: column, row: row)
     }
     
 //    @inlinable func prepareUpdateCells() {
@@ -136,8 +157,8 @@ final class CellGrid {
     // 3) Any live cell with more than three live neighbors dies (overpopulation)
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
-    @inlinable func updateCells() -> UInt64 {
-//        // Prepare update:
+    @inlinable func update() -> UInt64 {
+        // Prepare update:
         DispatchQueue.global(qos: .userInteractive).sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
@@ -145,6 +166,12 @@ final class CellGrid {
                 }
             }
         }
+        
+//        for x in 0..<xCount {
+//            for y in 0..<yCount {
+//                self.grid[x][y].prepareUpdate()
+//            }
+//        }
         
 //        DispatchQueue.global(qos: .userInteractive).sync {
 //            DispatchQueue.concurrentPerform(iterations: quarterCountX) { x in
@@ -159,10 +186,32 @@ final class CellGrid {
         DispatchQueue.global(qos: .userInteractive).async {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].update()
+                    let cell = self.grid[x][y]
+                    if cell.needsUpdate() {
+                        cell.update()
+                        if cell.alive() {
+                            self.makeTileLive(column: x, row: y)
+                        } else {
+                            self.makeTileDead(column: x, row: y)
+                        }
+                    }
                 }
             }
         }
+        
+//        for x in 0..<xCount {
+//            for y in 0..<yCount {
+//                if self.grid[x][y].needsUpdate() {
+//                    print("Cell \(x), \(y) needs update.")
+//                    self.grid[x][y].update()
+//                    if self.grid[x][y].alive() {
+//                        self.makeTileLive(column: x, row: y)
+//                    } else {
+//                        self.makeTileDead(column: x, row: y)
+//                    }
+//                }
+//            }
+//        }
         
 //        DispatchQueue.global(qos: .userInteractive).sync {
 //            DispatchQueue.concurrentPerform(iterations: quarterCountX) { x in
@@ -173,6 +222,17 @@ final class CellGrid {
 //        }
         
         // TODO: hitting weird bug where sometimes gliders will 'explode' or 'disintegrate'...
+        
+//        toggle.toggle()
+//
+//        if toggle {
+////            tileMap.setTileGroup(liveGroup, forColumn: 200, row: 200)
+//            makeTileLive(column: 200, row: 200)
+//        } else {
+////            tileMap.setTileGroup(deadGroup, forColumn: 200, row: 200)
+//            makeTileDead(column: 200, row: 200)
+//        }
+        
         
         generation += 1
         return generation
@@ -196,10 +256,12 @@ final class CellGrid {
         let touchedCell = grid[x][y]
         if !withAltAction && !touchedCell.alive() {
             touchedCell.makeLive(touched: true)
+            makeTileLive(column: x, row: y)
         }
-        
+
         if withAltAction && touchedCell.alive() {
             touchedCell.makeDead(touched: true)
+            makeTileDead(column: x, row: y)
         }
         
         // TODO: Implement this the O(1) way
@@ -229,12 +291,13 @@ final class CellGrid {
 
             let touchedCell = grid[x][y]
             touchedCell.makeLive()
+            makeTileLive(column: x, row: y)
         }
     }
     
     func resetShadowed() {
         for cell in shadowed {
-            cell.color = .blue
+//            cell.color = .blue
         }
         shadowed.removeAll()
     }
@@ -244,29 +307,29 @@ final class CellGrid {
             let x = Int(p.x / cellSize)
             let y = Int(p.y / cellSize)
 
-            let cell = grid[x][y]
-            if !cell.alive() {
-                cell.makeShadow()
-                shadowed.append(cell)
-            }
+//            let cell = grid[x][y]
+//            if !cell.alive() {
+//                cell.makeShadow()
+//                shadowed.append(cell)
+//            }
         }
     }
     
-    func getPointDimensions() -> (CGFloat, CGFloat) {
-        return (getPointWidth(), getPointHeight())
-    }
-    
-    func getPointWidth() -> CGFloat {
-        return CGFloat(grid.count) * cellSize
-    }
-    
-    func getPointHeight() -> CGFloat {
-        guard let gridY = grid.first else {
-            return 0
-        }
-        
-        return CGFloat(gridY.count) * cellSize
-    }
+//    func getPointDimensions() -> (CGFloat, CGFloat) {
+//        return (getPointWidth(), getPointHeight())
+//    }
+//
+//    func getPointWidth() -> CGFloat {
+//        return CGFloat(grid.count) * cellSize
+//    }
+//
+//    func getPointHeight() -> CGFloat {
+//        guard let gridY = grid.first else {
+//            return 0
+//        }
+//
+//        return CGFloat(gridY.count) * cellSize
+//    }
     
     func reset() {
         // Reset the game to initial state with no cells alive:
@@ -274,6 +337,7 @@ final class CellGrid {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].makeDead()
+                    makeTileDead(column: x, row: y)
                 }
             }
         }
@@ -308,6 +372,7 @@ final class CellGrid {
                             let randInt = Int.random(in: 0...100)
                             if randInt <= liveProb {
                                 self.grid[x][y].makeLive()
+                                makeTileLive(column: x, row: y)
                             }
                         }
                     }
@@ -321,6 +386,7 @@ final class CellGrid {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].makeLive()
+                    makeTileLive(column: x, row: y)
                 }
             }
         }
