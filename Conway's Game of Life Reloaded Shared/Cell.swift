@@ -22,7 +22,6 @@ public final class Cell: SKSpriteNode {
     
     public var neighbors: ContiguousArray<Cell>
     public var liveNeighbors: Int = 0
-    public var lastLiveNeighbors: Int = 0
     public let colorNodeSizeFraction: CGFloat = 0.92
     public let aliveColor: UIColor = .green
     public let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
@@ -49,11 +48,11 @@ public final class Cell: SKSpriteNode {
         self.physicsBody?.isDynamic = false
     }
     
-    @inlinable public func makeLive(touched: Bool = false) {
+    @inlinable
+    @inline(__always)
+    public func makeLive(touched: Bool = false) {
         currentState = .Live
-        neighbors.forEach {
-            $0.neighborLive()
-        }
+        neighbors.forEach {  $0.neighborLive() }
         resetNextState()
         
         if touched {
@@ -63,11 +62,11 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    @inlinable public func makeDead(touched: Bool = false) {
+    @inlinable
+    @inline(__always)
+    public func makeDead(touched: Bool = false) {
         currentState = .Dead
-        neighbors.forEach {
-            $0.neighborDied()
-        }
+        neighbors.forEach { $0.neighborDied() }
         resetNextState()
         
         if touched {
@@ -77,54 +76,44 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    @inlinable public func alive() -> Bool {
+    @inlinable
+    @inline(__always)
+    public func alive() -> Bool {
         return currentState == .Live
     }
     
-    @inlinable public func resetNextState() {
+    @inlinable
+    @inline(__always)
+    public func resetNextState() {
         nextState = currentState
     }
     
-    @inlinable public func neighborLive() {
+    @inlinable
+    @inline(__always)
+    public func neighborLive() {
         if liveNeighbors < 8 {
             liveNeighbors += 1
         }
     }
     
-    @inlinable public func neighborDied() {
+    @inlinable
+    @inline(__always)
+    public func neighborDied() {
         if liveNeighbors > 0 {
             liveNeighbors -= 1
         }
     }
     
-    @inlinable public func prepareUpdate() {
-        lastLiveNeighbors = liveNeighbors
-        switch lastLiveNeighbors {
-        case _ where lastLiveNeighbors < 2:
-            if alive() {
-                nextState = .Dead
-            }
-
-        case 2:
-            break
-
-        case 3:
-            if !alive() {
-                nextState = .Live
-            }
-
-        case _ where lastLiveNeighbors > 3:
-            if alive() {
-                nextState = .Dead
-            }
-
-        default:
-            break
-        }
+    @inlinable
+    @inline(__always)
+    public func prepareUpdate() {
+        nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
     }
     
-    @inlinable public func update() {
-        if currentState != nextState {
+    @inlinable
+    @inline(__always)
+    public func update() {
+        if needsUpdate() {
             switch nextState {
             case .Live:
                 makeLive()
@@ -134,7 +123,15 @@ public final class Cell: SKSpriteNode {
         }
     }
     
-    @inlinable public func makeShadow() {
+    @inlinable
+    @inline(__always)
+    public func needsUpdate() -> Bool {
+        return currentState != nextState
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func makeShadow() {
         self.color = shadowColor
     }
     

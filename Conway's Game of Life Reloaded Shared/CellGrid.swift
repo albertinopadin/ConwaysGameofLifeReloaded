@@ -136,7 +136,9 @@ final class CellGrid {
     // 3) Any live cell with more than three live neighbors dies (overpopulation)
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
-    @inlinable func updateCells() -> UInt64 {
+    @inlinable
+    @inline(__always)
+    func updateCells() -> UInt64 {
 //        // Prepare update:
 //        DispatchQueue.global(qos: .userInteractive).sync {
 //            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
@@ -310,6 +312,8 @@ final class CellGrid {
     }
         
     // TODO: Fix index out of bounds bug here:
+    @inlinable
+    @inline(__always)
     func touchedCell(at: CGPoint, withAltAction: Bool = false) {
         // Find the cell that contains the touch point and make it live:
         //        let (x, y) = self.getGridIndicesFromPoint(at: at)
@@ -392,6 +396,8 @@ final class CellGrid {
         return CGFloat(gridY.count) * cellSize
     }
     
+    @inlinable
+    @inline(__always)
     func reset() {
         // Reset the game to initial state with no cells alive:
         DispatchQueue.global(qos: .userInteractive).sync {
@@ -419,6 +425,8 @@ final class CellGrid {
     
     // TODO: Would be fun to randomize cell states as a starting condition,
     //       and see what happens.
+    @inlinable
+    @inline(__always)
     func randomState(liveProbability: Double) {
         reset()
         if liveProbability == 1.0 {
