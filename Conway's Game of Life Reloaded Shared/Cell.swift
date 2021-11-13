@@ -50,30 +50,47 @@ public final class Cell: SKSpriteNode {
     
     @inlinable
     @inline(__always)
-    public func makeLive(touched: Bool = false) {
-        currentState = .Live
-        neighbors.forEach {  $0.neighborLive() }
-        resetNextState()
-        
-        if touched {
-            self.run(self.colorAliveAction) { self.color = self.aliveColor }
-        } else {
-            self.color = self.aliveColor
-        }
+    public func makeLive() {
+        setLiveState()
+        self.color = aliveColor
     }
     
     @inlinable
     @inline(__always)
-    public func makeDead(touched: Bool = false) {
+    public func makeLive(touched: Bool) {
+        setLiveState()
+        self.run(self.colorAliveAction) { self.color = self.aliveColor }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func setLiveState() {
+        currentState = .Live
+        neighbors.forEach {  $0.neighborLive() }
+        resetNextState()
+    }
+    
+    
+    @inlinable
+    @inline(__always)
+    public func makeDead() {
+        setDeadState()
+        self.color = deadColor
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func makeDead(touched: Bool) {
+        setDeadState()
+        self.run(self.colorDeadAction) { self.color = self.deadColor }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func setDeadState() {
         currentState = .Dead
         neighbors.forEach { $0.neighborDied() }
         resetNextState()
-        
-        if touched {
-            self.run(self.colorDeadAction) { self.color = self.deadColor }
-        } else {
-            self.color = self.deadColor
-        }
     }
     
     @inlinable
@@ -114,10 +131,9 @@ public final class Cell: SKSpriteNode {
     @inline(__always)
     public func update() {
         if needsUpdate() {
-            switch nextState {
-            case .Live:
+            if nextState == .Live {
                 makeLive()
-            case .Dead:
+            } else {
                 makeDead()
             }
         }

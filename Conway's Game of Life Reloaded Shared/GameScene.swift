@@ -18,15 +18,17 @@ class GameScene: SKScene {
     var yCellsViz: Int = 0
     
     let defaultCellSize: CGFloat = 23.0
-    let defaultXCells: Int = 400
-    let defaultYCells: Int = 400
+//    let defaultXCells: Int = 400
+//    let defaultYCells: Int = 400
+    let defaultXCells: Int = 200
+    let defaultYCells: Int = 200
     
     var gameRunning: Bool = false
     var gameDelegate: GameSceneDelegate?
     let cameraNode = SKCameraNode()
     
     var spaceshipType: SpaceshipType = .None
-    
+    let backingNode = SKSpriteNode()
     
     class func newGameScene() -> GameScene {
         // Load 'GameScene.sks' as an SKScene.
@@ -37,8 +39,11 @@ class GameScene: SKScene {
 
         // Set the scale mode to scale to fit the window
         scene.scaleMode = .aspectFill
+//        scene.scaleMode = .resizeFill
+        scene.backgroundColor = .black
 //        scene.blendMode = .replace
 //        scene.shouldRasterize = true
+        scene.shouldRasterize = false
 //        scene.physicsBody?.isDynamic = false
         return scene
     }
@@ -49,24 +54,61 @@ class GameScene: SKScene {
         cellGrid = CellGrid(xCells: defaultXCells, yCells: defaultYCells, cellSize: defaultCellSize)
         addCellGridToScene(cellGrid: cellGrid.grid)
         positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
+        
+        
+        let w = CGFloat(defaultXCells) * defaultCellSize
+        let h = CGFloat(defaultYCells) * defaultCellSize
+        let bgSize = CGSize(width: w, height: h)
+        backingNode.size = bgSize
+        backingNode.position = CGPoint(x: bgSize.width/2, y: bgSize.height/2)
+        backingNode.color = .black
+//        backingNode.color = .red
+        backingNode.blendMode = .replace
+//        backingNode.anchorPoint = .zero
+//        backingNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+//        backingNode.anchorPoint = CGPoint(x: bgSize.width/2, y: bgSize.height/2)
+//        backingNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+//        backingNode.position = .zero
+//        backingNode.position = CGPoint(x: self.frame.width, y: self.frame.height)
+//        backingNode.position = self.frame.origin
+        self.addChild(backingNode)
     }
     
     func setUpCamera() {
-        cameraNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+//        cameraNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+//        cameraNode.position = .zero
+//        cameraNode.position = CGPoint(x: -self.frame.midX, y: -self.frame.midY)
         self.addChild(cameraNode)
         self.camera = cameraNode
     }
-    
+
     func getZoom() -> CGFloat {
         return cameraNode.xScale
     }
-    
+
     func setZoom(_ zoom: CGFloat) {
         cameraNode.setScale(zoom)
     }
     
+//    func getZoom() -> CGFloat {
+//        return backingNode.xScale
+//    }
+//
+//    func setZoom(_ zoom: CGFloat) {
+//        backingNode.setScale(1/zoom)
+//    }
+    
+//    func getZoom() -> CGFloat {
+//        return self.xScale
+//    }
+//
+//    func setZoom(_ zoom: CGFloat) {
+//        self.setScale(1/zoom)
+//    }
+    
     func setSpeed(_ speed: Double) {
         updateInterval = 1/speed
+        print("Update interval: \(updateInterval)")
     }
     
     func getVisibleCellsXYBasedOnDeviceViewport(cellSize: CGFloat) -> (Int, Int) {
@@ -91,9 +133,15 @@ class GameScene: SKScene {
     #endif
     
     func addCellGridToScene(cellGrid: ContiguousArray<ContiguousArray<Cell>>) {
+//        for cellArray in cellGrid {
+//            for cell in cellArray {
+//                self.addChild(cell)
+//            }
+//        }
+        
         for cellArray in cellGrid {
             for cell in cellArray {
-                self.addChild(cell)
+                backingNode.addChild(cell)
             }
         }
     }
@@ -184,6 +232,9 @@ extension GameScene {
 //                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
                 cellGrid.touchedCell(at: event.location(in: self))
+//                let eventLocation = event.location(in: self)
+//                let touchPoint = CGPoint(x: eventLocation.x * getZoom(), y: eventLocation.y * getZoom())
+//                cellGrid.touchedCell(at: touchPoint)
             }
         }
     }
@@ -196,6 +247,9 @@ extension GameScene {
                 cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
                 cellGrid.touchedCell(at: event.location(in: self))
+//                let eventLocation = event.location(in: self)
+//                let touchPoint = CGPoint(x: eventLocation.x * getZoom(), y: eventLocation.y * getZoom())
+//                cellGrid.touchedCell(at: touchPoint)
             }
         }
     }
