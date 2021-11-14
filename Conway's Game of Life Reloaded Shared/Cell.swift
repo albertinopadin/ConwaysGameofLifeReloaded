@@ -16,10 +16,11 @@ public enum CellState {
     case Live, Dead
 }
 
-public final class Cell: SKSpriteNode {
+public final class Cell {
     public var currentState: CellState
     public var nextState: CellState
     
+    public let node: SKSpriteNode
     public var neighbors: ContiguousArray<Cell>
     public var liveNeighbors: Int = 0
     public let colorNodeSizeFraction: CGFloat = 0.92
@@ -35,31 +36,33 @@ public final class Cell: SKSpriteNode {
                                                     colorBlendFactor: 1.0,
                                                     duration: 0.3)
     
+    public let updateNeighborsQueue = DispatchQueue(label: "cgol.update-neighbors.queue", qos: .userInteractive)
+    
     public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
         self.currentState = alive ? .Live: .Dead
         self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
-        super.init(texture: nil,
+        node = SKSpriteNode(texture: nil,
                    color: color,
                    size: CGSize(width: frame.size.width * colorNodeSizeFraction,
                                 height: frame.size.height * colorNodeSizeFraction))
-        self.position = frame.origin
-        self.blendMode = .replace
-        self.physicsBody?.isDynamic = false
+        node.position = frame.origin
+        node.blendMode = .replace
+        node.physicsBody?.isDynamic = false
     }
     
     @inlinable
     @inline(__always)
     public func makeLive() {
         setLiveState()
-        self.color = aliveColor
+        node.color = aliveColor
     }
     
     @inlinable
     @inline(__always)
     public func makeLive(touched: Bool) {
         setLiveState()
-        self.run(self.colorAliveAction) { self.color = self.aliveColor }
+        node.run(self.colorAliveAction) { self.node.color = self.aliveColor }
     }
     
     @inlinable
@@ -75,14 +78,14 @@ public final class Cell: SKSpriteNode {
     @inline(__always)
     public func makeDead() {
         setDeadState()
-        self.color = deadColor
+        node.color = deadColor
     }
     
     @inlinable
     @inline(__always)
     public func makeDead(touched: Bool) {
         setDeadState()
-        self.run(self.colorDeadAction) { self.color = self.deadColor }
+        node.run(self.colorDeadAction) { self.node.color = self.deadColor }
     }
     
     @inlinable
@@ -108,16 +111,20 @@ public final class Cell: SKSpriteNode {
     @inlinable
     @inline(__always)
     public func neighborLive() {
-        if liveNeighbors < 8 {
-            liveNeighbors += 1
+        updateNeighborsQueue.sync(flags: .barrier) {
+            if liveNeighbors < 8 {
+                liveNeighbors += 1
+            }
         }
     }
     
     @inlinable
     @inline(__always)
     public func neighborDied() {
-        if liveNeighbors > 0 {
-            liveNeighbors -= 1
+        updateNeighborsQueue.sync(flags: .barrier) {
+            if liveNeighbors > 0 {
+                liveNeighbors -= 1
+            }
         }
     }
     
@@ -148,7 +155,7 @@ public final class Cell: SKSpriteNode {
     @inlinable
     @inline(__always)
     public func makeShadow() {
-        self.color = shadowColor
+        node.color = shadowColor
     }
     
     required public init?(coder aDecoder: NSCoder) {

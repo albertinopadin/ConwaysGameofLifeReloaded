@@ -141,7 +141,7 @@ class GameScene: SKScene {
         
         for cellArray in cellGrid {
             for cell in cellArray {
-                backingNode.addChild(cell)
+                backingNode.addChild(cell.node)
             }
         }
     }
