@@ -313,7 +313,7 @@ final class CellGrid {
     // TODO: Fix index out of bounds bug here:
     @inlinable
     @inline(__always)
-    func touchedCell(at: CGPoint, withAltAction: Bool = false) {
+    func touchedCell(at: CGPoint, gameRunning: Bool, withAltAction: Bool = false) {
         // Find the cell that contains the touch point and make it live:
         //        let (x, y) = self.getGridIndicesFromPoint(at: at)
         
@@ -322,15 +322,23 @@ final class CellGrid {
 
         let touchedCell = grid[x][y]
         if !withAltAction && !touchedCell.alive() {
-            DispatchQueue.global().sync(flags: .barrier) {
-                touchedCell.makeLive(touched: true)
+            updateQueue.sync(flags: .barrier) {
+                if gameRunning {
+                    touchedCell.makeLive()
+                } else {
+                    touchedCell.makeLiveTouched()
+                }
             }
         }
         
         if withAltAction && touchedCell.alive() {
-//            touchedCell.makeDead(touched: true)
-            DispatchQueue.global().sync(flags: .barrier) {
-                touchedCell.makeDead(touched: true)
+            updateQueue.sync(flags: .barrier) {
+                if gameRunning {
+                    touchedCell.makeDead()
+                } else {
+                    touchedCell.makeDeadTouched()
+                }
+                
             }
         }
         
@@ -404,7 +412,7 @@ final class CellGrid {
     @inline(__always)
     func reset() {
         // Reset the game to initial state with no cells alive:
-        DispatchQueue.global(qos: .userInteractive).sync {
+        updateQueue.sync(flags: .barrier) {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].makeDead()
@@ -438,7 +446,7 @@ final class CellGrid {
         } else {
             if liveProbability > 0.0 {
                 let liveProb = Int(liveProbability*100)
-                DispatchQueue.global(qos: .userInteractive).async {
+                updateQueue.sync {
                     DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                         DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                             let randInt = Int.random(in: 0...100)
@@ -453,7 +461,7 @@ final class CellGrid {
     }
     
     func makeAllLive() {
-        DispatchQueue.global(qos: .userInteractive).sync {
+        updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].makeLive()

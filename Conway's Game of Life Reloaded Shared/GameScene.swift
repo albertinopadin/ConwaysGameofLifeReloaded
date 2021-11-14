@@ -18,10 +18,10 @@ class GameScene: SKScene {
     var yCellsViz: Int = 0
     
     let defaultCellSize: CGFloat = 23.0
-//    let defaultXCells: Int = 400
-//    let defaultYCells: Int = 400
-    let defaultXCells: Int = 200
-    let defaultYCells: Int = 200
+    let defaultXCells: Int = 400
+    let defaultYCells: Int = 400
+//    let defaultXCells: Int = 200
+//    let defaultYCells: Int = 200
     
     var gameRunning: Bool = false
     var gameDelegate: GameSceneDelegate?
@@ -192,13 +192,13 @@ extension GameScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
-            cellGrid.touchedCell(at: t.location(in: self))
+            cellGrid.touchedCell(at: t.location(in: self), gameRunning: gameRunning)
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
-            cellGrid.touchedCell(at: t.location(in: self))
+            cellGrid.touchedCell(at: t.location(in: self), gameRunning: gameRunning)
         }
     }
     
@@ -231,7 +231,7 @@ extension GameScene {
                 // Perhaps should put this in mouseUp action if that exists:
 //                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
-                cellGrid.touchedCell(at: event.location(in: self))
+                cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
 //                let eventLocation = event.location(in: self)
 //                let touchPoint = CGPoint(x: eventLocation.x * getZoom(), y: eventLocation.y * getZoom())
 //                cellGrid.touchedCell(at: touchPoint)
@@ -246,7 +246,7 @@ extension GameScene {
                 // What makes sense to do here? Is there a mouseUp action?
                 cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
-                cellGrid.touchedCell(at: event.location(in: self))
+                cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
 //                let eventLocation = event.location(in: self)
 //                let touchPoint = CGPoint(x: eventLocation.x * getZoom(), y: eventLocation.y * getZoom())
 //                cellGrid.touchedCell(at: touchPoint)
@@ -264,13 +264,13 @@ extension GameScene {
     
     override func rightMouseDown(with event: NSEvent) {
         if isMouseEventInsideView(event: event) {
-            cellGrid.touchedCell(at: event.location(in: self), withAltAction: true)
+            cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning, withAltAction: true)
         }
     }
     
     override func rightMouseDragged(with event: NSEvent) {
         if isMouseEventInsideView(event: event) {
-            cellGrid.touchedCell(at: event.location(in: self), withAltAction: true)
+            cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning, withAltAction: true)
         }
     }
     

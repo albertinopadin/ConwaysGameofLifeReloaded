@@ -60,7 +60,7 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public func makeLive(touched: Bool) {
+    public func makeLiveTouched() {
         setLiveState()
         node.run(self.colorAliveAction) { self.node.color = self.aliveColor }
     }
@@ -83,7 +83,7 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public func makeDead(touched: Bool) {
+    public func makeDeadTouched() {
         setDeadState()
         node.run(self.colorDeadAction) { self.node.color = self.deadColor }
     }
