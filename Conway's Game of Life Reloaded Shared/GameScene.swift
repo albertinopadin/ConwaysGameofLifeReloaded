@@ -39,12 +39,10 @@ class GameScene: SKScene {
 
         // Set the scale mode to scale to fit the window
         scene.scaleMode = .aspectFill
-//        scene.scaleMode = .resizeFill
-        scene.backgroundColor = .black
+//        scene.backgroundColor = .black
 //        scene.blendMode = .replace
 //        scene.shouldRasterize = true
         scene.shouldRasterize = false
-//        scene.physicsBody?.isDynamic = false
         return scene
     }
     
@@ -55,23 +53,14 @@ class GameScene: SKScene {
         addCellGridToScene(cellGrid: cellGrid.grid)
         positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
         
-        
-        let w = CGFloat(defaultXCells) * defaultCellSize
-        let h = CGFloat(defaultYCells) * defaultCellSize
-        let bgSize = CGSize(width: w, height: h)
-        backingNode.size = bgSize
-        backingNode.position = CGPoint(x: bgSize.width/2, y: bgSize.height/2)
-        backingNode.color = .black
-//        backingNode.color = .red
-        backingNode.blendMode = .replace
-//        backingNode.anchorPoint = .zero
-//        backingNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-//        backingNode.anchorPoint = CGPoint(x: bgSize.width/2, y: bgSize.height/2)
-//        backingNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-//        backingNode.position = .zero
-//        backingNode.position = CGPoint(x: self.frame.width, y: self.frame.height)
-//        backingNode.position = self.frame.origin
-        self.addChild(backingNode)
+//        let w = CGFloat(defaultXCells) * defaultCellSize
+//        let h = CGFloat(defaultYCells) * defaultCellSize
+//        let bgSize = CGSize(width: w, height: h)
+//        backingNode.size = bgSize
+//        backingNode.position = CGPoint(x: bgSize.width/2, y: bgSize.height/2)
+//        backingNode.color = .black
+//        backingNode.blendMode = .replace
+//        self.addChild(backingNode)
     }
     
     func setUpCamera() {
@@ -133,17 +122,17 @@ class GameScene: SKScene {
     #endif
     
     func addCellGridToScene(cellGrid: ContiguousArray<ContiguousArray<Cell>>) {
-//        for cellArray in cellGrid {
-//            for cell in cellArray {
-//                self.addChild(cell)
-//            }
-//        }
-        
         for cellArray in cellGrid {
             for cell in cellArray {
-                backingNode.addChild(cell.node)
+                self.addChild(cell.node)
             }
         }
+        
+//        for cellArray in cellGrid {
+//            for cell in cellArray {
+//                backingNode.addChild(cell.node)
+//            }
+//        }
     }
     
     // Called every 16ms, or every 8ms on ProMotion devices:

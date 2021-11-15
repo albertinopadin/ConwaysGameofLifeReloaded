@@ -24,31 +24,41 @@ public final class Cell {
     public var neighbors: ContiguousArray<Cell>
     public var liveNeighbors: Int = 0
     public let colorNodeSizeFraction: CGFloat = 0.92
-    public let aliveColor: UIColor = .green
-    public let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
-    public let shadowColor: UIColor = .darkGray
     
-    public let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
-    public let colorDeadAction = SKAction.colorize(with: UIColor(red: 0.16,
-                                                                  green: 0.15,
-                                                                  blue: 0.30,
-                                                                  alpha: 1.0),
-                                                    colorBlendFactor: 1.0,
-                                                    duration: 0.3)
+    public let aliveColor: SKColor
+    public let deadColor: SKColor
+    public let shadowColor: SKColor
+    
+    public let colorAliveAction: SKAction
+    public let colorDeadAction: SKAction
     
     public let updateNeighborsQueue = DispatchQueue(label: "cgol.update-neighbors.queue", qos: .userInteractive)
     
-    public init(frame: CGRect, alive: Bool = false, color: UIColor = .blue) {
+    public init(frame: CGRect,
+                liveColor: SKColor,
+                deadColor: SKColor,
+                shadowColor: SKColor,
+                colorAliveAction: SKAction,
+                colorDeadAction: SKAction,
+                alive: Bool = false,
+                color: UIColor = .clear) {
         self.currentState = alive ? .Live: .Dead
         self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
+        self.aliveColor = liveColor
+        self.deadColor = deadColor
+        self.shadowColor = shadowColor
+        self.colorAliveAction = colorAliveAction
+        self.colorDeadAction = colorDeadAction
         node = SKSpriteNode(texture: nil,
-                   color: color,
-                   size: CGSize(width: frame.size.width * colorNodeSizeFraction,
-                                height: frame.size.height * colorNodeSizeFraction))
+                            color: deadColor,
+                            size: CGSize(width: frame.size.width * colorNodeSizeFraction,
+                                         height: frame.size.height * colorNodeSizeFraction))
         node.position = frame.origin
         node.blendMode = .replace
         node.physicsBody?.isDynamic = false
+        
+        node.texture?.filteringMode = .nearest
     }
     
     @inlinable

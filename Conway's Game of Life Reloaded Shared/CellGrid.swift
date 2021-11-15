@@ -21,6 +21,18 @@ final class CellGrid {
     var shadowed = [Cell]()
     let updateQueue = DispatchQueue(label: "cgol.update.queue", qos: .userInteractive, attributes: .concurrent)
     
+    let aliveColor: UIColor = .green
+    let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
+    let shadowColor: UIColor = .darkGray
+    
+    public let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
+    public let colorDeadAction = SKAction.colorize(with: SKColor(red: 0.16,
+                                                                 green: 0.15,
+                                                                 blue: 0.30,
+                                                                 alpha: 1.0),
+                                                    colorBlendFactor: 1.0,
+                                                    duration: 0.3)
+    
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
@@ -33,31 +45,43 @@ final class CellGrid {
     }
     
     func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
-        let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+        let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0),
+                               liveColor: aliveColor,
+                               deadColor: deadColor,
+                               shadowColor: shadowColor,
+                               colorAliveAction: colorAliveAction,
+                               colorDeadAction: colorDeadAction)
         let newGridRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
         var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
         
         // For adding to backing node:
-        let totalSize = CGSize(width: CGFloat(xCells)*cellSize, height: CGFloat(yCells)*cellSize)
-        let xOffset = totalSize.width/2
-        let yOffset = totalSize.height/2
+//        let totalSize = CGSize(width: CGFloat(xCells)*cellSize, height: CGFloat(yCells)*cellSize)
+//        let xOffset = totalSize.width/2
+//        let yOffset = totalSize.height/2
+        
         for x in 0..<xCells {
             for y in 0..<yCells {
                 // The x and y coords are not at the edge of the cell; instead they are the center of it.
                 // This can create confusion when attempting to position cells!
                 
                 // For adding directly to scene:
-//                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize),
-//                                       y: cellMiddle(iteration: y, length: cellSize),
+                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize),
+                                       y: cellMiddle(iteration: y, length: cellSize),
+                                       width: cellSize,
+                                       height: cellSize)
+                
+                // For adding to backing node:
+//                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize) - xOffset,
+//                                       y: cellMiddle(iteration: y, length: cellSize) - yOffset,
 //                                       width: cellSize,
 //                                       height: cellSize)
                 
-                // For adding to backing node:
-                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize) - xOffset,
-                                       y: cellMiddle(iteration: y, length: cellSize) - yOffset,
-                                       width: cellSize,
-                                       height: cellSize)
-                newGrid[x][y] = Cell(frame: cellFrame)
+                newGrid[x][y] = Cell(frame: cellFrame,
+                                     liveColor: aliveColor,
+                                     deadColor: deadColor,
+                                     shadowColor: shadowColor,
+                                     colorAliveAction: colorAliveAction,
+                                     colorDeadAction: colorDeadAction)
             }
         }
         return newGrid
