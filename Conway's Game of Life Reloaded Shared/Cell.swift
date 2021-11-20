@@ -20,19 +20,20 @@ public final class Cell {
     public var currentState: CellState
     public var nextState: CellState
     
-    public let node: SKSpriteNode
-    public var neighbors: ContiguousArray<Cell>
+    public final let node: SKSpriteNode
+    public final var neighbors: ContiguousArray<Cell>
     public var liveNeighbors: Int = 0
-    public let colorNodeSizeFraction: CGFloat = 0.92
+    public final let colorNodeSizeFraction: CGFloat = 0.92
     
-    public let aliveColor: SKColor
-    public let deadColor: SKColor
-    public let shadowColor: SKColor
+    public final let aliveColor: SKColor
+    public final let deadColor: SKColor
+    public final let shadowColor: SKColor
     
-    public let colorAliveAction: SKAction
-    public let colorDeadAction: SKAction
+    public final let colorAliveAction: SKAction
+    public final let colorDeadAction: SKAction
     
-    public let updateNeighborsQueue = DispatchQueue(label: "cgol.update-neighbors.queue", qos: .userInteractive)
+    public final let updateNeighborsQueue = DispatchQueue(label: "cgol.update-neighbors.queue",
+                                                          qos: .userInteractive)
     
     public init(frame: CGRect,
                 liveColor: SKColor,
@@ -59,25 +60,29 @@ public final class Cell {
         node.physicsBody?.isDynamic = false
         
         node.texture?.filteringMode = .nearest
+//        node.centerRect = CGRect(x: 0.0, y: 0.0, width: 0.0, height: 0.0)
+//        node.centerRect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
+//        node.centerRect = CGRect(x: 1.0, y: 1.0, width: 0.0, height: 0.0)
+        node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
     }
     
     @inlinable
     @inline(__always)
-    public func makeLive() {
+    public final func makeLive() {
         setLiveState()
         node.color = aliveColor
     }
     
     @inlinable
     @inline(__always)
-    public func makeLiveTouched() {
+    public final func makeLiveTouched() {
         setLiveState()
         node.run(self.colorAliveAction) { self.node.color = self.aliveColor }
     }
     
     @inlinable
     @inline(__always)
-    public func setLiveState() {
+    public final func setLiveState() {
         currentState = .Live
         neighbors.forEach {  $0.neighborLive() }
         resetNextState()
@@ -86,21 +91,21 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public func makeDead() {
+    public final func makeDead() {
         setDeadState()
         node.color = deadColor
     }
     
     @inlinable
     @inline(__always)
-    public func makeDeadTouched() {
+    public final func makeDeadTouched() {
         setDeadState()
         node.run(self.colorDeadAction) { self.node.color = self.deadColor }
     }
     
     @inlinable
     @inline(__always)
-    public func setDeadState() {
+    public final func setDeadState() {
         currentState = .Dead
         neighbors.forEach { $0.neighborDied() }
         resetNextState()
@@ -108,19 +113,19 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public func alive() -> Bool {
+    public final func alive() -> Bool {
         return currentState == .Live
     }
     
     @inlinable
     @inline(__always)
-    public func resetNextState() {
+    public final func resetNextState() {
         nextState = currentState
     }
     
     @inlinable
     @inline(__always)
-    public func neighborLive() {
+    public final func neighborLive() {
         updateNeighborsQueue.sync(flags: .barrier) {
             if liveNeighbors < 8 {
                 liveNeighbors += 1
@@ -130,7 +135,7 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public func neighborDied() {
+    public final func neighborDied() {
         updateNeighborsQueue.sync(flags: .barrier) {
             if liveNeighbors > 0 {
                 liveNeighbors -= 1
@@ -140,13 +145,13 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public func prepareUpdate() {
+    public final func prepareUpdate() {
         nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
     }
     
     @inlinable
     @inline(__always)
-    public func update() {
+    public final func update() {
         if needsUpdate() {
             if nextState == .Live {
                 makeLive()
@@ -158,13 +163,13 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public func needsUpdate() -> Bool {
+    public final func needsUpdate() -> Bool {
         return currentState != nextState
     }
     
     @inlinable
     @inline(__always)
-    public func makeShadow() {
+    public final func makeShadow() {
         node.color = shadowColor
     }
     

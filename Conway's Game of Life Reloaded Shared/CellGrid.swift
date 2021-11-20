@@ -12,21 +12,24 @@ import SpriteKit
 final class CellGrid {
     let xCount: Int
     let yCount: Int
-    let quarterCountX: Int
-    let quarterCountY: Int
-    var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
+    let divCountX: Int
+    let divCountY: Int
+    let divFactor = 8
+    final var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
     var spaceshipFactory: SpaceshipFactory?
     var shadowed = [Cell]()
-    let updateQueue = DispatchQueue(label: "cgol.update.queue", qos: .userInteractive, attributes: .concurrent)
+    final let updateQueue = DispatchQueue(label: "cgol.update.queue",
+                                          qos: .userInteractive,
+                                          attributes: .concurrent)
     
-    let aliveColor: UIColor = .green
-    let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
-    let shadowColor: UIColor = .darkGray
+    final let aliveColor: UIColor = .green
+    final let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
+    final let shadowColor: UIColor = .darkGray
     
-    public let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
-    public let colorDeadAction = SKAction.colorize(with: SKColor(red: 0.16,
+    final let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
+    final let colorDeadAction = SKAction.colorize(with: SKColor(red: 0.16,
                                                                  green: 0.15,
                                                                  blue: 0.30,
                                                                  alpha: 1.0),
@@ -36,15 +39,17 @@ final class CellGrid {
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
-        quarterCountX = xCount / 4
-        quarterCountY = yCount / 4
+        divCountX = xCount / divFactor
+        divCountY = yCount / divFactor
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
     
-    func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
+    @inlinable
+    @inline(__always)
+    final func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
         let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0),
                                liveColor: aliveColor,
                                deadColor: deadColor,
@@ -53,29 +58,29 @@ final class CellGrid {
                                colorDeadAction: colorDeadAction)
         let newGridRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
         var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
-        
+
         // For adding to backing node:
 //        let totalSize = CGSize(width: CGFloat(xCells)*cellSize, height: CGFloat(yCells)*cellSize)
 //        let xOffset = totalSize.width/2
 //        let yOffset = totalSize.height/2
-        
+
         for x in 0..<xCells {
             for y in 0..<yCells {
                 // The x and y coords are not at the edge of the cell; instead they are the center of it.
                 // This can create confusion when attempting to position cells!
-                
+
                 // For adding directly to scene:
                 let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize),
                                        y: cellMiddle(iteration: y, length: cellSize),
                                        width: cellSize,
                                        height: cellSize)
-                
+
                 // For adding to backing node:
 //                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize) - xOffset,
 //                                       y: cellMiddle(iteration: y, length: cellSize) - yOffset,
 //                                       width: cellSize,
 //                                       height: cellSize)
-                
+
                 newGrid[x][y] = Cell(frame: cellFrame,
                                      liveColor: aliveColor,
                                      deadColor: deadColor,
@@ -91,7 +96,7 @@ final class CellGrid {
     // Example: If the cell is in iteration 0 and the length of a side
     // of the cell is 4, the cell middle would be 2.
     // Useful to position cells by their center point
-    private func cellMiddle(iteration: Int, length: CGFloat) -> CGFloat {
+    private final func cellMiddle(iteration: Int, length: CGFloat) -> CGFloat {
         return (CGFloat(iteration) * length) + length/2
     }
     
@@ -175,7 +180,28 @@ final class CellGrid {
     // Must apply changes all at once for each generation, so will need copy of current cell grid
     @inlinable
     @inline(__always)
-    func updateCells() -> UInt64 {
+    final func updateCells() -> UInt64 {
+//        self.grid.withUnsafeMutableBufferPointer { cellGrid in
+//            updateQueue.sync(flags: .barrier) {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        cellGrid.baseAddress![x][y].prepareUpdate()
+//                    }
+//                }
+//            }
+//
+//            // Update
+//            // Doing concurrentPerform on both inner and outer loops doubles FPS:
+//            updateQueue.sync(flags: .barrier) {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        cellGrid.baseAddress![x][y].update()
+//                    }
+//                }
+//            }
+//        }
+        
+        
         // Prepare update:
         updateQueue.sync(flags: .barrier) {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
@@ -186,65 +212,102 @@ final class CellGrid {
         }
         
 //        updateQueue.sync(flags: .barrier) {
-//            DispatchQueue.concurrentPerform(iterations: self.quarterCountX) { x in
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x][y].prepareUpdate()
-////
-////                    self.grid[x + self.quarterCountX][y].prepareUpdate()
-////                    self.grid[x][y + self.quarterCountY].prepareUpdate()
-////                    self.grid[x + self.quarterCountX][y + self.quarterCountY].prepareUpdate()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX*2][y].prepareUpdate()
-////                    self.grid[x][y + self.quarterCountY*2].prepareUpdate()
-////                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*2].prepareUpdate()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX*3][y].prepareUpdate()
-////                    self.grid[x][y + self.quarterCountY*3].prepareUpdate()
-////                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*3].prepareUpdate()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX][y + self.quarterCountY*2].prepareUpdate()
-////                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY].prepareUpdate()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX][y + self.quarterCountY*3].prepareUpdate()
-////                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY].prepareUpdate()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*2].prepareUpdate()
-////                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*3].prepareUpdate()
-////                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
+//            DispatchQueue.concurrentPerform(iterations: self.divCountX) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
 //                    self.grid[x][y].prepareUpdate()
+//                    self.grid[x + self.divCountX][y].prepareUpdate()
+//                    self.grid[x][y + self.divCountY].prepareUpdate()
+//                    self.grid[x + self.divCountX][y + self.divCountY].prepareUpdate()
+//                }
 //
-//                    self.grid[x + self.quarterCountX][y].prepareUpdate()
-//                    self.grid[x][y + self.quarterCountY].prepareUpdate()
-//                    self.grid[x + self.quarterCountX][y + self.quarterCountY].prepareUpdate()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*2][y].prepareUpdate()
+//                    self.grid[x][y + self.divCountY*2].prepareUpdate()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*2].prepareUpdate()
+//                }
 //
-//                    self.grid[x + self.quarterCountX*2][y].prepareUpdate()
-//                    self.grid[x][y + self.quarterCountY*2].prepareUpdate()
-//                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*2].prepareUpdate()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*3][y].prepareUpdate()
+//                    self.grid[x][y + self.divCountY*3].prepareUpdate()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*3].prepareUpdate()
+//                }
 //
-//                    self.grid[x + self.quarterCountX*3][y].prepareUpdate()
-//                    self.grid[x][y + self.quarterCountY*3].prepareUpdate()
-//                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*3].prepareUpdate()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX][y + self.divCountY*2].prepareUpdate()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY].prepareUpdate()
+//                    self.grid[x + self.divCountX][y + self.divCountY*3].prepareUpdate()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY].prepareUpdate()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*2].prepareUpdate()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*3].prepareUpdate()
+//                }
 //
-//                    self.grid[x + self.quarterCountX][y + self.quarterCountY*2].prepareUpdate()
-//                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY].prepareUpdate()
+//                // 8
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*4][y].prepareUpdate()
+//                    self.grid[x][y + self.divCountY*4].prepareUpdate()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*4].prepareUpdate()
+//                }
 //
-//                    self.grid[x + self.quarterCountX][y + self.quarterCountY*3].prepareUpdate()
-//                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY].prepareUpdate()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*5][y].prepareUpdate()
+//                    self.grid[x][y + self.divCountY*5].prepareUpdate()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*5].prepareUpdate()
+//                }
 //
-//                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*2].prepareUpdate()
-//                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*3].prepareUpdate()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*6][y].prepareUpdate()
+//                    self.grid[x][y + self.divCountY*6].prepareUpdate()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*6].prepareUpdate()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*7][y].prepareUpdate()
+//                    self.grid[x][y + self.divCountY*7].prepareUpdate()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*7].prepareUpdate()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX][y + self.divCountY*4].prepareUpdate()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY].prepareUpdate()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*4].prepareUpdate()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*2].prepareUpdate()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*4].prepareUpdate()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*3].prepareUpdate()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX][y + self.divCountY*5].prepareUpdate()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY].prepareUpdate()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*5].prepareUpdate()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*2].prepareUpdate()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*5].prepareUpdate()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*3].prepareUpdate()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*5].prepareUpdate()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*4].prepareUpdate()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*6].prepareUpdate()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*2].prepareUpdate()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*6].prepareUpdate()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*3].prepareUpdate()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*6].prepareUpdate()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*4].prepareUpdate()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*6].prepareUpdate()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*5].prepareUpdate()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*7].prepareUpdate()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*2].prepareUpdate()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*7].prepareUpdate()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*3].prepareUpdate()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*7].prepareUpdate()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*4].prepareUpdate()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*7].prepareUpdate()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*5].prepareUpdate()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*7].prepareUpdate()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*6].prepareUpdate()
 //                }
 //            }
 //        }
@@ -260,65 +323,102 @@ final class CellGrid {
         }
         
 //        updateQueue.sync(flags: .barrier) {
-//            DispatchQueue.concurrentPerform(iterations: self.quarterCountX) { x in
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x][y].update()
-////
-////                    self.grid[x + self.quarterCountX][y].update()
-////                    self.grid[x][y + self.quarterCountY].update()
-////                    self.grid[x + self.quarterCountX][y + self.quarterCountY].update()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX*2][y].update()
-////                    self.grid[x][y + self.quarterCountY*2].update()
-////                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*2].update()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX*3][y].update()
-////                    self.grid[x][y + self.quarterCountY*3].update()
-////                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*3].update()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX][y + self.quarterCountY*2].update()
-////                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY].update()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX][y + self.quarterCountY*3].update()
-////                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY].update()
-////                }
-////
-////                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
-////                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*2].update()
-////                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*3].update()
-////                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.quarterCountY) { y in
+//            DispatchQueue.concurrentPerform(iterations: self.divCountX) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
 //                    self.grid[x][y].update()
+//                    self.grid[x + self.divCountX][y].update()
+//                    self.grid[x][y + self.divCountY].update()
+//                    self.grid[x + self.divCountX][y + self.divCountY].update()
+//                }
 //
-//                    self.grid[x + self.quarterCountX][y].update()
-//                    self.grid[x][y + self.quarterCountY].update()
-//                    self.grid[x + self.quarterCountX][y + self.quarterCountY].update()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*2][y].update()
+//                    self.grid[x][y + self.divCountY*2].update()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*2].update()
+//                }
 //
-//                    self.grid[x + self.quarterCountX*2][y].update()
-//                    self.grid[x][y + self.quarterCountY*2].update()
-//                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*2].update()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*3][y].update()
+//                    self.grid[x][y + self.divCountY*3].update()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*3].update()
+//                }
 //
-//                    self.grid[x + self.quarterCountX*3][y].update()
-//                    self.grid[x][y + self.quarterCountY*3].update()
-//                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*3].update()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX][y + self.divCountY*2].update()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY].update()
+//                    self.grid[x + self.divCountX][y + self.divCountY*3].update()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY].update()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*2].update()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*3].update()
+//                }
 //
-//                    self.grid[x + self.quarterCountX][y + self.quarterCountY*2].update()
-//                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY].update()
+//                // 8
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*4][y].update()
+//                    self.grid[x][y + self.divCountY*4].update()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*4].update()
+//                }
 //
-//                    self.grid[x + self.quarterCountX][y + self.quarterCountY*3].update()
-//                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY].update()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*5][y].update()
+//                    self.grid[x][y + self.divCountY*5].update()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*5].update()
+//                }
 //
-//                    self.grid[x + self.quarterCountX*3][y + self.quarterCountY*2].update()
-//                    self.grid[x + self.quarterCountX*2][y + self.quarterCountY*3].update()
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*6][y].update()
+//                    self.grid[x][y + self.divCountY*6].update()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*6].update()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*7][y].update()
+//                    self.grid[x][y + self.divCountY*7].update()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*7].update()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX][y + self.divCountY*4].update()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY].update()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*4].update()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*2].update()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*4].update()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*3].update()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX][y + self.divCountY*5].update()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY].update()
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*5].update()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*2].update()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*5].update()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*3].update()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*5].update()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*4].update()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*6].update()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*2].update()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*6].update()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*3].update()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*6].update()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*4].update()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*6].update()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*5].update()
+//                }
+//
+//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
+//                    self.grid[x + self.divCountX*2][y + self.divCountY*7].update()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*2].update()
+//                    self.grid[x + self.divCountX*3][y + self.divCountY*7].update()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*3].update()
+//                    self.grid[x + self.divCountX*4][y + self.divCountY*7].update()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*4].update()
+//                    self.grid[x + self.divCountX*5][y + self.divCountY*7].update()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*5].update()
+//                    self.grid[x + self.divCountX*6][y + self.divCountY*7].update()
+//                    self.grid[x + self.divCountX*7][y + self.divCountY*6].update()
 //                }
 //            }
 //        }
@@ -337,7 +437,7 @@ final class CellGrid {
     // TODO: Fix index out of bounds bug here:
     @inlinable
     @inline(__always)
-    func touchedCell(at: CGPoint, gameRunning: Bool, withAltAction: Bool = false) {
+    final func touchedCell(at: CGPoint, gameRunning: Bool, withAltAction: Bool = false) {
         // Find the cell that contains the touch point and make it live:
         //        let (x, y) = self.getGridIndicesFromPoint(at: at)
         
@@ -434,7 +534,7 @@ final class CellGrid {
     
     @inlinable
     @inline(__always)
-    func reset() {
+    final func reset() {
         // Reset the game to initial state with no cells alive:
         updateQueue.sync(flags: .barrier) {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
@@ -463,7 +563,7 @@ final class CellGrid {
     //       and see what happens.
     @inlinable
     @inline(__always)
-    func randomState(liveProbability: Double) {
+    final func randomState(liveProbability: Double) {
         reset()
         if liveProbability == 1.0 {
             makeAllLive()
@@ -484,7 +584,7 @@ final class CellGrid {
         }
     }
     
-    func makeAllLive() {
+    final func makeAllLive() {
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in

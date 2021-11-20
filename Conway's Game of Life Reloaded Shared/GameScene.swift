@@ -28,7 +28,7 @@ class GameScene: SKScene {
     let cameraNode = SKCameraNode()
     
     var spaceshipType: SpaceshipType = .None
-    let backingNode = SKSpriteNode()
+//    let backingNode = SKSpriteNode()
     
     class func newGameScene() -> GameScene {
         // Load 'GameScene.sks' as an SKScene.
