@@ -35,6 +35,7 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         spaceshipButton.removeAllItems()
         spaceshipButton.addItems(withTitles: getSpaceshipTitles())
         spaceshipButton.selectItem(at: 0)
+//        gameViewController?.setLiveRandomProbability(liveProbability: 0.15)
     }
     
     
@@ -79,6 +80,7 @@ class GameWindowController: NSWindowController, GameSceneDelegate {
         // TODO: make this user-configurable:
         let liveProbability = 0.15
         gameViewController?.randomizeGame(liveProbability: liveProbability)
+//        gameViewController?.randomizeGame()
         if toggleGameplayButton.title == pauseString {
             toggleGameplayButton.title = runString
         }

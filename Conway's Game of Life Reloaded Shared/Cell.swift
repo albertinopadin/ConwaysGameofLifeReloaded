@@ -62,8 +62,8 @@ public final class Cell {
         node.texture?.filteringMode = .nearest
 //        node.centerRect = CGRect(x: 0.0, y: 0.0, width: 0.0, height: 0.0)
 //        node.centerRect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
-//        node.centerRect = CGRect(x: 1.0, y: 1.0, width: 0.0, height: 0.0)
-        node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
+        node.centerRect = CGRect(x: 1.0, y: 1.0, width: 0.0, height: 0.0)
+//        node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
     }
     
     @inlinable

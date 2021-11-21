@@ -45,6 +45,14 @@ class GameViewController: NSViewController, GameWindowDelegate {
         gameScene.resetGame()
     }
     
+//    func setLiveRandomProbability(liveProbability: Double) {
+//        gameScene.setLiveProbability(probability: liveProbability)
+//    }
+    
+//    func randomizeGame() {
+//        gameScene.randomizeGame()
+//    }
+    
     func randomizeGame(liveProbability: Double) {
         gameScene.randomizeGame(liveProbability: liveProbability)
     }

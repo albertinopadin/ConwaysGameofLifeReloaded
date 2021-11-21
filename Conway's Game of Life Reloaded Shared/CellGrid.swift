@@ -35,6 +35,8 @@ final class CellGrid {
                                                                  alpha: 1.0),
                                                     colorBlendFactor: 1.0,
                                                     duration: 0.3)
+//    final private var liveProbability: Double = 0.05
+//    final private var randomBoolBuffer = ContiguousArray<ContiguousArray<Bool>>()
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
@@ -45,7 +47,30 @@ final class CellGrid {
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
+//        randomizeBoolBuffer(x: xCells, y: yCells)
     }
+    
+//    func setLiveProbability(_ probability: Double) {
+//        liveProbability = probability
+//    }
+//
+//    @inlinable
+//    @inline(__always)
+//    final func randomizeBoolBuffer(x xc: Int, y yc: Int) {
+//        let colBoolBuf = ContiguousArray<Bool>(repeating: false, count: yc)
+//        randomBoolBuffer = ContiguousArray<ContiguousArray<Bool>>(repeating: colBoolBuf, count: xc)
+//        let liveProb = Int(liveProbability*100)
+//        updateQueue.async {
+//            DispatchQueue.concurrentPerform(iterations: xc) { x in
+//                DispatchQueue.concurrentPerform(iterations: yc) { y in
+//                    let randInt = Int.random(in: 0...100)
+//                    if randInt <= liveProb {
+//                        self.randomBoolBuffer[x][y] = true
+//                    }
+//                }
+//            }
+//        }
+//    }
     
     @inlinable
     @inline(__always)
@@ -211,6 +236,16 @@ final class CellGrid {
             }
         }
         
+        // Update
+        // Doing concurrentPerform on both inner and outer loops doubles FPS:
+        updateQueue.sync(flags: .barrier) {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+                    self.grid[x][y].update()
+                }
+            }
+        }
+        
 //        updateQueue.sync(flags: .barrier) {
 //            DispatchQueue.concurrentPerform(iterations: self.divCountX) { x in
 //                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
@@ -312,15 +347,6 @@ final class CellGrid {
 //            }
 //        }
 
-        // Update
-        // Doing concurrentPerform on both inner and outer loops doubles FPS:
-        updateQueue.sync(flags: .barrier) {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].update()
-                }
-            }
-        }
         
 //        updateQueue.sync(flags: .barrier) {
 //            DispatchQueue.concurrentPerform(iterations: self.divCountX) { x in
@@ -559,8 +585,6 @@ final class CellGrid {
         createPattern(with: spaceshipPoints)
     }
     
-    // TODO: Would be fun to randomize cell states as a starting condition,
-    //       and see what happens.
     @inlinable
     @inline(__always)
     final func randomState(liveProbability: Double) {
@@ -583,6 +607,28 @@ final class CellGrid {
             }
         }
     }
+    
+//    @inlinable
+//    @inline(__always)
+//    final func randomState() {
+//        reset()
+//        if liveProbability == 1.0 {
+//            makeAllLive()
+//        } else {
+//            if liveProbability > 0.0 {
+//                updateQueue.sync {
+//                    DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                        DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                            if self.randomBoolBuffer[x][y] {
+//                                self.grid[x][y].makeLive()
+//                            }
+//                        }
+//                    }
+//                }
+//                randomizeBoolBuffer(x: xCount, y: yCount)
+//            }
+//        }
+//    }
     
     final func makeAllLive() {
         updateQueue.sync {

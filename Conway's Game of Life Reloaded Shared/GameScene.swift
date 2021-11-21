@@ -163,6 +163,17 @@ class GameScene: SKScene {
         gameDelegate?.setGeneration(0)
     }
     
+//    func setLiveProbability(probability: Double) {
+//        cellGrid.setLiveProbability(probability)
+//    }
+    
+//    func randomizeGame() {
+//        gameRunning = false
+//        cellGrid.reset()
+//        cellGrid.randomState()
+//        gameDelegate?.setGeneration(0)
+//    }
+    
     func randomizeGame(liveProbability: Double) {
         gameRunning = false
         cellGrid.reset()
