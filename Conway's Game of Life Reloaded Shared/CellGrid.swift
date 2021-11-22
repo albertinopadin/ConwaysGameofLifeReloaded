@@ -24,9 +24,9 @@ final class CellGrid {
                                           qos: .userInteractive,
                                           attributes: .concurrent)
     
-    final let aliveColor: UIColor = .green
-    final let deadColor = UIColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
-    final let shadowColor: UIColor = .darkGray
+    final let aliveColor: SKColor = .green
+    final let deadColor = SKColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
+    final let shadowColor: SKColor = .darkGray
     
     final let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
     final let colorDeadAction = SKAction.colorize(with: SKColor(red: 0.16,
@@ -206,11 +206,11 @@ final class CellGrid {
     @inlinable
     @inline(__always)
     final func updateCells() -> UInt64 {
-//        self.grid.withUnsafeMutableBufferPointer { cellGrid in
+//        grid.withUnsafeMutableBufferPointer { buffer in
 //            updateQueue.sync(flags: .barrier) {
 //                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
 //                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                        cellGrid.baseAddress![x][y].prepareUpdate()
+//                        buffer.baseAddress![x][y].prepareUpdate()
 //                    }
 //                }
 //            }
@@ -220,7 +220,7 @@ final class CellGrid {
 //            updateQueue.sync(flags: .barrier) {
 //                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
 //                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                        cellGrid.baseAddress![x][y].update()
+//                        buffer.baseAddress![x][y].update()
 //                    }
 //                }
 //            }
@@ -235,7 +235,7 @@ final class CellGrid {
                 }
             }
         }
-        
+
         // Update
         // Doing concurrentPerform on both inner and outer loops doubles FPS:
         updateQueue.sync(flags: .barrier) {

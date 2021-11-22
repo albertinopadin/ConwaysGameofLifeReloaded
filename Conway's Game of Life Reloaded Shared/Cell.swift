@@ -8,26 +8,22 @@
 
 import SpriteKit
 
-#if os(macOS)
-public typealias UIColor = NSColor
-#endif
-
 public enum CellState {
     case Live, Dead
 }
 
 public final class Cell {
-    public var currentState: CellState
-    public var nextState: CellState
+    public final var currentState: CellState
+    public final var nextState: CellState
+    
+    public final var neighbors: ContiguousArray<Cell>
+    public final var liveNeighbors: Int = 0
     
     public final let node: SKSpriteNode
-    public final var neighbors: ContiguousArray<Cell>
-    public var liveNeighbors: Int = 0
-    public final let colorNodeSizeFraction: CGFloat = 0.92
-    
     public final let aliveColor: SKColor
     public final let deadColor: SKColor
     public final let shadowColor: SKColor
+    public final let colorNodeSizeFraction: CGFloat = 0.92
     
     public final let colorAliveAction: SKAction
     public final let colorDeadAction: SKAction
@@ -42,7 +38,7 @@ public final class Cell {
                 colorAliveAction: SKAction,
                 colorDeadAction: SKAction,
                 alive: Bool = false,
-                color: UIColor = .clear) {
+                color: SKColor = .clear) {
         self.currentState = alive ? .Live: .Dead
         self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
@@ -60,10 +56,7 @@ public final class Cell {
         node.physicsBody?.isDynamic = false
         
         node.texture?.filteringMode = .nearest
-//        node.centerRect = CGRect(x: 0.0, y: 0.0, width: 0.0, height: 0.0)
-//        node.centerRect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
-        node.centerRect = CGRect(x: 1.0, y: 1.0, width: 0.0, height: 0.0)
-//        node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
+        node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
     }
     
     @inlinable
@@ -84,7 +77,10 @@ public final class Cell {
     @inline(__always)
     public final func setLiveState() {
         currentState = .Live
-        neighbors.forEach {  $0.neighborLive() }
+        neighbors.forEach { $0.neighborLive() }
+//        DispatchQueue.concurrentPerform(iterations: neighbors.count) { i in
+//            neighbors[i].neighborLive()
+//        }
         resetNextState()
     }
     
@@ -108,6 +104,9 @@ public final class Cell {
     public final func setDeadState() {
         currentState = .Dead
         neighbors.forEach { $0.neighborDied() }
+//        DispatchQueue.concurrentPerform(iterations: neighbors.count) { i in
+//            neighbors[i].neighborDied()
+//        }
         resetNextState()
     }
     
@@ -146,7 +145,9 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func prepareUpdate() {
-        nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
+        if !(currentState == .Dead && liveNeighbors < 3) {
+            nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
+        }
     }
     
     @inlinable
@@ -171,9 +172,5 @@ public final class Cell {
     @inline(__always)
     public final func makeShadow() {
         node.color = shadowColor
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
