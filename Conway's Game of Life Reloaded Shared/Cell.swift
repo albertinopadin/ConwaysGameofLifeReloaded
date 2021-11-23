@@ -28,9 +28,6 @@ public final class Cell {
     public final let colorAliveAction: SKAction
     public final let colorDeadAction: SKAction
     
-    public final let updateNeighborsQueue = DispatchQueue(label: "cgol.update-neighbors.queue",
-                                                          qos: .userInteractive)
-    
     public init(frame: CGRect,
                 liveColor: SKColor,
                 deadColor: SKColor,
@@ -77,10 +74,6 @@ public final class Cell {
     @inline(__always)
     public final func setLiveState() {
         currentState = .Live
-        neighbors.forEach { $0.neighborLive() }
-//        DispatchQueue.concurrentPerform(iterations: neighbors.count) { i in
-//            neighbors[i].neighborLive()
-//        }
         resetNextState()
     }
     
@@ -103,10 +96,6 @@ public final class Cell {
     @inline(__always)
     public final func setDeadState() {
         currentState = .Dead
-        neighbors.forEach { $0.neighborDied() }
-//        DispatchQueue.concurrentPerform(iterations: neighbors.count) { i in
-//            neighbors[i].neighborDied()
-//        }
         resetNextState()
     }
     
@@ -124,27 +113,11 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public final func neighborLive() {
-        updateNeighborsQueue.sync(flags: .barrier) {
-            if liveNeighbors < 8 {
-                liveNeighbors += 1
-            }
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public final func neighborDied() {
-        updateNeighborsQueue.sync(flags: .barrier) {
-            if liveNeighbors > 0 {
-                liveNeighbors -= 1
-            }
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
     public final func prepareUpdate() {
+        // Lazy helps tremendously as it prevents an intermediate result array from being created
+        // For some reason doing this directly is faster than calling the extension:
+        liveNeighbors = neighbors.lazy.filter({ $0.alive() }).count
+//        liveNeighbors = neighbors.count(where: { $0.alive() })
         if !(currentState == .Dead && liveNeighbors < 3) {
             nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
         }

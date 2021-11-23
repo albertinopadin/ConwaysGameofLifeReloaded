@@ -15,6 +15,8 @@
 		CE527EA7270860E200984288 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
 		CE527EA82708629600984288 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
 		CE57E6A42600CD940014CE14 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
+		CE6D271B274C42C40082AA18 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
+		CE6D271C274C433F0082AA18 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
 		CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CE7E89EC2447E2010036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
 		CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
@@ -116,6 +118,7 @@
 		CE527EA2270858D700984288 /* ShapeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeFactory.swift; sourceTree = "<group>"; };
 		CE527EA6270860E200984288 /* CGPointExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPointExtension.swift; sourceTree = "<group>"; };
 		CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceshipFactory.swift; sourceTree = "<group>"; };
+		CE6D271A274C42C40082AA18 /* CollectionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		CE7E89ED2447F50C0036F64C /* CellGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellGrid.swift; sourceTree = "<group>"; };
 		CE7E89F2244D94FC0036F64C /* GameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
 		CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowDelegate.swift; sourceTree = "<group>"; };
@@ -214,6 +217,7 @@
 				CE527EA02708572400984288 /* GunFactory.swift */,
 				CE527EA2270858D700984288 /* ShapeFactory.swift */,
 				CE527EA6270860E200984288 /* CGPointExtension.swift */,
+				CE6D271A274C42C40082AA18 /* CollectionExtension.swift */,
 			);
 			path = "Conway's Game of Life Reloaded Shared";
 			sourceTree = "<group>";
@@ -485,6 +489,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE7E89F9244E4E310036F64C /* GameWindowDelegate.swift in Sources */,
+				CE6D271B274C42C40082AA18 /* CollectionExtension.swift in Sources */,
 				CECAD54B2446E00D00E07A8B /* GameScene.swift in Sources */,
 				CE7E89F8244E4E2A0036F64C /* GameSceneDelegate.swift in Sources */,
 				CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */,
@@ -534,6 +539,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE6D271C274C433F0082AA18 /* CollectionExtension.swift in Sources */,
 				CE527EA82708629600984288 /* CGPointExtension.swift in Sources */,
 				CE527EA427085FF900984288 /* GunFactory.swift in Sources */,
 				CE527EA527085FF900984288 /* ShapeFactory.swift in Sources */,

@@ -24,6 +24,8 @@ final class CellGrid {
                                           qos: .userInteractive,
                                           attributes: .concurrent)
     
+//    final let updateQueue = DispatchQueue(label: "cgol.update.queue", qos: .userInteractive)
+    
     final let aliveColor: SKColor = .green
     final let deadColor = SKColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     final let shadowColor: SKColor = .darkGray
@@ -37,6 +39,8 @@ final class CellGrid {
                                                     duration: 0.3)
 //    final private var liveProbability: Double = 0.05
 //    final private var randomBoolBuffer = ContiguousArray<ContiguousArray<Bool>>()
+    final var joinedGrid = ContiguousArray<Cell>()
+    final var totalCount: Int = 0
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
@@ -48,6 +52,8 @@ final class CellGrid {
         setNeighborsForAllCellsInGrid()
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
 //        randomizeBoolBuffer(x: xCells, y: yCells)
+        joinedGrid = ContiguousArray<Cell>(grid.joined())
+        totalCount = xCells * yCells
     }
     
 //    func setLiveProbability(_ probability: Double) {
@@ -227,8 +233,10 @@ final class CellGrid {
 //        }
         
         
+        // 20-43 FPS on 200x200 grid:
+        // 9-26 FPS on 400x400 grid:
         // Prepare update:
-        updateQueue.sync(flags: .barrier) {
+        updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].prepareUpdate()
@@ -238,13 +246,53 @@ final class CellGrid {
 
         // Update
         // Doing concurrentPerform on both inner and outer loops doubles FPS:
-        updateQueue.sync(flags: .barrier) {
+        updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                     self.grid[x][y].update()
                 }
             }
         }
+        
+        // 25-40+ FPS on 200x200 grid:
+        // 10-20 FPS on 400x400 grid:
+//        grid.lazy.joined().forEach({ $0.prepareUpdate() })
+//        grid.lazy.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
+        
+        
+        
+        
+        // This also seems to have a similar FPS and Frametime as double concurrentPerform:
+        // Prepare update:
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                self.grid[x].forEach { $0.prepareUpdate() }
+//            }
+//        }
+//
+//        // Update
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                self.grid[x].forEach { $0.update() }
+//            }
+//        }
+
+        
+        
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.totalCount) { i in
+//                self.joinedGrid[i].prepareUpdate()
+//            }
+//        }
+//
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.totalCount) { i in
+//                self.joinedGrid[i].update()
+//            }
+//        }
+        
+//        grid.joined().forEach({ $0.prepareUpdate() })
+//        grid.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
         
 //        updateQueue.sync(flags: .barrier) {
 //            DispatchQueue.concurrentPerform(iterations: self.divCountX) { x in
@@ -570,6 +618,8 @@ final class CellGrid {
             }
         }
         
+//        grid.lazy.joined().forEach({ $0.makeDead() })
+        
         generation = 0
     }
     
@@ -604,31 +654,16 @@ final class CellGrid {
                         }
                     }
                 }
+                
+//                grid.lazy.joined().forEach { cell in
+//                    let randInt = Int.random(in: 0...100)
+//                    if randInt <= liveProb {
+//                        cell.makeLive()
+//                    }
+//                }
             }
         }
     }
-    
-//    @inlinable
-//    @inline(__always)
-//    final func randomState() {
-//        reset()
-//        if liveProbability == 1.0 {
-//            makeAllLive()
-//        } else {
-//            if liveProbability > 0.0 {
-//                updateQueue.sync {
-//                    DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                        DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                            if self.randomBoolBuffer[x][y] {
-//                                self.grid[x][y].makeLive()
-//                            }
-//                        }
-//                    }
-//                }
-//                randomizeBoolBuffer(x: xCount, y: yCount)
-//            }
-//        }
-//    }
     
     final func makeAllLive() {
         updateQueue.sync {

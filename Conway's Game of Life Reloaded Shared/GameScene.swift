@@ -122,11 +122,13 @@ class GameScene: SKScene {
     #endif
     
     func addCellGridToScene(cellGrid: ContiguousArray<ContiguousArray<Cell>>) {
-        for cellArray in cellGrid {
-            for cell in cellArray {
-                self.addChild(cell.node)
-            }
-        }
+        cellGrid.lazy.joined().forEach({ self.addChild($0.node) })
+        
+//        for cellArray in cellGrid {
+//            for cell in cellArray {
+//                self.addChild(cell.node)
+//            }
+//        }
         
 //        for cellArray in cellGrid {
 //            for cell in cellArray {
