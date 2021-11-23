@@ -24,8 +24,6 @@ final class CellGrid {
                                           qos: .userInteractive,
                                           attributes: .concurrent)
     
-//    final let updateQueue = DispatchQueue(label: "cgol.update.queue", qos: .userInteractive)
-    
     final let aliveColor: SKColor = .green
     final let deadColor = SKColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     final let shadowColor: SKColor = .darkGray
@@ -37,10 +35,6 @@ final class CellGrid {
                                                                  alpha: 1.0),
                                                     colorBlendFactor: 1.0,
                                                     duration: 0.3)
-//    final private var liveProbability: Double = 0.05
-//    final private var randomBoolBuffer = ContiguousArray<ContiguousArray<Bool>>()
-    final var joinedGrid = ContiguousArray<Cell>()
-    final var totalCount: Int = 0
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
@@ -51,32 +45,7 @@ final class CellGrid {
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
-//        randomizeBoolBuffer(x: xCells, y: yCells)
-        joinedGrid = ContiguousArray<Cell>(grid.joined())
-        totalCount = xCells * yCells
     }
-    
-//    func setLiveProbability(_ probability: Double) {
-//        liveProbability = probability
-//    }
-//
-//    @inlinable
-//    @inline(__always)
-//    final func randomizeBoolBuffer(x xc: Int, y yc: Int) {
-//        let colBoolBuf = ContiguousArray<Bool>(repeating: false, count: yc)
-//        randomBoolBuffer = ContiguousArray<ContiguousArray<Bool>>(repeating: colBoolBuf, count: xc)
-//        let liveProb = Int(liveProbability*100)
-//        updateQueue.async {
-//            DispatchQueue.concurrentPerform(iterations: xc) { x in
-//                DispatchQueue.concurrentPerform(iterations: yc) { y in
-//                    let randInt = Int.random(in: 0...100)
-//                    if randInt <= liveProb {
-//                        self.randomBoolBuffer[x][y] = true
-//                    }
-//                }
-//            }
-//        }
-//    }
     
     @inlinable
     @inline(__always)
@@ -212,27 +181,6 @@ final class CellGrid {
     @inlinable
     @inline(__always)
     final func updateCells() -> UInt64 {
-//        grid.withUnsafeMutableBufferPointer { buffer in
-//            updateQueue.sync(flags: .barrier) {
-//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                        buffer.baseAddress![x][y].prepareUpdate()
-//                    }
-//                }
-//            }
-//
-//            // Update
-//            // Doing concurrentPerform on both inner and outer loops doubles FPS:
-//            updateQueue.sync(flags: .barrier) {
-//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                        buffer.baseAddress![x][y].update()
-//                    }
-//                }
-//            }
-//        }
-        
-        
         // 20-43 FPS on 200x200 grid:
         // 9-26 FPS on 400x400 grid:
         // Prepare update:
@@ -260,242 +208,23 @@ final class CellGrid {
 //        grid.lazy.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
         
         
-        
-        
+        // 25-40+ FPS on 200x200 grid:
+        // 10-30 FPS on 400x400 grid:
         // This also seems to have a similar FPS and Frametime as double concurrentPerform:
         // Prepare update:
 //        updateQueue.sync {
 //            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].forEach { $0.prepareUpdate() }
+//                self.grid[x].lazy.forEach { $0.prepareUpdate() }
 //            }
 //        }
 //
 //        // Update
 //        updateQueue.sync {
 //            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].forEach { $0.update() }
+//                self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
 //            }
 //        }
 
-        
-        
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.totalCount) { i in
-//                self.joinedGrid[i].prepareUpdate()
-//            }
-//        }
-//
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.totalCount) { i in
-//                self.joinedGrid[i].update()
-//            }
-//        }
-        
-//        grid.joined().forEach({ $0.prepareUpdate() })
-//        grid.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
-        
-//        updateQueue.sync(flags: .barrier) {
-//            DispatchQueue.concurrentPerform(iterations: self.divCountX) { x in
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x][y].prepareUpdate()
-//                    self.grid[x + self.divCountX][y].prepareUpdate()
-//                    self.grid[x][y + self.divCountY].prepareUpdate()
-//                    self.grid[x + self.divCountX][y + self.divCountY].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*2][y].prepareUpdate()
-//                    self.grid[x][y + self.divCountY*2].prepareUpdate()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*2].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*3][y].prepareUpdate()
-//                    self.grid[x][y + self.divCountY*3].prepareUpdate()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*3].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX][y + self.divCountY*2].prepareUpdate()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY].prepareUpdate()
-//                    self.grid[x + self.divCountX][y + self.divCountY*3].prepareUpdate()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY].prepareUpdate()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*2].prepareUpdate()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*3].prepareUpdate()
-//                }
-//
-//                // 8
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*4][y].prepareUpdate()
-//                    self.grid[x][y + self.divCountY*4].prepareUpdate()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*4].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*5][y].prepareUpdate()
-//                    self.grid[x][y + self.divCountY*5].prepareUpdate()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*5].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*6][y].prepareUpdate()
-//                    self.grid[x][y + self.divCountY*6].prepareUpdate()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*6].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*7][y].prepareUpdate()
-//                    self.grid[x][y + self.divCountY*7].prepareUpdate()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*7].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX][y + self.divCountY*4].prepareUpdate()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY].prepareUpdate()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*4].prepareUpdate()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*2].prepareUpdate()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*4].prepareUpdate()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*3].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX][y + self.divCountY*5].prepareUpdate()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY].prepareUpdate()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*5].prepareUpdate()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*2].prepareUpdate()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*5].prepareUpdate()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*3].prepareUpdate()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*5].prepareUpdate()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*4].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*6].prepareUpdate()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*2].prepareUpdate()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*6].prepareUpdate()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*3].prepareUpdate()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*6].prepareUpdate()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*4].prepareUpdate()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*6].prepareUpdate()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*5].prepareUpdate()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*7].prepareUpdate()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*2].prepareUpdate()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*7].prepareUpdate()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*3].prepareUpdate()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*7].prepareUpdate()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*4].prepareUpdate()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*7].prepareUpdate()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*5].prepareUpdate()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*7].prepareUpdate()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*6].prepareUpdate()
-//                }
-//            }
-//        }
-
-        
-//        updateQueue.sync(flags: .barrier) {
-//            DispatchQueue.concurrentPerform(iterations: self.divCountX) { x in
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x][y].update()
-//                    self.grid[x + self.divCountX][y].update()
-//                    self.grid[x][y + self.divCountY].update()
-//                    self.grid[x + self.divCountX][y + self.divCountY].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*2][y].update()
-//                    self.grid[x][y + self.divCountY*2].update()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*2].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*3][y].update()
-//                    self.grid[x][y + self.divCountY*3].update()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*3].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX][y + self.divCountY*2].update()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY].update()
-//                    self.grid[x + self.divCountX][y + self.divCountY*3].update()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY].update()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*2].update()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*3].update()
-//                }
-//
-//                // 8
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*4][y].update()
-//                    self.grid[x][y + self.divCountY*4].update()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*4].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*5][y].update()
-//                    self.grid[x][y + self.divCountY*5].update()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*5].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*6][y].update()
-//                    self.grid[x][y + self.divCountY*6].update()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*6].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*7][y].update()
-//                    self.grid[x][y + self.divCountY*7].update()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*7].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX][y + self.divCountY*4].update()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY].update()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*4].update()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*2].update()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*4].update()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*3].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX][y + self.divCountY*5].update()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY].update()
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*5].update()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*2].update()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*5].update()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*3].update()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*5].update()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*4].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*6].update()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*2].update()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*6].update()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*3].update()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*6].update()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*4].update()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*6].update()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*5].update()
-//                }
-//
-//                DispatchQueue.concurrentPerform(iterations: self.divCountY) { y in
-//                    self.grid[x + self.divCountX*2][y + self.divCountY*7].update()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*2].update()
-//                    self.grid[x + self.divCountX*3][y + self.divCountY*7].update()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*3].update()
-//                    self.grid[x + self.divCountX*4][y + self.divCountY*7].update()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*4].update()
-//                    self.grid[x + self.divCountX*5][y + self.divCountY*7].update()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*5].update()
-//                    self.grid[x + self.divCountX*6][y + self.divCountY*7].update()
-//                    self.grid[x + self.divCountX*7][y + self.divCountY*6].update()
-//                }
-//            }
-//        }
         
         generation += 1
         return generation

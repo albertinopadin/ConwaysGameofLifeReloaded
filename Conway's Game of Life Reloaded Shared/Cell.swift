@@ -117,6 +117,7 @@ public final class Cell {
         // Lazy helps tremendously as it prevents an intermediate result array from being created
         // For some reason doing this directly is faster than calling the extension:
         liveNeighbors = neighbors.lazy.filter({ $0.alive() }).count
+//        liveNeighbors = neighbors.lazy.filter({ $0.currentState == .Live }).count
 //        liveNeighbors = neighbors.count(where: { $0.alive() })
         if !(currentState == .Dead && liveNeighbors < 3) {
             nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
