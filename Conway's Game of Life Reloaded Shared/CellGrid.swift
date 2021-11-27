@@ -12,9 +12,6 @@ import SpriteKit
 final class CellGrid {
     let xCount: Int
     let yCount: Int
-    let divCountX: Int
-    let divCountY: Int
-    let divFactor = 8
     final var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
@@ -39,8 +36,6 @@ final class CellGrid {
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
-        divCountX = xCount / divFactor
-        divCountY = yCount / divFactor
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
@@ -182,7 +177,7 @@ final class CellGrid {
     @inline(__always)
     final func updateCells() -> UInt64 {
         // 20-43 FPS on 200x200 grid:
-        // 9-26 FPS on 400x400 grid:
+        // 9-26 FPS, 150-300% CPU on 400x400 grid:
         // Prepare update:
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
@@ -202,8 +197,9 @@ final class CellGrid {
             }
         }
         
+        
         // 25-40+ FPS on 200x200 grid:
-        // 10-20 FPS on 400x400 grid:
+        // 8-20, 85-105% CPU FPS on 400x400 grid:
 //        grid.lazy.joined().forEach({ $0.prepareUpdate() })
 //        grid.lazy.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
         
