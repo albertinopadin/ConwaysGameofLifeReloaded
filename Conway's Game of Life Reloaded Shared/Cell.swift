@@ -17,6 +17,16 @@ public struct CellAlpha {
     public static let dead: CGFloat = 0.0
 }
 
+public struct PrepareUpdateState: Hashable {
+    let state: CellState
+    let liveNeighbors: Int
+    
+    public init(state: CellState, liveNeighbors: Int) {
+        self.state = state
+        self.liveNeighbors = liveNeighbors
+    }
+}
+
 public final class Cell {
     public final var currentState: CellState
     public final var nextState: CellState
@@ -32,6 +42,27 @@ public final class Cell {
     public final let colorAliveAction: SKAction
     public final let colorDeadAction: SKAction
     
+    public static var prepareUpdateCache: [PrepareUpdateState: CellState] = [
+        PrepareUpdateState(state: .Dead, liveNeighbors: 0): .Dead,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 1): .Dead,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 2): .Dead,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 3): .Live,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 4): .Dead,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 5): .Dead,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 6): .Dead,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 7): .Dead,
+        PrepareUpdateState(state: .Dead, liveNeighbors: 8): .Dead,
+        PrepareUpdateState(state: .Live, liveNeighbors: 0): .Dead,
+        PrepareUpdateState(state: .Live, liveNeighbors: 1): .Dead,
+        PrepareUpdateState(state: .Live, liveNeighbors: 2): .Live,
+        PrepareUpdateState(state: .Live, liveNeighbors: 3): .Live,
+        PrepareUpdateState(state: .Live, liveNeighbors: 4): .Dead,
+        PrepareUpdateState(state: .Live, liveNeighbors: 5): .Dead,
+        PrepareUpdateState(state: .Live, liveNeighbors: 6): .Dead,
+        PrepareUpdateState(state: .Live, liveNeighbors: 7): .Dead,
+        PrepareUpdateState(state: .Live, liveNeighbors: 8): .Dead,
+    ]
+    
     public init(frame: CGRect,
                 color: SKColor,
                 shadowColor: SKColor,
@@ -45,16 +76,18 @@ public final class Cell {
         self.colorAliveAction = colorAliveAction
         self.colorDeadAction = colorDeadAction
         self.alive = alive
+        let nodeSize = CGSize(width: frame.size.width * colorNodeSizeFraction,
+                              height: frame.size.height * colorNodeSizeFraction)
         node = SKSpriteNode(texture: nil,
                             color: color,
-                            size: CGSize(width: frame.size.width * colorNodeSizeFraction,
-                                         height: frame.size.height * colorNodeSizeFraction))
+                            size: nodeSize)
         node.position = frame.origin
         node.blendMode = .replace
         node.physicsBody?.isDynamic = false
         
         node.texture?.filteringMode = .nearest
-        node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
+        // Using centerRect makes the quad count higher, which is bad for performance:
+        // node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
         node.alpha = CellAlpha.dead
     }
     
@@ -103,22 +136,11 @@ public final class Cell {
         // For some reason doing this directly is faster than calling the extension:
         liveNeighbors = neighbors.lazy.filter({ $0.alive }).count
         
-//        liveNeighbors = 0
-//        for cell in neighbors where cell.alive {
-//            liveNeighbors += 1
-////            if liveNeighbors > 3 {
-////                break
-////            }
-//        }
-        
-//        liveNeighbors = neighbors.lazy.filter({ $0.alive() }).prefix(4).count
-//        liveNeighbors = neighbors.lazy.filter({ $0.currentState == .Live }).count
-//        liveNeighbors = neighbors.count(where: { $0.alive() })
-//        liveNeighbors = neighbors.lazy.map({ $0.alive() ? 1: 0 }).reduce(0, +)
-//        liveNeighbors = neighbors.lazy.reduce(0, { $0 + ($1.alive() ? 1: 0) })
         if !(currentState == .Dead && liveNeighbors < 3) {
             nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
         }
+        
+//        nextState = Cell.prepareUpdateCache[PrepareUpdateState(state: currentState, liveNeighbors: liveNeighbors)]!
     }
     
     @inlinable
