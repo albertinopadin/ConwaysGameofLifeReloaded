@@ -46,8 +46,7 @@ final class CellGrid {
     @inline(__always)
     final func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
         let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0),
-                               liveColor: aliveColor,
-                               deadColor: deadColor,
+                               color: aliveColor,
                                shadowColor: shadowColor,
                                colorAliveAction: colorAliveAction,
                                colorDeadAction: colorDeadAction)
@@ -77,8 +76,7 @@ final class CellGrid {
 //                                       height: cellSize)
 
                 newGrid[x][y] = Cell(frame: cellFrame,
-                                     liveColor: aliveColor,
-                                     deadColor: deadColor,
+                                     color: aliveColor,
                                      shadowColor: shadowColor,
                                      colorAliveAction: colorAliveAction,
                                      colorDeadAction: colorDeadAction)

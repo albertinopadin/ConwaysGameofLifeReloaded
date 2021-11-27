@@ -20,8 +20,6 @@ public final class Cell {
     public final var liveNeighbors: Int = 0
     
     public final let node: SKSpriteNode
-    public final let aliveColor: SKColor
-    public final let deadColor: SKColor
     public final let shadowColor: SKColor
     public final let colorNodeSizeFraction: CGFloat = 0.92
     
@@ -29,23 +27,19 @@ public final class Cell {
     public final let colorDeadAction: SKAction
     
     public init(frame: CGRect,
-                liveColor: SKColor,
-                deadColor: SKColor,
+                color: SKColor,
                 shadowColor: SKColor,
                 colorAliveAction: SKAction,
                 colorDeadAction: SKAction,
-                alive: Bool = false,
-                color: SKColor = .clear) {
+                alive: Bool = false) {
         self.currentState = alive ? .Live: .Dead
         self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
-        self.aliveColor = liveColor
-        self.deadColor = deadColor
         self.shadowColor = shadowColor
         self.colorAliveAction = colorAliveAction
         self.colorDeadAction = colorDeadAction
         node = SKSpriteNode(texture: nil,
-                            color: deadColor,
+                            color: color,
                             size: CGSize(width: frame.size.width * colorNodeSizeFraction,
                                          height: frame.size.height * colorNodeSizeFraction))
         node.position = frame.origin
@@ -54,61 +48,48 @@ public final class Cell {
         
         node.texture?.filteringMode = .nearest
         node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
+        node.alpha = 0.0
     }
     
     @inlinable
     @inline(__always)
     public final func makeLive() {
-        setLiveState()
-        node.color = aliveColor
+        setState(state: .Live)
+        node.alpha = 1.0
     }
     
     @inlinable
     @inline(__always)
     public final func makeLiveTouched() {
-        setLiveState()
-        node.run(self.colorAliveAction) { self.node.color = self.aliveColor }
+        setState(state: .Live)
+        node.run(self.colorAliveAction) { self.node.alpha = 1.0 }
     }
-    
-    @inlinable
-    @inline(__always)
-    public final func setLiveState() {
-        currentState = .Live
-        resetNextState()
-    }
-    
     
     @inlinable
     @inline(__always)
     public final func makeDead() {
-        setDeadState()
-        node.color = deadColor
+        setState(state: .Dead)
+        node.alpha = 0.0
     }
     
     @inlinable
     @inline(__always)
     public final func makeDeadTouched() {
-        setDeadState()
-        node.run(self.colorDeadAction) { self.node.color = self.deadColor }
+        setState(state: .Dead)
+        node.run(self.colorDeadAction) { self.node.alpha = 0.0 }
     }
     
     @inlinable
     @inline(__always)
-    public final func setDeadState() {
-        currentState = .Dead
-        resetNextState()
+    public final func setState(state: CellState) {
+        currentState = state
+        nextState = currentState
     }
     
     @inlinable
     @inline(__always)
     public final func alive() -> Bool {
         return currentState == .Live
-    }
-    
-    @inlinable
-    @inline(__always)
-    public final func resetNextState() {
-        nextState = currentState
     }
     
     @inlinable
