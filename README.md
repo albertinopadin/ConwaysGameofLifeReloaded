@@ -9,4 +9,5 @@ Video:
 
 Experimental:
 Changing the cell's alpha value from 0.0 to 1.0 is much faster than changing the color:
+
 [![](http://img.youtube.com/vi/IMkzYZstlNc/0.jpg)](https://www.youtube.com/watch?v=IMkzYZstlNc "")
