@@ -12,6 +12,11 @@ public enum CellState {
     case Live, Dead
 }
 
+public struct CellAlpha {
+    public static let live: CGFloat = 1.0
+    public static let dead: CGFloat = 0.0
+}
+
 public final class Cell {
     public final var currentState: CellState
     public final var nextState: CellState
@@ -48,35 +53,35 @@ public final class Cell {
         
         node.texture?.filteringMode = .nearest
         node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
-        node.alpha = 0.0
+        node.alpha = CellAlpha.dead
     }
     
     @inlinable
     @inline(__always)
     public final func makeLive() {
         setState(state: .Live)
-        node.alpha = 1.0
+        node.alpha = CellAlpha.live
     }
     
     @inlinable
     @inline(__always)
     public final func makeLiveTouched() {
         setState(state: .Live)
-        node.run(self.colorAliveAction) { self.node.alpha = 1.0 }
+        node.run(self.colorAliveAction) { self.node.alpha = CellAlpha.live }
     }
     
     @inlinable
     @inline(__always)
     public final func makeDead() {
         setState(state: .Dead)
-        node.alpha = 0.0
+        node.alpha = CellAlpha.dead
     }
     
     @inlinable
     @inline(__always)
     public final func makeDeadTouched() {
         setState(state: .Dead)
-        node.run(self.colorDeadAction) { self.node.alpha = 0.0 }
+        node.run(self.colorDeadAction) { self.node.alpha = CellAlpha.dead }
     }
     
     @inlinable
