@@ -12,6 +12,8 @@ import SpriteKit
 final class CellGrid {
     let xCount: Int
     let yCount: Int
+    let halfCountX: Int
+    let halfCountY: Int
     final var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
@@ -36,6 +38,8 @@ final class CellGrid {
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
+        halfCountX = Int(xCells/2)
+        halfCountY = Int(yCells/2)
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
@@ -176,6 +180,10 @@ final class CellGrid {
     final func updateCells() -> UInt64 {
         // 20-43 FPS on 200x200 grid:
         // 9-26 FPS, 150-300% CPU on 400x400 grid:
+        // With Alpha trick:
+        // 38-42 FPS on 200x200
+        // 30-42 FPS on 400x400
+        // 12-18 FPS on 800x800
         // Prepare update:
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
@@ -194,6 +202,36 @@ final class CellGrid {
                 }
             }
         }
+        
+        
+        // With Alpha trick:
+        // 38-44 FPS on 200x200
+        // 30-38 FPS on 400x400
+        // 12-15 FPS on 800x800
+        // Prepare update:
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.halfCountX) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.halfCountY) { y in
+//                    self.grid[x][y].prepareUpdate()
+//                    self.grid[x + self.halfCountX][y].prepareUpdate()
+//                    self.grid[x][y + self.halfCountY].prepareUpdate()
+//                    self.grid[x + self.halfCountX][y + self.halfCountY].prepareUpdate()
+//                }
+//            }
+//        }
+//
+//        // Update
+//        // Doing concurrentPerform on both inner and outer loops doubles FPS:
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.halfCountX) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.halfCountY) { y in
+//                    self.grid[x][y].update()
+//                    self.grid[x + self.halfCountX][y].update()
+//                    self.grid[x][y + self.halfCountY].update()
+//                    self.grid[x + self.halfCountX][y + self.halfCountY].update()
+//                }
+//            }
+//        }
         
         
         // 25-40+ FPS on 200x200 grid:
@@ -242,7 +280,7 @@ final class CellGrid {
         let y = Int(at.y / cellSize)
 
         let touchedCell = grid[x][y]
-        if !withAltAction && !touchedCell.alive() {
+        if !withAltAction && !touchedCell.alive {
             updateQueue.sync(flags: .barrier) {
                 if gameRunning {
                     touchedCell.makeLive()
@@ -252,7 +290,7 @@ final class CellGrid {
             }
         }
         
-        if withAltAction && touchedCell.alive() {
+        if withAltAction && touchedCell.alive {
             updateQueue.sync(flags: .barrier) {
                 if gameRunning {
                     touchedCell.makeDead()
@@ -306,7 +344,7 @@ final class CellGrid {
             let y = Int(p.y / cellSize)
 
             let cell = grid[x][y]
-            if !cell.alive() {
+            if !cell.alive {
                 cell.makeShadow()
                 shadowed.append(cell)
             }
