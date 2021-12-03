@@ -115,11 +115,11 @@ final class CellGrid {
         let bottomY = y - 1
         
         let leftNeighbor        = leftX > -1 ? grid[leftX][y] : nil
-        let upperLeftNeighbor   = leftX > -1 && topY < (grid.first?.count)! ? grid[leftX][topY] : nil
-        let upperNeighbor       = topY < (grid.first?.count)! ? grid[x][topY] : nil
-        let upperRightNeighbor  = rightX < grid.count && topY < (grid.first?.count)! ? grid[rightX][topY] : nil
-        let rightNeighbor       = rightX < grid.count ? grid[rightX][y] : nil
-        let lowerRightNeighbor  = rightX < grid.count && bottomY > -1 ? grid[rightX][bottomY] : nil
+        let upperLeftNeighbor   = leftX > -1 && topY < yCount ? grid[leftX][topY] : nil
+        let upperNeighbor       = topY < yCount ? grid[x][topY] : nil
+        let upperRightNeighbor  = rightX < xCount && topY < yCount ? grid[rightX][topY] : nil
+        let rightNeighbor       = rightX < xCount ? grid[rightX][y] : nil
+        let lowerRightNeighbor  = rightX < xCount && bottomY > -1 ? grid[rightX][bottomY] : nil
         let lowerNeighbor       = bottomY > -1 ? grid[x][bottomY] : nil
         let lowerLeftNeighbor   = leftX > -1 && bottomY > -1 ? grid[leftX][bottomY] : nil
         
@@ -356,15 +356,11 @@ final class CellGrid {
     }
     
     func getPointWidth() -> CGFloat {
-        return CGFloat(grid.count) * cellSize
+        return CGFloat(xCount) * cellSize
     }
     
     func getPointHeight() -> CGFloat {
-        guard let gridY = grid.first else {
-            return 0
-        }
-        
-        return CGFloat(gridY.count) * cellSize
+        return CGFloat(yCount) * cellSize
     }
     
     @inlinable
