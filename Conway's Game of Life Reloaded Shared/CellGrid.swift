@@ -35,6 +35,8 @@ final class CellGrid {
                                                     colorBlendFactor: 1.0,
                                                     duration: 0.3)
     
+    var totalSize: CGSize = CGSize.zero
+    
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
@@ -58,9 +60,9 @@ final class CellGrid {
         var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
 
         // For adding to backing node:
-//        let totalSize = CGSize(width: CGFloat(xCells)*cellSize, height: CGFloat(yCells)*cellSize)
-//        let xOffset = totalSize.width/2
-//        let yOffset = totalSize.height/2
+        totalSize = CGSize(width: CGFloat(xCells)*cellSize, height: CGFloat(yCells)*cellSize)
+        let xOffset = totalSize.width/2
+        let yOffset = totalSize.height/2
 
         for x in 0..<xCells {
             for y in 0..<yCells {
@@ -68,16 +70,16 @@ final class CellGrid {
                 // This can create confusion when attempting to position cells!
 
                 // For adding directly to scene:
-                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize),
-                                       y: cellMiddle(iteration: y, length: cellSize),
-                                       width: cellSize,
-                                       height: cellSize)
-
-                // For adding to backing node:
-//                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize) - xOffset,
-//                                       y: cellMiddle(iteration: y, length: cellSize) - yOffset,
+//                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize),
+//                                       y: cellMiddle(iteration: y, length: cellSize),
 //                                       width: cellSize,
 //                                       height: cellSize)
+
+                // For adding to backing node:
+                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize) - xOffset,
+                                       y: cellMiddle(iteration: y, length: cellSize) - yOffset,
+                                       width: cellSize,
+                                       height: cellSize)
 
                 newGrid[x][y] = Cell(frame: cellFrame,
                                      color: aliveColor,
