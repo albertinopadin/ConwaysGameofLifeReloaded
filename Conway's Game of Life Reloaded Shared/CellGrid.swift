@@ -14,7 +14,12 @@ final class CellGrid {
     let yCount: Int
     let halfCountX: Int
     let halfCountY: Int
-    final var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
+    final var cellBuffer0 = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
+    final var cellBuffer1 = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
+    final var spriteGrid  = ContiguousArray<ContiguousArray<SKSpriteNode>>()   // 2D Array to hold the cells
+    final var cellBuffer = ContiguousArray<ContiguousArray<Cell>>()
+    final var cellBufferNext = ContiguousArray<ContiguousArray<Cell>>()
+    final var cellBuffer0InUse: Bool = true
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
     var spaceshipFactory: SpaceshipFactory?
@@ -26,6 +31,7 @@ final class CellGrid {
     final let aliveColor: SKColor = .green
     final let deadColor = SKColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     final let shadowColor: SKColor = .darkGray
+    final let colorNodeSizeFraction: CGFloat = 0.92
     
     final let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
     final let colorDeadAction = SKAction.colorize(with: SKColor(red: 0.16,
@@ -41,26 +47,41 @@ final class CellGrid {
         halfCountX = Int(xCells/2)
         halfCountY = Int(yCells/2)
         self.cellSize = cellSize
-        grid = makeGrid(xCells: xCells, yCells: yCells)
-        setNeighborsForAllCellsInGrid()
+        cellBuffer0 = makeCellBuffer(xCells: xCells, yCells: yCells)
+        cellBuffer1 = makeCellBuffer(xCells: xCells, yCells: yCells)
+        spriteGrid = makeSpriteGrid(xCells: xCells, yCells: yCells)
+        setNeighborsForAllCellsInBuffer(buffer: cellBuffer0)
+        setNeighborsForAllCellsInBuffer(buffer: cellBuffer1)
+        cellBuffer = cellBuffer0
+        cellBufferNext = cellBuffer0
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
     
     @inlinable
     @inline(__always)
-    final func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
-        let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0),
-                               color: aliveColor,
-                               shadowColor: shadowColor,
-                               colorAliveAction: colorAliveAction,
-                               colorDeadAction: colorDeadAction)
-        let newGridRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
-        var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
-
-        // For adding to backing node:
-//        let totalSize = CGSize(width: CGFloat(xCells)*cellSize, height: CGFloat(yCells)*cellSize)
-//        let xOffset = totalSize.width/2
-//        let yOffset = totalSize.height/2
+    final func makeCellBuffer(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
+        let initialCell = Cell(alive: false)
+        let newBufferRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
+        var newBuffer = ContiguousArray<ContiguousArray<Cell>>(repeating: newBufferRow, count: xCells)
+        
+        // Have to do this, otherwise the entire buffer will be referring to the same Cell:
+        for x in 0..<xCells {
+            for y in 0..<yCells {
+                newBuffer[x][y] = Cell(alive: false)
+            }
+        }
+        
+        return newBuffer
+    }
+    
+    @inlinable
+    @inline(__always)
+    final func makeSpriteGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<SKSpriteNode>> {
+        let initialSprite = SKSpriteNode(texture: nil,
+                                   color: aliveColor,
+                                   size: CGSize.zero)
+        let newGridRow = ContiguousArray<SKSpriteNode>(repeating: initialSprite, count: yCells)
+        var newGrid = ContiguousArray<ContiguousArray<SKSpriteNode>>(repeating: newGridRow, count: xCells)
 
         for x in 0..<xCells {
             for y in 0..<yCells {
@@ -72,18 +93,20 @@ final class CellGrid {
                                        y: cellMiddle(iteration: y, length: cellSize),
                                        width: cellSize,
                                        height: cellSize)
+                
+                let node = SKSpriteNode(texture: nil,
+                                        color: aliveColor,
+                                        size: CGSize(width: cellFrame.size.width * colorNodeSizeFraction,
+                                                     height: cellFrame.size.height * colorNodeSizeFraction))
+                node.position = cellFrame.origin
+                node.blendMode = .replace
+                node.physicsBody?.isDynamic = false
 
-                // For adding to backing node:
-//                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize) - xOffset,
-//                                       y: cellMiddle(iteration: y, length: cellSize) - yOffset,
-//                                       width: cellSize,
-//                                       height: cellSize)
-
-                newGrid[x][y] = Cell(frame: cellFrame,
-                                     color: aliveColor,
-                                     shadowColor: shadowColor,
-                                     colorAliveAction: colorAliveAction,
-                                     colorDeadAction: colorDeadAction)
+                node.texture?.filteringMode = .nearest
+                node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
+                node.alpha = CellAlpha.dead
+                
+                newGrid[x][y] = node
             }
         }
         return newGrid
@@ -97,15 +120,15 @@ final class CellGrid {
         return (CGFloat(iteration) * length) + length/2
     }
     
-    private func setNeighborsForAllCellsInGrid() {
+    private func setNeighborsForAllCellsInBuffer(buffer: ContiguousArray<ContiguousArray<Cell>>) {
         for x in 0..<xCount {
             for y in 0..<yCount {
-                grid[x][y].neighbors = getCellNeighbors(x: x, y: y)
+                buffer[x][y].neighbors = getCellNeighbors(x: x, y: y, buffer: buffer)
             }
         }
     }
     
-    private func getCellNeighbors(x: Int, y: Int) -> ContiguousArray<Cell> {
+    private func getCellNeighbors(x: Int, y: Int, buffer: ContiguousArray<ContiguousArray<Cell>>) -> ContiguousArray<Cell> {
         var neighbors = ContiguousArray<Cell>()
         
         // Get the neighbors:
@@ -114,14 +137,14 @@ final class CellGrid {
         let topY    = y + 1
         let bottomY = y - 1
         
-        let leftNeighbor        = leftX > -1 ? grid[leftX][y] : nil
-        let upperLeftNeighbor   = leftX > -1 && topY < yCount ? grid[leftX][topY] : nil
-        let upperNeighbor       = topY < yCount ? grid[x][topY] : nil
-        let upperRightNeighbor  = rightX < xCount && topY < yCount ? grid[rightX][topY] : nil
-        let rightNeighbor       = rightX < xCount ? grid[rightX][y] : nil
-        let lowerRightNeighbor  = rightX < xCount && bottomY > -1 ? grid[rightX][bottomY] : nil
-        let lowerNeighbor       = bottomY > -1 ? grid[x][bottomY] : nil
-        let lowerLeftNeighbor   = leftX > -1 && bottomY > -1 ? grid[leftX][bottomY] : nil
+        let leftNeighbor        = leftX > -1 ? buffer[leftX][y] : nil
+        let upperLeftNeighbor   = leftX > -1 && topY < yCount ? buffer[leftX][topY] : nil
+        let upperNeighbor       = topY < yCount ? buffer[x][topY] : nil
+        let upperRightNeighbor  = rightX < xCount && topY < yCount ? buffer[rightX][topY] : nil
+        let rightNeighbor       = rightX < xCount ? buffer[rightX][y] : nil
+        let lowerRightNeighbor  = rightX < xCount && bottomY > -1 ? buffer[rightX][bottomY] : nil
+        let lowerNeighbor       = bottomY > -1 ? buffer[x][bottomY] : nil
+        let lowerLeftNeighbor   = leftX > -1 && bottomY > -1 ? buffer[leftX][bottomY] : nil
         
         if let left_n = leftNeighbor {
             neighbors.append(left_n)
@@ -169,6 +192,19 @@ final class CellGrid {
 //        }
 //    }
     
+    @inlinable
+    @inline(__always)
+    final func switchCellBuffer() {
+        if cellBuffer0InUse {
+            cellBuffer = cellBuffer1
+            cellBufferNext = cellBuffer0
+        } else {
+            cellBuffer = cellBuffer0
+            cellBufferNext = cellBuffer1
+        }
+        cellBuffer0InUse.toggle()
+    }
+    
     // Update cells using Conway's Rules of Life:
     // 1) Any live cell with fewer than two live neighbors dies (underpopulation)
     // 2) Any live cell with two or three live neighbors lives on to the next generation
@@ -178,85 +214,122 @@ final class CellGrid {
     @inlinable
     @inline(__always)
     final func updateCells() -> UInt64 {
-        // 20-43 FPS on 200x200 grid:
-        // 9-26 FPS, 150-300% CPU on 400x400 grid:
-        // With Alpha trick:
-        // 38-42 FPS on 200x200
-        // 30-42 FPS on 400x400
-        // 12-18 FPS on 800x800
-        // Prepare update:
-        updateQueue.sync {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].prepareUpdate()
-                }
-            }
-        }
-
-        // Update
+        //  FPS on 200x200
+        //  FPS on 400x400
+        //  FPS on 800x800
+        // Prepare update & Update all in one go:
         // Doing concurrentPerform on both inner and outer loops doubles FPS:
+        print("cellBuffer0InUse: \(self.cellBuffer0InUse)")
+        
+//        for x in 0..<self.xCount {
+//            for y in 0..<self.yCount {
+//                if self.cellBuffer0InUse {
+//                    let nextState = self.cellBuffer0[x][y].getUpdate()
+//                    if self.cellBuffer0[x][y].needsUpdate() {
+//                        print("cell needs update")
+//                        self.cellBuffer1[x][y].setState(state: nextState)
+//                        if self.cellBuffer1[x][y].alive {
+//                           self.spriteGrid[x][y].alpha = CellAlpha.live
+//                        } else {
+//                           self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                        }
+//                    }
+//                } else {
+//                    let nextState = self.cellBuffer1[x][y].getUpdate()
+//                    if self.cellBuffer1[x][y].needsUpdate() {
+//                        print("cell needs update")
+//                        self.cellBuffer0[x][y].setState(state: nextState)
+//                        if self.cellBuffer0[x][y].alive {
+//                           self.spriteGrid[x][y].alpha = CellAlpha.live
+//                        } else {
+//                           self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        
+//        for x in 0..<self.xCount {
+//            for y in 0..<self.yCount {
+//                if self.cellBuffer0InUse {
+//                    let nextState = self.cellBuffer0[x][y].getUpdate()
+//                    self.cellBuffer1[x][y].setState(state: nextState)
+//                    if self.cellBuffer1[x][y].alive {
+//                       self.spriteGrid[x][y].alpha = CellAlpha.live
+//                    } else {
+//                       self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                    }
+//                } else {
+//                    let nextState = self.cellBuffer1[x][y].getUpdate()
+//                    self.cellBuffer0[x][y].setState(state: nextState)
+//                    if self.cellBuffer0[x][y].alive {
+//                       self.spriteGrid[x][y].alpha = CellAlpha.live
+//                    } else {
+//                       self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                    }
+//                }
+//            }
+//        }
+            
+        
+        
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].update()
+//                    self.cellBuffer[x][y].prepareUpdate()
+                    
+//                    if self.cellBuffer[x][y].needsUpdate() {
+//                        self.cellBufferNext[x][y].setState(state: self.cellBuffer[x][y].nextState)
+//                        if self.cellBufferNext[x][y].alive {
+//                            self.spriteGrid[x][y].alpha = CellAlpha.live
+//                        } else {
+//                            self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                        }
+//                    }
+                    
+                    let nextState = self.cellBuffer[x][y].getUpdate()
+                    self.cellBufferNext[x][y].setState(state: nextState)
+                    if nextState == .Live {
+                        self.spriteGrid[x][y].alpha = CellAlpha.live
+                    } else {
+                        self.spriteGrid[x][y].alpha = CellAlpha.dead
+                    }
+
+//                    print("Preparing update")
+//                    if self.cellBuffer0InUse {
+//                        let nextState = self.cellBuffer0[x][y].getUpdate()
+//                        if self.cellBuffer0[x][y].needsUpdate() {
+////                            print("cell needs update")
+//                            self.cellBuffer1[x][y].setState(state: nextState)
+//                            if self.cellBuffer1[x][y].alive {
+//                               self.spriteGrid[x][y].alpha = CellAlpha.live
+//                            } else {
+//                               self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                            }
+//                        }
+//                    } else {
+//                        let nextState = self.cellBuffer1[x][y].getUpdate()
+//                        if self.cellBuffer1[x][y].needsUpdate() {
+////                            print("cell needs update")
+//                            self.cellBuffer0[x][y].setState(state: nextState)
+//                            if self.cellBuffer0[x][y].alive {
+//                               self.spriteGrid[x][y].alpha = CellAlpha.live
+//                            } else {
+//                               self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                            }
+//                        }
+//                    }
+
                 }
             }
+            
+//            self.switchCellBuffer()
+//            self.cellBuffer0InUse = !self.cellBuffer0InUse
         }
         
-        
-        // With Alpha trick:
-        // 38-44 FPS on 200x200
-        // 30-38 FPS on 400x400
-        // 12-15 FPS on 800x800
-        // Prepare update:
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.halfCountX) { x in
-//                DispatchQueue.concurrentPerform(iterations: self.halfCountY) { y in
-//                    self.grid[x][y].prepareUpdate()
-//                    self.grid[x + self.halfCountX][y].prepareUpdate()
-//                    self.grid[x][y + self.halfCountY].prepareUpdate()
-//                    self.grid[x + self.halfCountX][y + self.halfCountY].prepareUpdate()
-//                }
-//            }
-//        }
-//
-//        // Update
-//        // Doing concurrentPerform on both inner and outer loops doubles FPS:
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.halfCountX) { x in
-//                DispatchQueue.concurrentPerform(iterations: self.halfCountY) { y in
-//                    self.grid[x][y].update()
-//                    self.grid[x + self.halfCountX][y].update()
-//                    self.grid[x][y + self.halfCountY].update()
-//                    self.grid[x + self.halfCountX][y + self.halfCountY].update()
-//                }
-//            }
-//        }
-        
-        
-        // 25-40+ FPS on 200x200 grid:
-        // 8-20, 85-105% CPU FPS on 400x400 grid:
-//        grid.lazy.joined().forEach({ $0.prepareUpdate() })
-//        grid.lazy.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
-        
-        
-        // 25-40+ FPS on 200x200 grid:
-        // 10-30 FPS on 400x400 grid:
-        // This also seems to have a similar FPS and Frametime as double concurrentPerform:
-        // Prepare update:
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].lazy.forEach { $0.prepareUpdate() }
-//            }
-//        }
-//
-//        // Update
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
-//            }
-//        }
-
+        self.switchCellBuffer()
+//        self.cellBuffer0InUse = !self.cellBuffer0InUse
+//        self.cellBuffer0InUse.toggle()
         
         generation += 1
         return generation
@@ -278,20 +351,30 @@ final class CellGrid {
         
         let x = Int(at.x / cellSize)
         let y = Int(at.y / cellSize)
+        
+        cellBuffer = cellBuffer0InUse ? cellBuffer0: cellBuffer1
+        
+        print("In touchedCell, x, y: \(x), \(y)")
+        print("cellBuffer0InUse: \(cellBuffer0InUse)")
 
-        let touchedCell = grid[x][y]
+        let touchedCell = cellBuffer[x][y]
         if !withAltAction && !touchedCell.alive {
+//            spriteGrid[x][y].alpha = CellAlpha.live
+//            print("Turned sprite alpha to live: \(spriteGrid[x][y].alpha)")
             updateQueue.sync(flags: .barrier) {
-                if gameRunning {
-                    touchedCell.makeLive()
-                } else {
-                    touchedCell.makeLiveTouched()
-                }
+                spriteGrid[x][y].alpha = CellAlpha.live
+                touchedCell.makeLive()
+//                if gameRunning {
+//                    touchedCell.makeLive()
+//                } else {
+//                    touchedCell.makeLiveTouched()
+//                }
             }
         }
         
         if withAltAction && touchedCell.alive {
             updateQueue.sync(flags: .barrier) {
+                spriteGrid[x][y].alpha = CellAlpha.dead
                 if gameRunning {
                     touchedCell.makeDead()
                 } else {
@@ -326,29 +409,38 @@ final class CellGrid {
             let x = Int(p.x / cellSize)
             let y = Int(p.y / cellSize)
 
-            let touchedCell = grid[x][y]
+            let touchedCell = cellBuffer[x][y]
             touchedCell.makeLive()
+            spriteGrid[x][y].alpha = CellAlpha.live
         }
     }
+    
+//    func resetShadowed() {
+//        for cell in shadowed {
+//            cell.node.color = .blue
+//        }
+//        shadowed.removeAll()
+//    }
     
     func resetShadowed() {
-        for cell in shadowed {
-            cell.node.color = .blue
-        }
-        shadowed.removeAll()
+        print("Unimplemented")
     }
     
+//    func shadowPattern(with points: [CGPoint]) {
+//        for p in points {
+//            let x = Int(p.x / cellSize)
+//            let y = Int(p.y / cellSize)
+//
+//            let cell = grid[x][y]
+//            if !cell.alive {
+//                cell.makeShadow()
+//                shadowed.append(cell)
+//            }
+//        }
+//    }
+    
     func shadowPattern(with points: [CGPoint]) {
-        for p in points {
-            let x = Int(p.x / cellSize)
-            let y = Int(p.y / cellSize)
-
-            let cell = grid[x][y]
-            if !cell.alive {
-                cell.makeShadow()
-                shadowed.append(cell)
-            }
-        }
+        print("Unimplemented")
     }
     
     func getPointDimensions() -> (CGFloat, CGFloat) {
@@ -370,7 +462,8 @@ final class CellGrid {
         updateQueue.sync(flags: .barrier) {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].makeDead()
+                    self.cellBuffer[x][y].makeDead()
+                    spriteGrid[x][y].alpha = CellAlpha.dead
                 }
             }
         }
@@ -406,7 +499,8 @@ final class CellGrid {
                         DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
                             let randInt = Int.random(in: 0...100)
                             if randInt <= liveProb {
-                                self.grid[x][y].makeLive()
+                                self.cellBuffer[x][y].makeLive()
+                                spriteGrid[x][y].alpha = CellAlpha.live
                             }
                         }
                     }
@@ -426,7 +520,8 @@ final class CellGrid {
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].makeLive()
+                    self.cellBuffer[x][y].makeLive()
+                    spriteGrid[x][y].alpha = CellAlpha.live
                 }
             }
         }

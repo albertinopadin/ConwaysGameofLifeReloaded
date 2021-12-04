@@ -18,12 +18,14 @@ class GameScene: SKScene {
     var yCellsViz: Int = 0
     
     let defaultCellSize: CGFloat = 23.0
+//    let defaultXCells: Int = 100
+//    let defaultYCells: Int = 100
 //    let defaultXCells: Int = 200
 //    let defaultYCells: Int = 200
-    let defaultXCells: Int = 400
-    let defaultYCells: Int = 400
-//    let defaultXCells: Int = 800
-//    let defaultYCells: Int = 800
+//    let defaultXCells: Int = 400
+//    let defaultYCells: Int = 400
+    let defaultXCells: Int = 800
+    let defaultYCells: Int = 800
 //    let defaultXCells: Int = 1000
 //    let defaultYCells: Int = 1000
     
@@ -54,7 +56,7 @@ class GameScene: SKScene {
         setUpCamera()
         (xCellsViz, yCellsViz) = getVisibleCellsXYBasedOnDeviceViewport(cellSize: defaultCellSize)
         cellGrid = CellGrid(xCells: defaultXCells, yCells: defaultYCells, cellSize: defaultCellSize)
-        addCellGridToScene(cellGrid: cellGrid.grid)
+        addSpriteGridToScene(spriteGrid: cellGrid.spriteGrid)
         positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
         
 //        let w = CGFloat(defaultXCells) * defaultCellSize
@@ -125,20 +127,8 @@ class GameScene: SKScene {
     }
     #endif
     
-    func addCellGridToScene(cellGrid: ContiguousArray<ContiguousArray<Cell>>) {
-        cellGrid.lazy.joined().forEach({ self.addChild($0.node) })
-        
-//        for cellArray in cellGrid {
-//            for cell in cellArray {
-//                self.addChild(cell.node)
-//            }
-//        }
-        
-//        for cellArray in cellGrid {
-//            for cell in cellArray {
-//                backingNode.addChild(cell.node)
-//            }
-//        }
+    func addSpriteGridToScene(spriteGrid: ContiguousArray<ContiguousArray<SKSpriteNode>>) {
+        spriteGrid.lazy.joined().forEach({ self.addChild($0) })
     }
     
     // Called every 16ms, or every 8ms on ProMotion devices:
