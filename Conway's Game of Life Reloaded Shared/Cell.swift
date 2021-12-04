@@ -19,7 +19,6 @@ public struct CellAlpha {
 
 public final class Cell {
     public final var currentState: CellState
-    public final var nextState: CellState
     public final var alive: Bool
     
     public final var neighbors: ContiguousArray<Cell>
@@ -27,7 +26,6 @@ public final class Cell {
     
     public init(alive: Bool = false) {
         self.currentState = alive ? .Live: .Dead
-        self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
         self.alive = alive
     }
@@ -59,21 +57,8 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func setState(state: CellState) {
-//        print("In cell setState: \(state)")
         currentState = state
         alive = currentState == .Live
-        nextState = currentState
-    }
-    
-    @inlinable
-    @inline(__always)
-    public final func prepareUpdate() {
-        // Lazy helps tremendously as it prevents an intermediate result array from being created
-        // For some reason doing this directly is faster than calling the extension:
-        liveNeighbors = neighbors.lazy.filter({ $0.alive }).count
-        if !(currentState == .Dead && liveNeighbors < 3) {
-            nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
-        }
     }
     
     @inlinable
@@ -83,16 +68,9 @@ public final class Cell {
         // For some reason doing this directly is faster than calling the extension:
         liveNeighbors = neighbors.lazy.filter({ $0.alive }).count
         if !(currentState == .Dead && liveNeighbors < 3) {
-            nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
-            return nextState
+            return (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
         } else {
             return currentState
         }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public final func needsUpdate() -> Bool {
-        return currentState != nextState
     }
 }

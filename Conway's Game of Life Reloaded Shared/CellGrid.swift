@@ -219,117 +219,20 @@ final class CellGrid {
         //  FPS on 800x800
         // Prepare update & Update all in one go:
         // Doing concurrentPerform on both inner and outer loops doubles FPS:
-        print("cellBuffer0InUse: \(self.cellBuffer0InUse)")
-        
-//        for x in 0..<self.xCount {
-//            for y in 0..<self.yCount {
-//                if self.cellBuffer0InUse {
-//                    let nextState = self.cellBuffer0[x][y].getUpdate()
-//                    if self.cellBuffer0[x][y].needsUpdate() {
-//                        print("cell needs update")
-//                        self.cellBuffer1[x][y].setState(state: nextState)
-//                        if self.cellBuffer1[x][y].alive {
-//                           self.spriteGrid[x][y].alpha = CellAlpha.live
-//                        } else {
-//                           self.spriteGrid[x][y].alpha = CellAlpha.dead
-//                        }
-//                    }
-//                } else {
-//                    let nextState = self.cellBuffer1[x][y].getUpdate()
-//                    if self.cellBuffer1[x][y].needsUpdate() {
-//                        print("cell needs update")
-//                        self.cellBuffer0[x][y].setState(state: nextState)
-//                        if self.cellBuffer0[x][y].alive {
-//                           self.spriteGrid[x][y].alpha = CellAlpha.live
-//                        } else {
-//                           self.spriteGrid[x][y].alpha = CellAlpha.dead
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        
-//        for x in 0..<self.xCount {
-//            for y in 0..<self.yCount {
-//                if self.cellBuffer0InUse {
-//                    let nextState = self.cellBuffer0[x][y].getUpdate()
-//                    self.cellBuffer1[x][y].setState(state: nextState)
-//                    if self.cellBuffer1[x][y].alive {
-//                       self.spriteGrid[x][y].alpha = CellAlpha.live
-//                    } else {
-//                       self.spriteGrid[x][y].alpha = CellAlpha.dead
-//                    }
-//                } else {
-//                    let nextState = self.cellBuffer1[x][y].getUpdate()
-//                    self.cellBuffer0[x][y].setState(state: nextState)
-//                    if self.cellBuffer0[x][y].alive {
-//                       self.spriteGrid[x][y].alpha = CellAlpha.live
-//                    } else {
-//                       self.spriteGrid[x][y].alpha = CellAlpha.dead
-//                    }
-//                }
-//            }
-//        }
-            
-        
-        
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                    self.cellBuffer[x][y].prepareUpdate()
-                    
-//                    if self.cellBuffer[x][y].needsUpdate() {
-//                        self.cellBufferNext[x][y].setState(state: self.cellBuffer[x][y].nextState)
-//                        if self.cellBufferNext[x][y].alive {
-//                            self.spriteGrid[x][y].alpha = CellAlpha.live
-//                        } else {
-//                            self.spriteGrid[x][y].alpha = CellAlpha.dead
-//                        }
-//                    }
-                    
-                    let nextState = self.cellBuffer[x][y].getUpdate()
-                    self.cellBufferNext[x][y].setState(state: nextState)
-                    if nextState == .Live {
+                    self.cellBufferNext[x][y].setState(state: self.cellBuffer[x][y].getUpdate())
+                    if self.cellBufferNext[x][y].alive {
                         self.spriteGrid[x][y].alpha = CellAlpha.live
                     } else {
                         self.spriteGrid[x][y].alpha = CellAlpha.dead
                     }
-
-//                    print("Preparing update")
-//                    if self.cellBuffer0InUse {
-//                        let nextState = self.cellBuffer0[x][y].getUpdate()
-//                        if self.cellBuffer0[x][y].needsUpdate() {
-////                            print("cell needs update")
-//                            self.cellBuffer1[x][y].setState(state: nextState)
-//                            if self.cellBuffer1[x][y].alive {
-//                               self.spriteGrid[x][y].alpha = CellAlpha.live
-//                            } else {
-//                               self.spriteGrid[x][y].alpha = CellAlpha.dead
-//                            }
-//                        }
-//                    } else {
-//                        let nextState = self.cellBuffer1[x][y].getUpdate()
-//                        if self.cellBuffer1[x][y].needsUpdate() {
-////                            print("cell needs update")
-//                            self.cellBuffer0[x][y].setState(state: nextState)
-//                            if self.cellBuffer0[x][y].alive {
-//                               self.spriteGrid[x][y].alpha = CellAlpha.live
-//                            } else {
-//                               self.spriteGrid[x][y].alpha = CellAlpha.dead
-//                            }
-//                        }
-//                    }
-
                 }
             }
             
-//            self.switchCellBuffer()
-//            self.cellBuffer0InUse = !self.cellBuffer0InUse
+            self.switchCellBuffer()
         }
-        
-        self.switchCellBuffer()
-//        self.cellBuffer0InUse = !self.cellBuffer0InUse
-//        self.cellBuffer0InUse.toggle()
         
         generation += 1
         return generation
@@ -359,16 +262,13 @@ final class CellGrid {
 
         let touchedCell = cellBuffer[x][y]
         if !withAltAction && !touchedCell.alive {
-//            spriteGrid[x][y].alpha = CellAlpha.live
-//            print("Turned sprite alpha to live: \(spriteGrid[x][y].alpha)")
             updateQueue.sync(flags: .barrier) {
                 spriteGrid[x][y].alpha = CellAlpha.live
-                touchedCell.makeLive()
-//                if gameRunning {
-//                    touchedCell.makeLive()
-//                } else {
-//                    touchedCell.makeLiveTouched()
-//                }
+                if gameRunning {
+                    touchedCell.makeLive()
+                } else {
+                    touchedCell.makeLiveTouched()
+                }
             }
         }
         
