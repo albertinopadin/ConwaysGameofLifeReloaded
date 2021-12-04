@@ -14,11 +14,11 @@ final class CellGrid {
     let yCount: Int
     let halfCountX: Int
     let halfCountY: Int
-    final var cellBuffer0 = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
-    final var cellBuffer1 = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
+    final var cellBuffer0 = [[UInt8]]()   // 2D Array to hold the cells
+    final var cellBuffer1 = [[UInt8]]()   // 2D Array to hold the cells
     final var spriteGrid  = ContiguousArray<ContiguousArray<SKSpriteNode>>()   // 2D Array to hold the cells
-    final var cellBuffer = ContiguousArray<ContiguousArray<Cell>>()
-    final var cellBufferNext = ContiguousArray<ContiguousArray<Cell>>()
+//    final var cellBuffer = [[UInt8]]()
+//    final var cellBufferNext = [[UInt8]]()
     final var cellBuffer0InUse: Bool = true
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
@@ -50,24 +50,25 @@ final class CellGrid {
         cellBuffer0 = makeCellBuffer(xCells: xCells, yCells: yCells)
         cellBuffer1 = makeCellBuffer(xCells: xCells, yCells: yCells)
         spriteGrid = makeSpriteGrid(xCells: xCells, yCells: yCells)
-        setNeighborsForAllCellsInBuffer(buffer: cellBuffer0)
-        setNeighborsForAllCellsInBuffer(buffer: cellBuffer1)
-        cellBuffer = cellBuffer0
-        cellBufferNext = cellBuffer0
+        // Maybe do this as arrays of pointers into the neighbors???
+//        setNeighborsForAllCellsInBuffer(buffer: cellBuffer0)
+//        setNeighborsForAllCellsInBuffer(buffer: cellBuffer1)
+//        cellBuffer = cellBuffer0
+//        cellBufferNext = cellBuffer0
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
     
     @inlinable
     @inline(__always)
-    final func makeCellBuffer(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
-        let initialCell = Cell(alive: false)
-        let newBufferRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
-        var newBuffer = ContiguousArray<ContiguousArray<Cell>>(repeating: newBufferRow, count: xCells)
+    final func makeCellBuffer(xCells: Int, yCells: Int) -> [[UInt8]] {
+//        let newBufferRow = ContiguousArray<Bool>(repeating: false, count: yCells)
+//        return ContiguousArray<ContiguousArray<Bool>>(repeating: newBufferRow, count: xCells)
         
-        // Have to do this, otherwise the entire buffer will be referring to the same Cell:
+        let newBufferRow = [UInt8](repeating: 0, count: yCells)
+        var newBuffer = [[UInt8]](repeating: newBufferRow, count: xCells)
         for x in 0..<xCells {
             for y in 0..<yCells {
-                newBuffer[x][y] = Cell(alive: false)
+                newBuffer[x][y] = 0
             }
         }
         
@@ -120,16 +121,18 @@ final class CellGrid {
         return (CGFloat(iteration) * length) + length/2
     }
     
-    private func setNeighborsForAllCellsInBuffer(buffer: ContiguousArray<ContiguousArray<Cell>>) {
-        for x in 0..<xCount {
-            for y in 0..<yCount {
-                buffer[x][y].neighbors = getCellNeighbors(x: x, y: y, buffer: buffer)
-            }
-        }
-    }
+//    private func setNeighborsForAllCellsInBuffer(buffer: ContiguousArray<ContiguousArray<Cell>>) {
+//        for x in 0..<xCount {
+//            for y in 0..<yCount {
+//                buffer[x][y].neighbors = getCellNeighbors(x: x, y: y, buffer: buffer)
+//            }
+//        }
+//    }
     
-    private func getCellNeighbors(x: Int, y: Int, buffer: ContiguousArray<ContiguousArray<Cell>>) -> ContiguousArray<Cell> {
-        var neighbors = ContiguousArray<Cell>()
+    @inlinable
+    @inline(__always)
+    public func getLiveNeighbors(x: Int, y: Int, buffer: [[UInt8]]) -> UInt8 {
+        var liveNeighbors: UInt8 = 0
         
         // Get the neighbors:
         let leftX   = x - 1
@@ -147,38 +150,38 @@ final class CellGrid {
         let lowerLeftNeighbor   = leftX > -1 && bottomY > -1 ? buffer[leftX][bottomY] : nil
         
         if let left_n = leftNeighbor {
-            neighbors.append(left_n)
+            liveNeighbors += left_n
         }
         
         if let upper_left_n = upperLeftNeighbor {
-            neighbors.append(upper_left_n)
+            liveNeighbors += upper_left_n
         }
         
         if let upper_n = upperNeighbor {
-            neighbors.append(upper_n)
+            liveNeighbors += upper_n
         }
         
         if let upper_right_n = upperRightNeighbor {
-            neighbors.append(upper_right_n)
+            liveNeighbors += upper_right_n
         }
         
         if let right_n = rightNeighbor {
-            neighbors.append(right_n)
+            liveNeighbors += right_n
         }
         
         if let lower_right_n = lowerRightNeighbor {
-            neighbors.append(lower_right_n)
+            liveNeighbors += lower_right_n
         }
         
         if let lower_n = lowerNeighbor {
-            neighbors.append(lower_n)
+            liveNeighbors += lower_n
         }
         
         if let lower_left_n = lowerLeftNeighbor {
-            neighbors.append(lower_left_n)
+            liveNeighbors += lower_left_n
         }
         
-        return neighbors
+        return liveNeighbors
     }
     
 //    @inlinable func prepareUpdateCells() {
@@ -192,18 +195,29 @@ final class CellGrid {
 //        }
 //    }
     
+//    @inlinable
+//    @inline(__always)
+//    final func switchCellBuffer() {
+//        if cellBuffer0InUse {
+//            cellBuffer = cellBuffer1
+//            cellBufferNext = cellBuffer0
+//        } else {
+//            cellBuffer = cellBuffer0
+//            cellBufferNext = cellBuffer1
+//        }
+//        cellBuffer0InUse.toggle()
+//    }
+    
     @inlinable
     @inline(__always)
-    final func switchCellBuffer() {
-        if cellBuffer0InUse {
-            cellBuffer = cellBuffer1
-            cellBufferNext = cellBuffer0
+    final func getCellState(currentState: UInt8, liveNeighbors: UInt8) -> UInt8 {
+        if !(currentState == 0 && liveNeighbors < 3) {
+            return (currentState == 1 && liveNeighbors == 2) || (liveNeighbors == 3) ? 1: 0
         } else {
-            cellBuffer = cellBuffer0
-            cellBufferNext = cellBuffer1
+            return currentState
         }
-        cellBuffer0InUse.toggle()
     }
+    
     
     // Update cells using Conway's Rules of Life:
     // 1) Any live cell with fewer than two live neighbors dies (underpopulation)
@@ -214,24 +228,65 @@ final class CellGrid {
     @inlinable
     @inline(__always)
     final func updateCells() -> UInt64 {
+//        let numLive = cellBuffer.lazy.joined().filter({ $0 == 1 }).count
+//        print("Gen: \(generation)")
+//        print("Number of live: \(numLive)")
+        
         //  FPS on 200x200
         //  FPS on 400x400
         //  FPS on 800x800
         // Prepare update & Update all in one go:
         // Doing concurrentPerform on both inner and outer loops doubles FPS:
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                    let liveNeighbors = self.getLiveNeighbors(x: x, y: y, buffer: self.cellBuffer)
+//                    let live = self.getCellState(currentState: self.cellBuffer[x][y],
+//                                                 liveNeighbors: liveNeighbors)
+//
+//                    self.cellBufferNext[x][y] = live
+//                    if live == 1 {
+//                        self.spriteGrid[x][y].alpha = CellAlpha.live
+//                    } else {
+//                        self.spriteGrid[x][y].alpha = CellAlpha.dead
+//                    }
+//                }
+//            }
+//
+//            self.switchCellBuffer()
+//        }
+        
+        
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.cellBufferNext[x][y].setState(state: self.cellBuffer[x][y].getUpdate())
-                    if self.cellBufferNext[x][y].alive {
-                        self.spriteGrid[x][y].alpha = CellAlpha.live
+                    if self.cellBuffer0InUse {
+                        let liveNeighbors = self.getLiveNeighbors(x: x, y: y, buffer: self.cellBuffer0)
+                        let live = self.getCellState(currentState: self.cellBuffer0[x][y],
+                                                     liveNeighbors: liveNeighbors)
+                        
+                        self.cellBuffer1[x][y] = live
+                        if live == 1 {
+                            self.spriteGrid[x][y].alpha = CellAlpha.live
+                        } else {
+                            self.spriteGrid[x][y].alpha = CellAlpha.dead
+                        }
                     } else {
-                        self.spriteGrid[x][y].alpha = CellAlpha.dead
+                        let liveNeighbors = self.getLiveNeighbors(x: x, y: y, buffer: self.cellBuffer1)
+                        let live = self.getCellState(currentState: self.cellBuffer1[x][y],
+                                                     liveNeighbors: liveNeighbors)
+                        
+                        self.cellBuffer0[x][y] = live
+                        if live == 1 {
+                            self.spriteGrid[x][y].alpha = CellAlpha.live
+                        } else {
+                            self.spriteGrid[x][y].alpha = CellAlpha.dead
+                        }
                     }
                 }
             }
-            
-            self.switchCellBuffer()
+
+            self.cellBuffer0InUse.toggle()
         }
         
         generation += 1
@@ -254,33 +309,31 @@ final class CellGrid {
         
         let x = Int(at.x / cellSize)
         let y = Int(at.y / cellSize)
-        
-        cellBuffer = cellBuffer0InUse ? cellBuffer0: cellBuffer1
-        
-        print("In touchedCell, x, y: \(x), \(y)")
-        print("cellBuffer0InUse: \(cellBuffer0InUse)")
 
-        let touchedCell = cellBuffer[x][y]
-        if !withAltAction && !touchedCell.alive {
-            updateQueue.sync(flags: .barrier) {
-                spriteGrid[x][y].alpha = CellAlpha.live
-                if gameRunning {
-                    touchedCell.makeLive()
-                } else {
-                    touchedCell.makeLiveTouched()
-                }
+        let touchedCell = cellBuffer0InUse ? cellBuffer0[x][y]: cellBuffer1[x][y]
+        if !withAltAction && touchedCell == 0 {
+//            updateQueue.sync(flags: .barrier) {
+//                spriteGrid[x][y].alpha = CellAlpha.live
+//                cellBuffer[x][y] = true
+//            }
+            spriteGrid[x][y].alpha = CellAlpha.live
+            if cellBuffer0InUse {
+                cellBuffer0[x][y] = 1
+            } else {
+                cellBuffer1[x][y] = 1
             }
         }
         
-        if withAltAction && touchedCell.alive {
-            updateQueue.sync(flags: .barrier) {
-                spriteGrid[x][y].alpha = CellAlpha.dead
-                if gameRunning {
-                    touchedCell.makeDead()
-                } else {
-                    touchedCell.makeDeadTouched()
-                }
-                
+        if withAltAction && touchedCell == 1 {
+//            updateQueue.sync(flags: .barrier) {
+//                spriteGrid[x][y].alpha = CellAlpha.dead
+//                cellBuffer[x][y] = false
+//            }
+            spriteGrid[x][y].alpha = CellAlpha.dead
+            if cellBuffer0InUse {
+                cellBuffer0[x][y] = 0
+            } else {
+                cellBuffer1[x][y] = 0
             }
         }
         
@@ -309,8 +362,11 @@ final class CellGrid {
             let x = Int(p.x / cellSize)
             let y = Int(p.y / cellSize)
 
-            let touchedCell = cellBuffer[x][y]
-            touchedCell.makeLive()
+            if cellBuffer0InUse {
+                cellBuffer0[x][y] = 1
+            } else {
+                cellBuffer1[x][y] = 1
+            }
             spriteGrid[x][y].alpha = CellAlpha.live
         }
     }
@@ -359,16 +415,22 @@ final class CellGrid {
     @inline(__always)
     final func reset() {
         // Reset the game to initial state with no cells alive:
-        updateQueue.sync(flags: .barrier) {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.cellBuffer[x][y].makeDead()
-                    spriteGrid[x][y].alpha = CellAlpha.dead
-                }
+//        updateQueue.sync(flags: .barrier) {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                    self.cellBuffer[x][y] = 0
+//                    spriteGrid[x][y].alpha = CellAlpha.dead
+//                }
+//            }
+//        }
+        
+        for x in 0..<xCount {
+            for y in 0..<yCount {
+                self.cellBuffer0[x][y] = 0
+                self.cellBuffer1[x][y] = 0
+                spriteGrid[x][y].alpha = CellAlpha.dead
             }
         }
-        
-//        grid.lazy.joined().forEach({ $0.makeDead() })
         
         generation = 0
     }
@@ -394,16 +456,35 @@ final class CellGrid {
         } else {
             if liveProbability > 0.0 {
                 let liveProb = Int(liveProbability*100)
-                updateQueue.sync {
-                    DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                        DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                            let randInt = Int.random(in: 0...100)
-                            if randInt <= liveProb {
-                                self.cellBuffer[x][y].makeLive()
-                                spriteGrid[x][y].alpha = CellAlpha.live
-                            }
+//                updateQueue.sync {
+//                    DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                        DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                            let randInt = Int.random(in: 0...100)
+//                            if randInt <= liveProb {
+//                                self.cellBuffer[x][y] = 1
+//                                spriteGrid[x][y].alpha = CellAlpha.live
+//                            }
+//                        }
+//                    }
+//                }
+                
+                for x in 0..<xCount {
+                    for y in 0..<yCount {
+                        let randInt = Int.random(in: 0...100)
+                        if randInt <= liveProb {
+                            self.cellBuffer0[x][y] = 1
+                            spriteGrid[x][y].alpha = CellAlpha.live
                         }
                     }
+                }
+                
+                
+                if cellBuffer0InUse {
+                    let live = cellBuffer0.lazy.joined().filter({ $0 == 1 }).count
+                    print("Number of live after setting random state: \(live)")
+                } else {
+                    let live = cellBuffer1.lazy.joined().filter({ $0 == 1 }).count
+                    print("Number of live after setting random state: \(live)")
                 }
                 
 //                grid.lazy.joined().forEach { cell in
@@ -420,7 +501,7 @@ final class CellGrid {
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.cellBuffer[x][y].makeLive()
+                    self.cellBuffer0[x][y] = 1
                     spriteGrid[x][y].alpha = CellAlpha.live
                 }
             }
