@@ -9,6 +9,12 @@
 import SpriteKit
 
 
+public struct CellAlpha {
+    public static let live: CGFloat = 1.0
+    public static let dead: CGFloat = 0.0
+}
+
+
 final class CellGrid {
     let xCount: Int
     let yCount: Int
@@ -23,7 +29,7 @@ final class CellGrid {
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
     var spaceshipFactory: SpaceshipFactory?
-    var shadowed = [Cell]()
+//    var shadowed = [Cell]()
     final let updateQueue = DispatchQueue(label: "cgol.update.queue",
                                           qos: .userInteractive,
                                           attributes: .concurrent)
@@ -265,22 +271,19 @@ final class CellGrid {
                         let live = self.getCellState(currentState: self.cellBuffer0[x][y],
                                                      liveNeighbors: liveNeighbors)
                         
-                        self.cellBuffer1[x][y] = live
-                        if live == 1 {
-                            self.spriteGrid[x][y].alpha = CellAlpha.live
-                        } else {
-                            self.spriteGrid[x][y].alpha = CellAlpha.dead
+                        if self.cellBuffer1[x][y] != live {
+                            self.cellBuffer1[x][y] = live
+                            self.spriteGrid[x][y].alpha = live == 1 ? CellAlpha.live: CellAlpha.dead
                         }
+                        
                     } else {
                         let liveNeighbors = self.getLiveNeighbors(x: x, y: y, buffer: self.cellBuffer1)
                         let live = self.getCellState(currentState: self.cellBuffer1[x][y],
                                                      liveNeighbors: liveNeighbors)
                         
-                        self.cellBuffer0[x][y] = live
-                        if live == 1 {
-                            self.spriteGrid[x][y].alpha = CellAlpha.live
-                        } else {
-                            self.spriteGrid[x][y].alpha = CellAlpha.dead
+                        if self.cellBuffer0[x][y] != live {
+                            self.cellBuffer0[x][y] = live
+                            self.spriteGrid[x][y].alpha = live == 1 ? CellAlpha.live: CellAlpha.dead
                         }
                     }
                 }
