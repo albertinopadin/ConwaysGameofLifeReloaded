@@ -127,18 +127,6 @@ class GameScene: SKScene {
     
     func addCellGridToScene(cellGrid: ContiguousArray<ContiguousArray<Cell>>) {
         cellGrid.lazy.joined().forEach({ self.addChild($0.node) })
-        
-//        for cellArray in cellGrid {
-//            for cell in cellArray {
-//                self.addChild(cell.node)
-//            }
-//        }
-        
-//        for cellArray in cellGrid {
-//            for cell in cellArray {
-//                backingNode.addChild(cell.node)
-//            }
-//        }
     }
     
     // Called every 16ms, or every 8ms on ProMotion devices:
