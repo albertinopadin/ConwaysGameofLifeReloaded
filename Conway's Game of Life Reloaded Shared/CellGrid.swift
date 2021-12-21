@@ -35,6 +35,7 @@ final class CellGrid {
                                                     colorBlendFactor: 1.0,
                                                     duration: 0.3)
     
+    
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
@@ -185,24 +186,35 @@ final class CellGrid {
         // 30-42 FPS on 400x400
         // 12-18 FPS on 800x800
         // Prepare update:
-        updateQueue.sync {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].prepareUpdate()
-                }
-            }
-        }
-
-        // Update
-        // Doing concurrentPerform on both inner and outer loops doubles FPS:
-        updateQueue.sync {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].update()
-                }
-            }
-        }
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                    self.grid[x][y].prepareUpdate()
+//                }
+//            }
+//        }
+//
+//        // Update
+//        // Doing concurrentPerform on both inner and outer loops doubles FPS:
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                    self.grid[x][y].update()
+//                }
+//            }
+//        }
         
+        let lazyRef = grid.lazy.joined().filter({ $0.alive })
+            
+        lazyRef.forEach({
+            $0.prepareUpdate()
+            $0.neighbors.forEach({ $0.prepareUpdate() })
+        })
+        
+        lazyRef.forEach({
+            $0.update()
+            $0.neighbors.forEach({ $0.update() })
+        })
         
         // With Alpha trick:
         // 38-44 FPS on 200x200

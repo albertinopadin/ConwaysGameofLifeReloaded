@@ -32,6 +32,10 @@ public final class Cell {
     public final let colorAliveAction: SKAction
     public final let colorDeadAction: SKAction
     
+    public final let cellUpdateQueue = DispatchQueue(label: "cgol.update.cell.queue",
+                                                     qos: .userInteractive,
+                                                     attributes: .concurrent)
+    
     public init(frame: CGRect,
                 color: SKColor,
                 shadowColor: SKColor,
