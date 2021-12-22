@@ -6,7 +6,7 @@
 //  Copyright © 2020 Albertino Padin. All rights reserved.
 //
 
-public protocol GameWindowDelegate: class {
+public protocol GameWindowDelegate: AnyObject {
     func toggleGameplay()
     func resetGame()
 }
