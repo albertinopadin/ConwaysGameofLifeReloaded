@@ -1,2 +1,4 @@
 **.trace/
 **xcshareddata/
+.DS_Store
+**xcuserdata/

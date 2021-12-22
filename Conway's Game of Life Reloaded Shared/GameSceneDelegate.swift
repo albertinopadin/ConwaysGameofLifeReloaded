@@ -6,7 +6,7 @@
 //  Copyright © 2020 Albertino Padin. All rights reserved.
 //
 
-public protocol GameSceneDelegate: class {
+public protocol GameSceneDelegate: AnyObject {
     func setGeneration(_ generation: UInt64)
     func setSpeed(_ speed: Double)
 }
