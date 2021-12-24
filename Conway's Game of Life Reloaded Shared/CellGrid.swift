@@ -12,32 +12,37 @@ import SpriteKit
 // Using Hashlife algorithm, as described here: https://johnhw.github.io/hashlife/index.md.html
 final class QuadTreeNode: Hashable, CustomStringConvertible {
     static func == (lhs: QuadTreeNode, rhs: QuadTreeNode) -> Bool {
-        return lhs._hash == rhs._hash
+        return lhs.ihash == rhs.ihash
     }
     
-    var k: UInt
+    static let PRIME_A: Int = 5131830419411
+    static let PRIME_B: Int = 3758991985019
+    static let PRIME_C: Int = 8973110871315
+    static let PRIME_D: Int = 4318490180473
+    
+    var k: Int
     var a: QuadTreeNode?
     var b: QuadTreeNode?
     var c: QuadTreeNode?
     var d: QuadTreeNode?
-    var n: UInt
-    var _hash: String
+    var n: Int
+    var ihash: Int
     var description: String {
         return "Node k=\(k), \(1<<k) x \(1<<k), pop \(n)"
     }
     
-    init(k: UInt, a: QuadTreeNode?, b: QuadTreeNode?, c: QuadTreeNode?, d: QuadTreeNode?, n: UInt, hash: String) {
+    init(k: Int, a: QuadTreeNode?, b: QuadTreeNode?, c: QuadTreeNode?, d: QuadTreeNode?, n: Int, hash: Int) {
         self.k = k
         self.a = a
         self.b = b
         self.c = c
         self.d = d
         self.n = n
-        self._hash = hash
+        self.ihash = hash
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(_hash)
+        hasher.combine(ihash)
     }
 }
 
@@ -69,10 +74,12 @@ final class CellGrid {
                                                     duration: 0.3)
     
     // Hashlife base level nodes:
-    final let alive = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 1, hash: "1")
-    final let dead  = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 0, hash: "0")
+    final let alive = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 1, hash: 1)
+    final let dead  = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 0, hash: 0)
     
     final var quadTreeHead: QuadTreeNode
+    final var gridPoints = [(Int, Int)]()
+    final let cache = NSCache<NSString, QuadTreeNode>()
     
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
@@ -87,6 +94,122 @@ final class CellGrid {
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
     
+    // ---------------- Hashlife functions: ---------------- //
+    
+    // TODO: Implement cache function as decorator (like in Python)
+    // TODO: Add cache code to join, getZero, and succesor
+    func getQuadHash(a: QuadTreeNode, b: QuadTreeNode, c: QuadTreeNode, d: QuadTreeNode) -> Int {
+        let ak2 = a.k + 2
+        let amp = a.ihash*QuadTreeNode.PRIME_A
+        let bmp = b.ihash*QuadTreeNode.PRIME_B
+        let cmp = c.ihash*QuadTreeNode.PRIME_C
+        let dmp = d.ihash*QuadTreeNode.PRIME_D
+        let primeMult = ak2 + amp + bmp + cmp + dmp
+        return primeMult & ((1 << 63) - 1)
+    }
+    
+    func join(a: QuadTreeNode, b: QuadTreeNode, c: QuadTreeNode, d: QuadTreeNode) -> QuadTreeNode {
+        let n = a.n + b.n + c.n + d.n
+        let newHash = getQuadHash(a: a, b: b, c: c, d: d)
+        return QuadTreeNode(k: a.k + 1, a: a, b: b, c: c, d: d, n: n, hash: newHash)
+    }
+    
+    func getZero(k: Int) -> QuadTreeNode {
+        return k == 0 ? dead: join(a: getZero(k: k-1), b: getZero(k: k-1), c: getZero(k: k-1), d: getZero(k: k-1))
+    }
+    
+    func getCenter(m: QuadTreeNode) -> QuadTreeNode {
+        let z = getZero(k: m.k - 1)
+        return join(a: join(a: z, b: z, c: z, d: m.a!),
+                    b: join(a: z, b: z, c: m.b!, d: z),
+                    c: join(a: z, b: m.c!, c: z, d: z),
+                    d: join(a: m.d!, b: z, c: z, d: z))
+    }
+    
+    // Life rule for 3x3 collection of cells:
+    func life(a: QuadTreeNode, b: QuadTreeNode, c: QuadTreeNode, d: QuadTreeNode, E: QuadTreeNode,
+              f: QuadTreeNode, g: QuadTreeNode, h: QuadTreeNode, i: QuadTreeNode) -> QuadTreeNode {
+        let mooreNeighborsLive = [a, b, c, d, f, g, h, i].lazy.filter({ $0.n == 1 }).count
+        return (E.n == 1 && mooreNeighborsLive == 2) || mooreNeighborsLive == 3 ? alive: dead
+    }
+    
+    // TODO: So many force unwraps is nasty...
+    func life4x4(m: QuadTreeNode) -> QuadTreeNode {
+        let ad = life(a: m.a!.a!, b: m.a!.b!, c: m.b!.a!, d: m.a!.c!, E: m.a!.d!, f: m.b!.c!, g: m.c!.a!, h: m.c!.b!, i: m.d!.a!)
+        let bc = life(a: m.a!.b!, b: m.b!.a!, c: m.b!.b!, d: m.a!.d!, E: m.b!.c!, f: m.b!.d!, g: m.c!.b!, h: m.d!.a!, i: m.d!.b!)
+        let cb = life(a: m.a!.c!, b: m.a!.d!, c: m.b!.c!, d: m.c!.a!, E: m.c!.b!, f: m.d!.a!, g: m.c!.c!, h: m.c!.d!, i: m.d!.c!)
+        let da = life(a: m.a!.d!, b: m.b!.c!, c: m.b!.d!, d: m.c!.b!, E: m.d!.a!, f: m.d!.b!, g: m.c!.d!, h: m.c!.d!, i: m.d!.d!)
+        return join(a: ad, b: bc, c: cb, d: da)
+    }
+    
+    // Return the 2^(k-1) x 2^(k-1) successor, 2^j generations in the future:
+    func successor(m: QuadTreeNode, j: Int? = nil) -> QuadTreeNode {
+        if m.n == 0 {
+            return m.a!
+        } else if m.k == 2 {
+            // Base case:
+            return life4x4(m: m)
+        } else {
+            let jn: Int
+            if let j = j {
+                jn = min(j, m.k - 2)
+            } else {
+                jn = m.k - 2
+            }
+            
+            let c1 = successor(m: join(a: m.a!.a!, b: m.a!.b!, c: m.a!.c!, d: m.a!.d!), j: jn)
+            let c2 = successor(m: join(a: m.a!.b!, b: m.b!.a!, c: m.a!.d!, d: m.b!.c!), j: jn)
+            let c3 = successor(m: join(a: m.b!.a!, b: m.b!.b!, c: m.b!.c!, d: m.b!.d!), j: jn)
+            let c4 = successor(m: join(a: m.a!.c!, b: m.a!.d!, c: m.c!.a!, d: m.c!.b!), j: jn)
+            let c5 = successor(m: join(a: m.a!.d!, b: m.b!.c!, c: m.c!.b!, d: m.d!.a!), j: jn)
+            let c6 = successor(m: join(a: m.b!.c!, b: m.b!.d!, c: m.d!.a!, d: m.d!.b!), j: jn)
+            let c7 = successor(m: join(a: m.c!.a!, b: m.c!.b!, c: m.c!.c!, d: m.c!.d!), j: jn)
+            let c8 = successor(m: join(a: m.c!.b!, b: m.d!.a!, c: m.c!.d!, d: m.d!.c!), j: jn)
+            let c9 = successor(m: join(a: m.d!.a!, b: m.d!.b!, c: m.d!.c!, d: m.d!.d!), j: jn)
+
+            if jn < m.k - 2 {
+                return join(a: join(a: c1.d!, b: c2.c!, c: c4.b!, d: c5.a!),
+                            b: join(a: c2.d!, b: c3.c!, c: c5.b!, d: c6.a!),
+                            c: join(a: c4.d!, b: c5.c!, c: c7.b!, d: c8.a!),
+                            d: join(a: c5.d!, b: c6.c!, c: c8.b!, d: c9.a!))
+            } else {
+                return join(a: successor(m: join(a: c1, b: c2, c: c4, d: c5), j: j),
+                            b: successor(m: join(a: c2, b: c3, c: c5, d: c6), j: j),
+                            c: successor(m: join(a: c4, b: c5, c: c7, d: c8), j: j),
+                            d: successor(m: join(a: c5, b: c6, c: c8, d: c9), j: j))
+            }
+        }
+    }
+    
+    func advance(node: QuadTreeNode, n: Int) -> QuadTreeNode {
+        if n == 0 {
+            return node
+        }
+        
+        // Binary expansion:
+        var levels = n
+        var _node = node
+        var bits = [Int]()
+        while levels > 0 {
+            bits.append(levels & 1)
+            levels = levels >> 1
+            _node = getCenter(m: _node)  // Nest
+        }
+        
+        bits.reversed().enumerated().forEach { (k: Int, bit: Int) in
+            let j = bits.count - k - 1
+            if bit == 1 {
+                _node = successor(m: _node, j: j)
+            }
+        }
+        
+        return _node
+    }
+    
+    // TODO: missing expand & construct
+    
+    // ----------------------------------------------------- //
+    
     @inlinable
     @inline(__always)
     final func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
@@ -98,11 +221,6 @@ final class CellGrid {
         let newGridRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
         var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
 
-        // For adding to backing node:
-//        let totalSize = CGSize(width: CGFloat(xCells)*cellSize, height: CGFloat(yCells)*cellSize)
-//        let xOffset = totalSize.width/2
-//        let yOffset = totalSize.height/2
-
         for x in 0..<xCells {
             for y in 0..<yCells {
                 // The x and y coords are not at the edge of the cell; instead they are the center of it.
@@ -113,12 +231,6 @@ final class CellGrid {
                                        y: cellMiddle(iteration: y, length: cellSize),
                                        width: cellSize,
                                        height: cellSize)
-
-                // For adding to backing node:
-//                let cellFrame = CGRect(x: cellMiddle(iteration: x, length: cellSize) - xOffset,
-//                                       y: cellMiddle(iteration: y, length: cellSize) - yOffset,
-//                                       width: cellSize,
-//                                       height: cellSize)
 
                 newGrid[x][y] = Cell(frame: cellFrame,
                                      color: aliveColor,
@@ -199,17 +311,6 @@ final class CellGrid {
         return neighbors
     }
     
-//    @inlinable func prepareUpdateCells() {
-//        // Prepare update:
-//        DispatchQueue.global(qos: .userInteractive).sync {
-//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                    self.grid[x][y].prepareUpdate()
-//                }
-//            }
-//        }
-//    }
-    
     // Update cells using Conway's Rules of Life:
     // 1) Any live cell with fewer than two live neighbors dies (underpopulation)
     // 2) Any live cell with two or three live neighbors lives on to the next generation
@@ -243,61 +344,6 @@ final class CellGrid {
                 }
             }
         }
-        
-        
-        // With Alpha trick:
-        // 38-44 FPS on 200x200
-        // 30-38 FPS on 400x400
-        // 12-15 FPS on 800x800
-        // Prepare update:
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.halfCountX) { x in
-//                DispatchQueue.concurrentPerform(iterations: self.halfCountY) { y in
-//                    self.grid[x][y].prepareUpdate()
-//                    self.grid[x + self.halfCountX][y].prepareUpdate()
-//                    self.grid[x][y + self.halfCountY].prepareUpdate()
-//                    self.grid[x + self.halfCountX][y + self.halfCountY].prepareUpdate()
-//                }
-//            }
-//        }
-//
-//        // Update
-//        // Doing concurrentPerform on both inner and outer loops doubles FPS:
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.halfCountX) { x in
-//                DispatchQueue.concurrentPerform(iterations: self.halfCountY) { y in
-//                    self.grid[x][y].update()
-//                    self.grid[x + self.halfCountX][y].update()
-//                    self.grid[x][y + self.halfCountY].update()
-//                    self.grid[x + self.halfCountX][y + self.halfCountY].update()
-//                }
-//            }
-//        }
-        
-        
-        // 25-40+ FPS on 200x200 grid:
-        // 8-20, 85-105% CPU FPS on 400x400 grid:
-//        grid.lazy.joined().forEach({ $0.prepareUpdate() })
-//        grid.lazy.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
-        
-        
-        // 25-40+ FPS on 200x200 grid:
-        // 10-30 FPS on 400x400 grid:
-        // This also seems to have a similar FPS and Frametime as double concurrentPerform:
-        // Prepare update:
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].lazy.forEach { $0.prepareUpdate() }
-//            }
-//        }
-//
-//        // Update
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
-//            }
-//        }
-
         
         generation += 1
         return generation
