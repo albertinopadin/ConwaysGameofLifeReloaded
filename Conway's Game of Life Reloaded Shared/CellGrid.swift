@@ -9,6 +9,39 @@
 import SpriteKit
 
 
+// Using Hashlife algorithm, as described here: https://johnhw.github.io/hashlife/index.md.html
+final class QuadTreeNode: Hashable, CustomStringConvertible {
+    static func == (lhs: QuadTreeNode, rhs: QuadTreeNode) -> Bool {
+        return lhs._hash == rhs._hash
+    }
+    
+    var k: UInt
+    var a: QuadTreeNode?
+    var b: QuadTreeNode?
+    var c: QuadTreeNode?
+    var d: QuadTreeNode?
+    var n: UInt
+    var _hash: String
+    var description: String {
+        return "Node k=\(k), \(1<<k) x \(1<<k), pop \(n)"
+    }
+    
+    init(k: UInt, a: QuadTreeNode?, b: QuadTreeNode?, c: QuadTreeNode?, d: QuadTreeNode?, n: UInt, hash: String) {
+        self.k = k
+        self.a = a
+        self.b = b
+        self.c = c
+        self.d = d
+        self.n = n
+        self._hash = hash
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(_hash)
+    }
+}
+
+
 final class CellGrid {
     let xCount: Int
     let yCount: Int
@@ -35,12 +68,20 @@ final class CellGrid {
                                                     colorBlendFactor: 1.0,
                                                     duration: 0.3)
     
+    // Hashlife base level nodes:
+    final let alive = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 1, hash: "1")
+    final let dead  = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 0, hash: "0")
+    
+    final var quadTreeHead: QuadTreeNode
+    
+    
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
         halfCountX = Int(xCells/2)
         halfCountY = Int(yCells/2)
         self.cellSize = cellSize
+        quadTreeHead = alive  // TODO: Actually implement this
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
