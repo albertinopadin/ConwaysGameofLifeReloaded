@@ -26,12 +26,15 @@ class GameScene: SKScene {
 //    let defaultYCells: Int = 200
 //    let defaultXCells: Int = 400
 //    let defaultYCells: Int = 400
-    let defaultXCells: Int = 600
-    let defaultYCells: Int = 600
+    static let defaultXCells: Int = 600
+    static let defaultYCells: Int = 600
 //    let defaultXCells: Int = 800
 //    let defaultYCells: Int = 800
 //    let defaultXCells: Int = 1000
 //    let defaultYCells: Int = 1000
+    
+    var xCells: Int
+    var yCells: Int
     
     var gameRunning: Bool = false
     var gameDelegate: GameSceneDelegate?
@@ -40,22 +43,30 @@ class GameScene: SKScene {
     var spaceshipType: SpaceshipType = .None
 //    let backingNode = SKSpriteNode()
     
-    class func newGameScene() -> GameScene {
-        // Load 'GameScene.sks' as an SKScene.
-        guard let scene = GameScene(fileNamed: "GameScene") else {
-            print("Failed to load GameScene.sks")
-            abort()
-        }
-
+    class func newGameScene(size: CGSize,
+                            xCells: Int = GameScene.defaultXCells,
+                            yCells: Int = GameScene.defaultYCells) -> GameScene {
+        let scene = GameScene(size: size, xCells: xCells, yCells: yCells)
         // Set the scale mode to scale to fit the window
         scene.scaleMode = .aspectFill
         return scene
     }
     
+    init(size: CGSize, xCells: Int, yCells: Int) {
+        self.xCells = xCells
+        self.yCells = yCells
+        super.init(size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     func setUpScene() {
         setUpCamera()
         (xCellsViz, yCellsViz) = getVisibleCellsXYBasedOnDeviceViewport(cellSize: defaultCellSize)
-        cellGrid = CellGrid(xCells: defaultXCells, yCells: defaultYCells, cellSize: defaultCellSize)
+        cellGrid = CellGrid(xCells: xCells, yCells: yCells, cellSize: defaultCellSize)
         addCellGridToScene(cellGrid: cellGrid.grid)
         positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
     }
@@ -74,7 +85,7 @@ class GameScene: SKScene {
     }
     
     func setSpeed(_ speed: Double) {
-//        updateInterval = 1/speed
+        // updateInterval = 1/speed
         updateInterval = (1/speed)/4  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
         print("Update interval: \(updateInterval)")
     }

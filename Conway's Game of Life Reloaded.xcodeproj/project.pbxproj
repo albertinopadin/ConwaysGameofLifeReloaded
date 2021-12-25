@@ -8,13 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		CE185B5C264924F3008FD4A9 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
+		CE2632DF277751EF00E05C04 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
+		CE2632E02777521B00E05C04 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
+		CE2632E12777521B00E05C04 /* GunFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA02708572400984288 /* GunFactory.swift */; };
+		CE2632E22777521B00E05C04 /* ShapeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA2270858D700984288 /* ShapeFactory.swift */; };
+		CE2632E32777521B00E05C04 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
+		CE2632E42777521B00E05C04 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
 		CE527EA12708572400984288 /* GunFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA02708572400984288 /* GunFactory.swift */; };
 		CE527EA3270858D700984288 /* ShapeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA2270858D700984288 /* ShapeFactory.swift */; };
 		CE527EA427085FF900984288 /* GunFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA02708572400984288 /* GunFactory.swift */; };
 		CE527EA527085FF900984288 /* ShapeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA2270858D700984288 /* ShapeFactory.swift */; };
 		CE527EA7270860E200984288 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
 		CE527EA82708629600984288 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
-		CE57E6A42600CD940014CE14 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
 		CE6D271B274C42C40082AA18 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
 		CE6D271C274C433F0082AA18 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
 		CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
@@ -488,6 +493,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE2632DF277751EF00E05C04 /* SpaceshipFactory.swift in Sources */,
 				CE7E89F9244E4E310036F64C /* GameWindowDelegate.swift in Sources */,
 				CE6D271B274C42C40082AA18 /* CollectionExtension.swift in Sources */,
 				CECAD54B2446E00D00E07A8B /* GameScene.swift in Sources */,
@@ -498,7 +504,6 @@
 				CE527EA3270858D700984288 /* ShapeFactory.swift in Sources */,
 				CED7FB7F248E444D00BDB0F4 /* SpeedViewController.swift in Sources */,
 				CE527EA7270860E200984288 /* CGPointExtension.swift in Sources */,
-				CE57E6A42600CD940014CE14 /* SpaceshipFactory.swift in Sources */,
 				CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */,
 				CE527EA12708572400984288 /* GunFactory.swift in Sources */,
 				CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */,
@@ -509,6 +514,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE2632E02777521B00E05C04 /* SpaceshipFactory.swift in Sources */,
+				CE2632E12777521B00E05C04 /* GunFactory.swift in Sources */,
+				CE2632E22777521B00E05C04 /* ShapeFactory.swift in Sources */,
+				CE2632E32777521B00E05C04 /* CGPointExtension.swift in Sources */,
+				CE2632E42777521B00E05C04 /* CollectionExtension.swift in Sources */,
 				CE7E89FA244E4E560036F64C /* GameWindowDelegate.swift in Sources */,
 				CECAD54C2446E00D00E07A8B /* GameScene.swift in Sources */,
 				CE7E89F12447F8550036F64C /* CellGrid.swift in Sources */,

@@ -23,18 +23,19 @@ class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresenta
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        gameScene = GameScene.newGameScene()
-        gameScene.gameDelegate = self
 
         // Present the scene
         let skView = self.view as! SKView
+        gameScene = GameScene.newGameScene(size: skView.bounds.size, xCells: 200, yCells: 400)
+        gameScene.gameDelegate = self
+        skView.ignoresSiblingOrder = true
+        skView.preferredFramesPerSecond = 120
         skView.presentScene(gameScene)
         
         skView.showsFPS = true
         skView.showsNodeCount = true
         skView.showsDrawCount = true
-        skView.ignoresSiblingOrder = true
+        skView.showsQuadCount = true
         
         setUpPinchGestureRecognizer()
         setUpSpeedViewController()
@@ -74,6 +75,11 @@ class GameViewController: UIViewController, GameSceneDelegate, UIPopoverPresenta
         if toggleGameplayButton.title == pauseString {
             toggleGameplayButton.title = runString
         }
+    }
+    
+    @IBAction func randomizeGame(sender: UIBarButtonItem) {
+        let liveProbability = 0.15
+        gameScene.randomizeGame(liveProbability: liveProbability)
     }
     
     @IBAction func presentSpeedPopover(sender: UIBarButtonItem) {
