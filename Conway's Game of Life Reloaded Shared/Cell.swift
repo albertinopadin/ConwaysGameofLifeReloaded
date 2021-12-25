@@ -76,16 +76,18 @@ public final class Cell {
         self.colorAliveAction = colorAliveAction
         self.colorDeadAction = colorDeadAction
         self.alive = alive
+        let nodeSize = CGSize(width: frame.size.width * colorNodeSizeFraction,
+                              height: frame.size.height * colorNodeSizeFraction)
         node = SKSpriteNode(texture: nil,
                             color: color,
-                            size: CGSize(width: frame.size.width * colorNodeSizeFraction,
-                                         height: frame.size.height * colorNodeSizeFraction))
+                            size: nodeSize)
         node.position = frame.origin
         node.blendMode = .replace
         node.physicsBody?.isDynamic = false
         
         node.texture?.filteringMode = .nearest
-        node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
+        // Using centerRect makes the quad count higher, which is bad for performance:
+        // node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
         node.alpha = CellAlpha.dead
     }
     

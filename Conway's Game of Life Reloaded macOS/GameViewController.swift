@@ -21,12 +21,14 @@ class GameViewController: NSViewController, GameWindowDelegate {
         
         // Present the scene
         let skView = self.view as! SKView
+        skView.ignoresSiblingOrder = true
+        skView.preferredFramesPerSecond = 120
         skView.presentScene(gameScene)
         
         skView.showsFPS = true
         skView.showsNodeCount = true
         skView.showsDrawCount = true
-        skView.ignoresSiblingOrder = true
+        skView.showsQuadCount = true
     }
     
     func toggleGameplay() {
