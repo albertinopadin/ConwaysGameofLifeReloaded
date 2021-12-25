@@ -18,10 +18,16 @@ class GameScene: SKScene {
     var yCellsViz: Int = 0
     
     let defaultCellSize: CGFloat = 23.0
+//    let defaultXCells: Int = 50
+//    let defaultYCells: Int = 50
+//    let defaultXCells: Int = 100
+//    let defaultYCells: Int = 100
 //    let defaultXCells: Int = 200
 //    let defaultYCells: Int = 200
-    let defaultXCells: Int = 400
-    let defaultYCells: Int = 400
+//    let defaultXCells: Int = 400
+//    let defaultYCells: Int = 400
+    let defaultXCells: Int = 600
+    let defaultYCells: Int = 600
 //    let defaultXCells: Int = 800
 //    let defaultYCells: Int = 800
 //    let defaultXCells: Int = 1000
@@ -43,10 +49,6 @@ class GameScene: SKScene {
 
         // Set the scale mode to scale to fit the window
         scene.scaleMode = .aspectFill
-//        scene.backgroundColor = .black
-//        scene.blendMode = .replace
-//        scene.shouldRasterize = true
-        scene.shouldRasterize = false
         return scene
     }
     
@@ -56,21 +58,9 @@ class GameScene: SKScene {
         cellGrid = CellGrid(xCells: defaultXCells, yCells: defaultYCells, cellSize: defaultCellSize)
         addCellGridToScene(cellGrid: cellGrid.grid)
         positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
-        
-//        let w = CGFloat(defaultXCells) * defaultCellSize
-//        let h = CGFloat(defaultYCells) * defaultCellSize
-//        let bgSize = CGSize(width: w, height: h)
-//        backingNode.size = bgSize
-//        backingNode.position = CGPoint(x: bgSize.width/2, y: bgSize.height/2)
-//        backingNode.color = .black
-//        backingNode.blendMode = .replace
-//        self.addChild(backingNode)
     }
     
     func setUpCamera() {
-//        cameraNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-//        cameraNode.position = .zero
-//        cameraNode.position = CGPoint(x: -self.frame.midX, y: -self.frame.midY)
         self.addChild(cameraNode)
         self.camera = cameraNode
     }
@@ -83,24 +73,9 @@ class GameScene: SKScene {
         cameraNode.setScale(zoom)
     }
     
-//    func getZoom() -> CGFloat {
-//        return backingNode.xScale
-//    }
-//
-//    func setZoom(_ zoom: CGFloat) {
-//        backingNode.setScale(1/zoom)
-//    }
-    
-//    func getZoom() -> CGFloat {
-//        return self.xScale
-//    }
-//
-//    func setZoom(_ zoom: CGFloat) {
-//        self.setScale(1/zoom)
-//    }
-    
     func setSpeed(_ speed: Double) {
-        updateInterval = 1/speed
+//        updateInterval = 1/speed
+        updateInterval = (1/speed)/4  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
         print("Update interval: \(updateInterval)")
     }
     
@@ -143,10 +118,6 @@ class GameScene: SKScene {
         }
     }
     
-//    override func didFinishUpdate() {
-//        cellGrid.prepareUpdateCells()
-//    }
-    
     func toggleGameplay() {
         gameRunning.toggle()
     }
@@ -156,17 +127,6 @@ class GameScene: SKScene {
         cellGrid.reset()
         gameDelegate?.setGeneration(0)
     }
-    
-//    func setLiveProbability(probability: Double) {
-//        cellGrid.setLiveProbability(probability)
-//    }
-    
-//    func randomizeGame() {
-//        gameRunning = false
-//        cellGrid.reset()
-//        cellGrid.randomState()
-//        gameDelegate?.setGeneration(0)
-//    }
     
     func randomizeGame(liveProbability: Double) {
         gameRunning = false
