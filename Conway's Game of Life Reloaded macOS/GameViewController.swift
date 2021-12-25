@@ -17,10 +17,9 @@ class GameViewController: NSViewController, GameWindowDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        gameScene = GameScene.newGameScene()
-        
         // Present the scene
         let skView = self.view as! SKView
+        gameScene = GameScene.newGameScene(size: skView.bounds.size)
         skView.ignoresSiblingOrder = true
         skView.preferredFramesPerSecond = 120
         skView.presentScene(gameScene)
