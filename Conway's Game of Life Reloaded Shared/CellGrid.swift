@@ -112,11 +112,13 @@ final class CellGrid {
     @inline(__always)
     final func getQuadHash(a: QuadTreeNode, b: QuadTreeNode, c: QuadTreeNode, d: QuadTreeNode) -> UInt64 {
         let ak2 = UInt64(a.k + 2)
-        let amp = a.ihash*QuadTreeNode.PRIME_A
-        let bmp = b.ihash*QuadTreeNode.PRIME_B
-        let cmp = c.ihash*QuadTreeNode.PRIME_C
-        let dmp = d.ihash*QuadTreeNode.PRIME_D
-        let primeMult = ak2 + amp + bmp + cmp + dmp
+        // TODO: Perhaps use smaller prime numbers to multiply here:
+        // Using overflow operators: https://docs.swift.org/swift-book/LanguageGuide/AdvancedOperators.html
+        let amp = a.ihash&*QuadTreeNode.PRIME_A
+        let bmp = b.ihash&*QuadTreeNode.PRIME_B
+        let cmp = c.ihash&*QuadTreeNode.PRIME_C
+        let dmp = d.ihash&*QuadTreeNode.PRIME_D
+        let primeMult = ak2 &+ amp &+ bmp &+ cmp &+ dmp
         return primeMult & ((1 << 63) - 1)
     }
     
@@ -317,14 +319,18 @@ final class CellGrid {
             let zero = getZero(k: k)
             
             while !pattern.isEmpty {
-                let point = patternIter.next()!.key  // TODO: Found nil - is patternIter using the same ref as pattern?
-                let nPoint = Point(x: point.x - (point.x & 1), y: point.y - (point.y & 1))
-                let a = pattern.removeValue(forKey: nPoint) ?? zero
-                let b = pattern.removeValue(forKey: Point(x: nPoint.x + 1, y: nPoint.y)) ?? zero
-                let c = pattern.removeValue(forKey: Point(x: nPoint.x, y: nPoint.y + 1)) ?? zero
-                let d = pattern.removeValue(forKey: Point(x: nPoint.x + 1, y: nPoint.y + 1)) ?? zero
-                lastNode = join(a: a, b: b, c: c, d: d)
-                nextLevel[Point(x: nPoint.x >> 1, y: nPoint.y >> 1)] = lastNode
+                if let nxt = patternIter.next() {
+                    let point = nxt.key
+                    let nPoint = Point(x: point.x - (point.x & 1), y: point.y - (point.y & 1))
+                    let a = pattern.removeValue(forKey: nPoint) ?? zero
+                    let b = pattern.removeValue(forKey: Point(x: nPoint.x + 1, y: nPoint.y)) ?? zero
+                    let c = pattern.removeValue(forKey: Point(x: nPoint.x, y: nPoint.y + 1)) ?? zero
+                    let d = pattern.removeValue(forKey: Point(x: nPoint.x + 1, y: nPoint.y + 1)) ?? zero
+                    lastNode = join(a: a, b: b, c: c, d: d)
+                    nextLevel[Point(x: nPoint.x >> 1, y: nPoint.y >> 1)] = lastNode
+                } else {
+                    break
+                }
             }
             
             // Merge at next level:
