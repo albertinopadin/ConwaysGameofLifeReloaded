@@ -18,12 +18,14 @@ class GameScene: SKScene {
     var yCellsViz: Int = 0
     
     let defaultCellSize: CGFloat = 23.0
+    let defaultXCells: Int = 100
+    let defaultYCells: Int = 100
 //    let defaultXCells: Int = 200
 //    let defaultYCells: Int = 200
 //    let defaultXCells: Int = 400
 //    let defaultYCells: Int = 400
-    let defaultXCells: Int = 800
-    let defaultYCells: Int = 800
+//    let defaultXCells: Int = 800
+//    let defaultYCells: Int = 800
 //    let defaultXCells: Int = 1000
 //    let defaultYCells: Int = 1000
     
