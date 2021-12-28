@@ -111,8 +111,6 @@ public final class Cell {
         setState(state: .Live)
 //        node.run(self.setLiveAction) { self.node.alpha = CellAlpha.live }
         node.run(self.setLiveAction) { self.node.isHidden = false }
-//        self.node.alpha = CellAlpha.live
-//        node.isHidden = false
     }
     
     @inlinable
@@ -129,8 +127,6 @@ public final class Cell {
         setState(state: .Dead)
 //        node.run(self.setDeadAction) { self.node.alpha = CellAlpha.dead }
         node.run(self.setDeadAction) { self.node.isHidden = true }
-//        self.node.alpha = CellAlpha.dead
-//        node.isHidden = true
     }
     
     @inlinable

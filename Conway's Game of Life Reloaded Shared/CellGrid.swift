@@ -296,7 +296,6 @@ final class CellGrid {
                 } else {
                     touchedCell.makeDeadTouched()
                 }
-                
             }
         }
         

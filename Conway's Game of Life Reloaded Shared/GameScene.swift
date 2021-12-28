@@ -86,7 +86,7 @@ class GameScene: SKScene {
     
     func setSpeed(_ speed: Double) {
         // updateInterval = 1/speed
-        updateInterval = (1/speed)/4  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
+        updateInterval = (1/speed)/8  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
         print("Update interval: \(updateInterval)")
     }
     
@@ -115,6 +115,14 @@ class GameScene: SKScene {
         cellGrid.lazy.joined().forEach({ self.addChild($0.node) })
     }
     
+    @inlinable
+    @inline(__always)
+    public final func timeit(body: ()->()) -> UInt64 {
+        let start = DispatchTime.now().uptimeNanoseconds
+        body()
+        return DispatchTime.now().uptimeNanoseconds - start
+    }
+    
     // Called every 16ms, or every 8ms on ProMotion devices:
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
@@ -126,6 +134,13 @@ class GameScene: SKScene {
             let generation = cellGrid.updateCells()
             previousTime = currentTime
             gameDelegate?.setGeneration(generation)
+            
+//            let t = timeit {
+//                let generation = cellGrid.updateCells()
+//                previousTime = currentTime
+//                gameDelegate?.setGeneration(generation)
+//            }
+//            print("Run time: \(Double(t)/1_000_000) ms")
         }
     }
     
@@ -182,7 +197,6 @@ extension GameScene {
 // Mouse-based event handling
 extension GameScene {
     override func mouseMoved(with event: NSEvent) {
-        print("Mouse Moved!")
         if isMouseEventInsideView(event: event) {
             if spaceshipType != .None {
                 cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
@@ -197,24 +211,17 @@ extension GameScene {
 //                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
                 cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
-//                let eventLocation = event.location(in: self)
-//                let touchPoint = CGPoint(x: eventLocation.x * getZoom(), y: eventLocation.y * getZoom())
-//                cellGrid.touchedCell(at: touchPoint)
             }
         }
     }
     
     override func mouseDragged(with event: NSEvent) {
-        print("Mouse Dragged!")
         if isMouseEventInsideView(event: event) {
             if spaceshipType != .None {
                 // What makes sense to do here? Is there a mouseUp action?
                 cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
             } else {
                 cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
-//                let eventLocation = event.location(in: self)
-//                let touchPoint = CGPoint(x: eventLocation.x * getZoom(), y: eventLocation.y * getZoom())
-//                cellGrid.touchedCell(at: touchPoint)
             }
         }
     }
@@ -240,7 +247,7 @@ extension GameScene {
     }
     
     func isMouseEventInsideView(event: NSEvent) -> Bool {
-        return self.view?.hitTest(event.locationInWindow) != nil
+        return self.view!.hitTest(event.locationInWindow) != nil
     }
 
 }
