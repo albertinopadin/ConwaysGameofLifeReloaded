@@ -39,8 +39,8 @@ public final class Cell {
     public final let shadowColor: SKColor
     public final let colorNodeSizeFraction: CGFloat = 0.92
     
-    public final let colorAliveAction: SKAction
-    public final let colorDeadAction: SKAction
+    public final let setLiveAction: SKAction
+    public final let setDeadAction: SKAction
     
     public static var prepareUpdateCache: [PrepareUpdateState: CellState] = [
         PrepareUpdateState(state: .Dead, liveNeighbors: 0): .Dead,
@@ -66,15 +66,15 @@ public final class Cell {
     public init(frame: CGRect,
                 color: SKColor,
                 shadowColor: SKColor,
-                colorAliveAction: SKAction,
-                colorDeadAction: SKAction,
+                setLiveAction: SKAction,
+                setDeadAction: SKAction,
                 alive: Bool = false) {
         self.currentState = alive ? .Live: .Dead
         self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
         self.shadowColor = shadowColor
-        self.colorAliveAction = colorAliveAction
-        self.colorDeadAction = colorDeadAction
+        self.setLiveAction = setLiveAction
+        self.setDeadAction = setDeadAction
         self.alive = alive
         let nodeSize = CGSize(width: frame.size.width * colorNodeSizeFraction,
                               height: frame.size.height * colorNodeSizeFraction)
@@ -88,37 +88,49 @@ public final class Cell {
         node.texture?.filteringMode = .nearest
         // Using centerRect makes the quad count higher, which is bad for performance:
         // node.centerRect = CGRect(x: 0.5, y: 0.5, width: 0.0, height: 0.0)
-        node.alpha = CellAlpha.dead
+        
+        // Using just alpha:
+//        node.alpha = CellAlpha.dead
+        
+        // Using isHidden to hide or show node:
+        node.alpha = CellAlpha.live
+        node.isHidden = true
     }
     
     @inlinable
     @inline(__always)
     public final func makeLive() {
         setState(state: .Live)
-        node.alpha = CellAlpha.live
+//        node.alpha = CellAlpha.live
+        node.isHidden = false
     }
     
     @inlinable
     @inline(__always)
     public final func makeLiveTouched() {
         setState(state: .Live)
-//        node.run(self.colorAliveAction) { self.node.alpha = CellAlpha.live }
-        self.node.alpha = CellAlpha.live
+//        node.run(self.setLiveAction) { self.node.alpha = CellAlpha.live }
+        node.run(self.setLiveAction) { self.node.isHidden = false }
+//        self.node.alpha = CellAlpha.live
+//        node.isHidden = false
     }
     
     @inlinable
     @inline(__always)
     public final func makeDead() {
         setState(state: .Dead)
-        node.alpha = CellAlpha.dead
+//        node.alpha = CellAlpha.dead
+        node.isHidden = true
     }
     
     @inlinable
     @inline(__always)
     public final func makeDeadTouched() {
         setState(state: .Dead)
-//        node.run(self.colorDeadAction) { self.node.alpha = CellAlpha.dead }
-        self.node.alpha = CellAlpha.dead
+//        node.run(self.setDeadAction) { self.node.alpha = CellAlpha.dead }
+        node.run(self.setDeadAction) { self.node.isHidden = true }
+//        self.node.alpha = CellAlpha.dead
+//        node.isHidden = true
     }
     
     @inlinable

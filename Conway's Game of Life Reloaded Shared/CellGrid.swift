@@ -27,13 +27,12 @@ final class CellGrid {
     final let deadColor = SKColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
     final let shadowColor: SKColor = .darkGray
     
-    final let colorAliveAction = SKAction.colorize(with: .green, colorBlendFactor: 1.0, duration: 0.3)
-    final let colorDeadAction = SKAction.colorize(with: SKColor(red: 0.16,
-                                                                 green: 0.15,
-                                                                 blue: 0.30,
-                                                                 alpha: 1.0),
-                                                    colorBlendFactor: 1.0,
-                                                    duration: 0.3)
+//    final let liveAction = SKAction.fadeAlpha(to: 1.0, duration: 0.2)
+//    final let deadAction = SKAction.fadeAlpha(to: 0.0, duration: 0.2)
+    
+    final let liveAction = SKAction.unhide()
+    final let deadAction = SKAction.hide()
+    
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
@@ -52,8 +51,8 @@ final class CellGrid {
         let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0),
                                color: aliveColor,
                                shadowColor: shadowColor,
-                               colorAliveAction: colorAliveAction,
-                               colorDeadAction: colorDeadAction)
+                               setLiveAction: liveAction,
+                               setDeadAction: deadAction)
         let newGridRow = ContiguousArray<Cell>(repeating: initialCell, count: yCells)
         var newGrid = ContiguousArray<ContiguousArray<Cell>>(repeating: newGridRow, count: xCells)
 
@@ -82,8 +81,8 @@ final class CellGrid {
                 newGrid[x][y] = Cell(frame: cellFrame,
                                      color: aliveColor,
                                      shadowColor: shadowColor,
-                                     colorAliveAction: colorAliveAction,
-                                     colorDeadAction: colorDeadAction)
+                                     setLiveAction: liveAction,
+                                     setDeadAction: deadAction)
             }
         }
         return newGrid
