@@ -26,10 +26,10 @@ class GameScene: SKScene {
 //    let defaultYCells: Int = 200
 //    let defaultXCells: Int = 400
 //    let defaultYCells: Int = 400
-    static let defaultXCells: Int = 600
-    static let defaultYCells: Int = 600
-//    let defaultXCells: Int = 800
-//    let defaultYCells: Int = 800
+//    static let defaultXCells: Int = 600
+//    static let defaultYCells: Int = 600
+    static let defaultXCells: Int = 800
+    static let defaultYCells: Int = 800
 //    let defaultXCells: Int = 1000
 //    let defaultYCells: Int = 1000
     
@@ -86,7 +86,7 @@ class GameScene: SKScene {
     
     func setSpeed(_ speed: Double) {
         // updateInterval = 1/speed
-        updateInterval = (1/speed)/8  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
+        updateInterval = (1/speed)/4  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
         print("Update interval: \(updateInterval)")
     }
     
@@ -129,18 +129,18 @@ class GameScene: SKScene {
         if previousTime == nil {
             previousTime = currentTime
         }
-        
+
         if gameRunning && (currentTime - previousTime >= updateInterval) {
-            let generation = cellGrid.updateCells()
-            previousTime = currentTime
-            gameDelegate?.setGeneration(generation)
-            
-//            let t = timeit {
-//                let generation = cellGrid.updateCells()
-//                previousTime = currentTime
-//                gameDelegate?.setGeneration(generation)
-//            }
-//            print("Run time: \(Double(t)/1_000_000) ms")
+//            let generation = cellGrid.updateCells()
+//            previousTime = currentTime
+//            gameDelegate?.setGeneration(generation)
+
+            let t = timeit {
+                let generation = cellGrid.updateCells()
+                previousTime = currentTime
+                gameDelegate?.setGeneration(generation)
+            }
+            print("Run time: \(Double(t)/1_000_000) ms")
         }
     }
     

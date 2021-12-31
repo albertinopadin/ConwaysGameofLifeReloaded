@@ -177,36 +177,28 @@ final class CellGrid {
     @inlinable
     @inline(__always)
     final func updateCells() -> UInt64 {
-        // 20-43 FPS on 200x200 grid:
-        // 9-26 FPS, 150-300% CPU on 400x400 grid:
-        // With Alpha trick:
-        // 38-42 FPS on 200x200
-        // 30-42 FPS on 400x400
-        // 12-18 FPS on 800x800
+        // 3.7 - 4 ms
         // Prepare update:
-        updateQueue.sync {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].prepareUpdate()
-                }
-            }
-        }
-
-        // Update
-        // Doing concurrentPerform on both inner and outer loops doubles FPS:
-        updateQueue.sync {
-            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                    self.grid[x][y].update()
-                }
-            }
-        }
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                    self.grid[x][y].prepareUpdate()
+//                }
+//            }
+//        }
+//
+//        // Update
+//        // Doing concurrentPerform on both inner and outer loops doubles FPS:
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                    self.grid[x][y].update()
+//                }
+//            }
+//        }
         
         
-        // With Alpha trick:
-        // 38-44 FPS on 200x200
-        // 30-38 FPS on 400x400
-        // 12-15 FPS on 800x800
+        // 3.6 - 4 ms
         // Prepare update:
 //        updateQueue.sync {
 //            DispatchQueue.concurrentPerform(iterations: self.halfCountX) { x in
@@ -233,29 +225,22 @@ final class CellGrid {
 //        }
         
         
-        // 25-40+ FPS on 200x200 grid:
-        // 8-20, 85-105% CPU FPS on 400x400 grid:
-//        grid.lazy.joined().forEach({ $0.prepareUpdate() })
-//        grid.lazy.joined().filter({ $0.needsUpdate() }).forEach({ $0.update() })
-        
-        
-        // 25-40+ FPS on 200x200 grid:
-        // 10-30 FPS on 400x400 grid:
+        // 2.8 - 3 ms:
         // This also seems to have a similar FPS and Frametime as double concurrentPerform:
         // Prepare update:
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].lazy.forEach { $0.prepareUpdate() }
-//            }
-//        }
-//
-//        // Update
-//        updateQueue.sync {
-//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-//                self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
-//            }
-//        }
+        updateQueue.sync {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                self.grid[x].lazy.forEach { $0.prepareUpdate() }
+            }
+        }
 
+        // Update
+        updateQueue.sync {
+            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+                self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
+//                self.grid[x].lazy.forEach { $0.update() }
+            }
+        }
         
         generation += 1
         return generation
