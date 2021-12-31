@@ -20,18 +20,30 @@ class GameScene: SKScene {
     let defaultCellSize: CGFloat = 23.0
 //    let defaultXCells: Int = 50
 //    let defaultYCells: Int = 50
-//    let defaultXCells: Int = 100
-//    let defaultYCells: Int = 100
-//    let defaultXCells: Int = 200
-//    let defaultYCells: Int = 200
-//    let defaultXCells: Int = 400
-//    let defaultYCells: Int = 400
-//    static let defaultXCells: Int = 600
-//    static let defaultYCells: Int = 600
-    static let defaultXCells: Int = 800
-    static let defaultYCells: Int = 800
-//    let defaultXCells: Int = 1000
-//    let defaultYCells: Int = 1000
+    
+    // Can run @ 120 FPS
+//    static let defaultXCells: Int = 100
+//    static let defaultYCells: Int = 100
+    
+    // Can run @ 110-120 FPS:
+//    static let defaultXCells: Int = 200
+//    static let defaultYCells: Int = 200
+    
+    // Can run @80-120 FPS:
+//    static let defaultXCells: Int = 400
+//    static let defaultYCells: Int = 400
+    
+    // Can run @40-60 FPS:
+    static let defaultXCells: Int = 600
+    static let defaultYCells: Int = 600
+    
+    // Can run @25-40 FPS:
+//    static let defaultXCells: Int = 800
+//    static let defaultYCells: Int = 800
+    
+    // Can run @20-25 FPS:
+//    static let defaultXCells: Int = 1000
+//    static let defaultYCells: Int = 1000
     
     var xCells: Int
     var yCells: Int
@@ -42,6 +54,9 @@ class GameScene: SKScene {
     
     var spaceshipType: SpaceshipType = .None
 //    let backingNode = SKSpriteNode()
+    
+    let updateTimeOffset = 0.015  // Max time code needs to actually update
+    
     
     class func newGameScene(size: CGSize,
                             xCells: Int = GameScene.defaultXCells,
@@ -86,7 +101,10 @@ class GameScene: SKScene {
     
     func setSpeed(_ speed: Double) {
         // updateInterval = 1/speed
-        updateInterval = (1/speed)/4  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
+//        updateInterval = (1/speed)/4  // TODO: I have no idea why this works. Crazy! Now this runs at 60FPS
+        
+        // Seems the update method fires AFTER frame has rendered, not on rigid schedule:
+        updateInterval = (1/speed) - updateTimeOffset
         print("Update interval: \(updateInterval)")
     }
     
@@ -129,6 +147,8 @@ class GameScene: SKScene {
         if previousTime == nil {
             previousTime = currentTime
         }
+        
+//        print("Time interval in update: \(currentTime - previousTime)")
 
         if gameRunning && (currentTime - previousTime >= updateInterval) {
 //            let generation = cellGrid.updateCells()
