@@ -17,9 +17,8 @@ class GameScene: SKScene {
     var xCellsViz: Int = 0
     var yCellsViz: Int = 0
     
-    let defaultCellSize: CGFloat = 23.0
-//    let defaultXCells: Int = 50
-//    let defaultYCells: Int = 50
+//    let defaultCellSize: CGFloat = 23.0
+    let defaultCellSize: CGFloat = 6.0
     
     // Can run @ 120 FPS
 //    static let defaultXCells: Int = 100
@@ -34,12 +33,12 @@ class GameScene: SKScene {
 //    static let defaultYCells: Int = 400
     
     // Can run @40-60 FPS:
-    static let defaultXCells: Int = 600
-    static let defaultYCells: Int = 600
+//    static let defaultXCells: Int = 600
+//    static let defaultYCells: Int = 600
     
     // Can run @25-40 FPS:
-//    static let defaultXCells: Int = 800
-//    static let defaultYCells: Int = 800
+    static let defaultXCells: Int = 800
+    static let defaultYCells: Int = 800
     
     // Can run @20-25 FPS:
 //    static let defaultXCells: Int = 1000

@@ -42,27 +42,6 @@ public final class Cell {
     public final let setLiveAction: SKAction
     public final let setDeadAction: SKAction
     
-    public static var prepareUpdateCache: [PrepareUpdateState: CellState] = [
-        PrepareUpdateState(state: .Dead, liveNeighbors: 0): .Dead,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 1): .Dead,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 2): .Dead,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 3): .Live,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 4): .Dead,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 5): .Dead,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 6): .Dead,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 7): .Dead,
-        PrepareUpdateState(state: .Dead, liveNeighbors: 8): .Dead,
-        PrepareUpdateState(state: .Live, liveNeighbors: 0): .Dead,
-        PrepareUpdateState(state: .Live, liveNeighbors: 1): .Dead,
-        PrepareUpdateState(state: .Live, liveNeighbors: 2): .Live,
-        PrepareUpdateState(state: .Live, liveNeighbors: 3): .Live,
-        PrepareUpdateState(state: .Live, liveNeighbors: 4): .Dead,
-        PrepareUpdateState(state: .Live, liveNeighbors: 5): .Dead,
-        PrepareUpdateState(state: .Live, liveNeighbors: 6): .Dead,
-        PrepareUpdateState(state: .Live, liveNeighbors: 7): .Dead,
-        PrepareUpdateState(state: .Live, liveNeighbors: 8): .Dead,
-    ]
-    
     public init(frame: CGRect,
                 color: SKColor,
                 shadowColor: SKColor,
@@ -147,8 +126,6 @@ public final class Cell {
         if !(currentState == .Dead && liveNeighbors < 3) {
             nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
         }
-        
-//        nextState = Cell.prepareUpdateCache[PrepareUpdateState(state: currentState, liveNeighbors: liveNeighbors)]!
     }
     
     @inlinable

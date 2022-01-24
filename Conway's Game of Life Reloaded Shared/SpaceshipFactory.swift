@@ -40,6 +40,14 @@ public final class SpaceshipFactory {
         }
     }
     
+    public func rotatePoints(_ points: [CGPoint], around center: CGPoint) -> [CGPoint] {
+        var rotatedPoints = [CGPoint]()
+        points.forEach { p in
+            rotatedPoints.append(p.rotate(around: center, degrees: 90.0))
+        }
+        return rotatedPoints
+    }
+    
     public func createGlider(at point: CGPoint) -> [CGPoint] {
         let top         = CGPoint(x: point.x, y: point.y - self.cellSize)
         let right       = CGPoint(x: point.x + self.cellSize, y: point.y)

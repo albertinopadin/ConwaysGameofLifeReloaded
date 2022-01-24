@@ -12,8 +12,10 @@ import SpriteKit
 final class CellGrid {
     let xCount: Int
     let yCount: Int
-    let halfCountX: Int
-    let halfCountY: Int
+//    let halfCountX: Int
+//    let halfCountY: Int
+    let quadCountX: Int
+    let quadCountY: Int
     final var grid = ContiguousArray<ContiguousArray<Cell>>()   // 2D Array to hold the cells
     var cellSize: CGFloat = 23.0
     var generation: UInt64 = 0
@@ -37,8 +39,10 @@ final class CellGrid {
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
         xCount = xCells
         yCount = yCells
-        halfCountX = Int(xCells/2)
-        halfCountY = Int(yCells/2)
+//        halfCountX = Int(xCells/2)
+//        halfCountY = Int(yCells/2)
+        quadCountX = Int(xCells/4)
+        quadCountY = Int(yCells/4)
         self.cellSize = cellSize
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
@@ -178,7 +182,7 @@ final class CellGrid {
     @inline(__always)
     final func updateCells() -> UInt64 {
         // 3.7 - 4 ms
-        // Prepare update:
+//        // Prepare update:
 //        updateQueue.sync {
 //            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
 //                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
@@ -193,6 +197,28 @@ final class CellGrid {
 //            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
 //                DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
 //                    self.grid[x][y].update()
+//                }
+//            }
+//        }
+        
+        
+//        self.grid.withUnsafeBufferPointer { buffer in
+//            // Prepare update:
+//            updateQueue.sync {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        buffer[x][y].prepareUpdate()
+//                    }
+//                }
+//            }
+//
+//            // Update
+//            // Doing concurrentPerform on both inner and outer loops doubles FPS:
+//            updateQueue.sync {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        buffer[x][y].update()
+//                    }
 //                }
 //            }
 //        }
@@ -230,7 +256,7 @@ final class CellGrid {
         // Prepare update:
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                self.grid[x].lazy.forEach { $0.prepareUpdate() }
+                self.grid[x].forEach { $0.prepareUpdate() }
             }
         }
 
@@ -238,7 +264,7 @@ final class CellGrid {
         updateQueue.sync {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
                 self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
-//                self.grid[x].lazy.forEach { $0.update() }
+//                self.grid[x].forEach { $0.update() }
             }
         }
         
