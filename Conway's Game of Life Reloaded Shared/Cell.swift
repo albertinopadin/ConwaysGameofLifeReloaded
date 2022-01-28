@@ -57,9 +57,7 @@ public final class Cell {
         self.alive = alive
         let nodeSize = CGSize(width: frame.size.width * colorNodeSizeFraction,
                               height: frame.size.height * colorNodeSizeFraction)
-        node = SKSpriteNode(texture: nil,
-                            color: color,
-                            size: nodeSize)
+        node = SKSpriteNode(color: color, size: nodeSize)
         node.position = frame.origin
         node.blendMode = .replace
         node.physicsBody?.isDynamic = false
