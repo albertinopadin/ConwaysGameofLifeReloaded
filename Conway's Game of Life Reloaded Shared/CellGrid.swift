@@ -21,9 +21,15 @@ final class CellGrid {
     var generation: UInt64 = 0
     var spaceshipFactory: SpaceshipFactory?
     var shadowed = [Cell]()
+//    final let updateQueue = DispatchQueue(label: "cgol.update.queue",
+//                                          qos: .userInteractive,
+//                                          attributes: .concurrent)
+    
     final let updateQueue = DispatchQueue(label: "cgol.update.queue",
-                                          qos: .userInteractive,
-                                          attributes: .concurrent)
+                                          qos: .userInteractive)
+    
+    final let userInputQueue = DispatchQueue(label: "cgol.userInput.queue",
+                                             qos: .userInteractive)
     
     final let aliveColor: SKColor = .green
     final let deadColor = SKColor(red: 0.16, green: 0.15, blue: 0.30, alpha: 1.0)
@@ -268,6 +274,107 @@ final class CellGrid {
             }
         }
         
+        
+//        ************************************************************************************
+        
+        
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                self.grid.withUnsafeBufferPointer { buffer in
+//                    buffer[x].forEach { $0.prepareUpdate() }
+//                }
+//            }
+//        }
+//
+//        // Update
+//        updateQueue.sync {
+//            DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                self.grid.withUnsafeBufferPointer { buffer in
+//                    self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
+//                }
+//            }
+//        }
+        
+        
+//        updateQueue.sync {
+//            self.grid.withUnsafeBufferPointer { buffer in
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    buffer[x].forEach { $0.prepareUpdate() }
+//                }
+//            }
+//        }
+//
+//        // Update
+//        updateQueue.sync {
+//            self.grid.withUnsafeBufferPointer { buffer in
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    self.grid[x].lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
+//                }
+//            }
+//        }
+        
+        
+//        self.grid.withUnsafeBufferPointer { buffer in
+//            updateQueue.sync {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        buffer[x][y].prepareUpdate()
+//                    }
+//                }
+//            }
+//
+//            updateQueue.sync {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        buffer[x][y].update()
+//                    }
+//                }
+//            }
+//        }
+        
+        
+        
+//        updateQueue.sync {
+//            self.grid.withUnsafeBufferPointer { buffer in
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        buffer[x][y].prepareUpdate()
+//                    }
+//                }
+//            }
+//        }
+//
+//        updateQueue.sync {
+//            self.grid.withUnsafeBufferPointer { buffer in
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                        buffer[x][y].update()
+//                    }
+//                }
+//            }
+//        }
+        
+        
+//        grid.withUnsafeBufferPointer { xBuffer in
+//            updateQueue.sync {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    xBuffer[x].withUnsafeBufferPointer { yBuffer in
+//                        yBuffer.forEach { $0.prepareUpdate() }
+//                    }
+//                }
+//            }
+//
+//            // Update
+//            updateQueue.sync {
+//                DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                    xBuffer[x].withUnsafeBufferPointer { yBuffer in
+//                        yBuffer.lazy.filter({ $0.needsUpdate() }).forEach { $0.update() }
+//                    }
+//                }
+//            }
+//        }
+        
+        
         generation += 1
         return generation
     }
@@ -286,29 +393,64 @@ final class CellGrid {
         // Find the cell that contains the touch point and make it live:
         //        let (x, y) = self.getGridIndicesFromPoint(at: at)
         
-        let x = Int(at.x / cellSize)
-        let y = Int(at.y / cellSize)
-
-        let touchedCell = grid[x][y]
-        if !withAltAction && !touchedCell.alive {
-            updateQueue.sync(flags: .barrier) {
-                if gameRunning {
-                    touchedCell.makeLive()
-                } else {
-                    touchedCell.makeLiveTouched()
-                }
-            }
-        }
+//        let x = Int(at.x / cellSize)
+//        let y = Int(at.y / cellSize)
+//
+//        let cell = grid[x][y]
+////        let cell = grid.withUnsafeBufferPointer { buf in
+////            return buf[x][y]
+////        }
+//
+//        if !withAltAction && !cell.alive {
+//            updateQueue.sync(flags: .barrier) {
+//                if gameRunning {
+//                    cell.makeLive()
+//                } else {
+//                    cell.makeLiveTouched()
+//                }
+//
+////                cell.makeLive()
+//            }
+//        } else if withAltAction && cell.alive {
+//            updateQueue.sync(flags: .barrier) {
+//                if gameRunning {
+//                    cell.makeDead()
+//                } else {
+//                    cell.makeDeadTouched()
+//                }
+//
+////                cell.makeDead()
+//            }
+//        }
         
-        if withAltAction && touchedCell.alive {
-            updateQueue.sync(flags: .barrier) {
-                if gameRunning {
-                    touchedCell.makeDead()
-                } else {
-                    touchedCell.makeDeadTouched()
+        
+        
+        let t = timeit {
+            let x = Int(at.x / cellSize)
+            let y = Int(at.y / cellSize)
+
+            let cell = grid[x][y]
+            
+            if !withAltAction && !cell.alive {
+                userInputQueue.sync(flags: .barrier) {
+                    if gameRunning {
+                        cell.makeLive()
+                    } else {
+                        cell.makeLiveTouched()
+                    }
+                }
+            } else if withAltAction && cell.alive {
+                userInputQueue.sync(flags: .barrier) {
+                    if gameRunning {
+                        cell.makeDead()
+                    } else {
+                        cell.makeDeadTouched()
+                    }
                 }
             }
         }
+        print("Run time for touchedCell: \(Double(t)/1_000_000) ms")
+        
         
         // TODO: Implement this the O(1) way
         // For now will just be a loop:
@@ -335,8 +477,8 @@ final class CellGrid {
             let x = Int(p.x / cellSize)
             let y = Int(p.y / cellSize)
 
-            let touchedCell = grid[x][y]
-            touchedCell.makeLive()
+            let cell = grid[x][y]
+            cell.makeLive()
         }
     }
     

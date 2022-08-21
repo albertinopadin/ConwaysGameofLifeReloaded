@@ -8,9 +8,6 @@
 
 import SpriteKit
 
-public enum CellState {
-    case Live, Dead
-}
 
 public struct CellAlpha {
     public static let live: CGFloat = 1.0
@@ -18,18 +15,18 @@ public struct CellAlpha {
 }
 
 public struct PrepareUpdateState: Hashable {
-    let state: CellState
+    let state: Bool
     let liveNeighbors: Int
     
-    public init(state: CellState, liveNeighbors: Int) {
+    public init(state: Bool, liveNeighbors: Int) {
         self.state = state
         self.liveNeighbors = liveNeighbors
     }
 }
 
 public final class Cell {
-    public final var currentState: CellState
-    public final var nextState: CellState
+    public final var currentState: Bool
+    public final var nextState: Bool
     public final var alive: Bool
     
     public final var neighbors: ContiguousArray<Cell>
@@ -48,7 +45,7 @@ public final class Cell {
                 setLiveAction: SKAction,
                 setDeadAction: SKAction,
                 alive: Bool = false) {
-        self.currentState = alive ? .Live: .Dead
+        self.currentState = alive
         self.nextState = self.currentState
         self.neighbors = ContiguousArray<Cell>()
         self.shadowColor = shadowColor
@@ -77,7 +74,7 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func makeLive() {
-        setState(state: .Live)
+        setState(state: true)
 //        node.alpha = CellAlpha.live
         node.isHidden = false
     }
@@ -85,15 +82,16 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func makeLiveTouched() {
-        setState(state: .Live)
+        setState(state: true)
 //        node.run(self.setLiveAction) { self.node.alpha = CellAlpha.live }
         node.run(self.setLiveAction) { self.node.isHidden = false }
+        node.isHidden = false
     }
     
     @inlinable
     @inline(__always)
     public final func makeDead() {
-        setState(state: .Dead)
+        setState(state: false)
 //        node.alpha = CellAlpha.dead
         node.isHidden = true
     }
@@ -101,16 +99,17 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func makeDeadTouched() {
-        setState(state: .Dead)
+        setState(state: false)
 //        node.run(self.setDeadAction) { self.node.alpha = CellAlpha.dead }
         node.run(self.setDeadAction) { self.node.isHidden = true }
+        node.isHidden = true
     }
     
     @inlinable
     @inline(__always)
-    public final func setState(state: CellState) {
+    public final func setState(state: Bool) {
         currentState = state
-        alive = currentState == .Live
+        alive = currentState
         nextState = currentState
     }
     
@@ -121,8 +120,8 @@ public final class Cell {
         // For some reason doing this directly is faster than calling the extension:
         liveNeighbors = neighbors.lazy.filter({ $0.alive }).count
         
-        if !(currentState == .Dead && liveNeighbors < 3) {
-            nextState = (currentState == .Live && liveNeighbors == 2) || (liveNeighbors == 3) ? .Live: .Dead
+        if !(!currentState && liveNeighbors < 3) {
+            nextState = (currentState && liveNeighbors == 2) || (liveNeighbors == 3)
         }
     }
     
@@ -130,7 +129,7 @@ public final class Cell {
     @inline(__always)
     public final func update() {
         if needsUpdate() {
-            if nextState == .Live {
+            if nextState {
                 makeLive()
             } else {
                 makeDead()

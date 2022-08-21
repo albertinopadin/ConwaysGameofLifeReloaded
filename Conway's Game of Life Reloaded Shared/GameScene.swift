@@ -37,6 +37,7 @@ class GameScene: SKScene {
 //    static let defaultYCells: Int = 600
     
     // Can run @25-40 FPS:
+    // TODO: Mouse drag seems laggier the bigger the grid
     static let defaultXCells: Int = 800
     static let defaultYCells: Int = 800
     
@@ -132,14 +133,6 @@ class GameScene: SKScene {
         cellGrid.lazy.joined().forEach({ self.addChild($0.node) })
     }
     
-    @inlinable
-    @inline(__always)
-    public final func timeit(body: ()->()) -> UInt64 {
-        let start = DispatchTime.now().uptimeNanoseconds
-        body()
-        return DispatchTime.now().uptimeNanoseconds - start
-    }
-    
     // Called every 16ms, or every 8ms on ProMotion devices:
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
@@ -224,25 +217,50 @@ extension GameScene {
     }
 
     override func mouseDown(with event: NSEvent) {
-        if isMouseEventInsideView(event: event) {
-            if spaceshipType != .None {
-                // Perhaps should put this in mouseUp action if that exists:
-//                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
-            } else {
-                cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
+//        if isMouseEventInsideView(event: event) {
+//            if spaceshipType != .None {
+//                // Perhaps should put this in mouseUp action if that exists:
+////                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
+//            } else {
+//                cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
+//            }
+//        }
+        
+        let t = timeit {
+            if isMouseEventInsideView(event: event) {
+                if spaceshipType != .None {
+                    // Perhaps should put this in mouseUp action if that exists:
+    //                cellGrid.placeSpaceship(at: event.location(in: self), type: spaceshipType)
+                } else {
+                    cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
+                }
             }
         }
+        print("Run time for mouseDown: \(Double(t)/1_000_000) ms")
     }
     
     override func mouseDragged(with event: NSEvent) {
-        if isMouseEventInsideView(event: event) {
-            if spaceshipType != .None {
-                // What makes sense to do here? Is there a mouseUp action?
-                cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
-            } else {
-                cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
+//        if isMouseEventInsideView(event: event) {
+//            if spaceshipType != .None {
+//                // What makes sense to do here? Is there a mouseUp action?
+//                cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
+//            } else {
+//                cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
+//            }
+//        }
+        
+        
+        let t = timeit {
+            if isMouseEventInsideView(event: event) {
+                if spaceshipType != .None {
+                    // What makes sense to do here? Is there a mouseUp action?
+                    cellGrid.shadowSpaceship(at: event.location(in: self), type: spaceshipType)
+                } else {
+                    cellGrid.touchedCell(at: event.location(in: self), gameRunning: gameRunning)
+                }
             }
         }
+        print("Run time for mouseDragged: \(Double(t)/1_000_000) ms")
     }
     
     override func mouseUp(with event: NSEvent) {
