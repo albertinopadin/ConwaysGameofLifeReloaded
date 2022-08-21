@@ -74,7 +74,7 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func makeLive() {
-        setState(state: true)
+        setState(live: true)
 //        node.alpha = CellAlpha.live
         node.isHidden = false
     }
@@ -82,7 +82,7 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func makeLiveTouched() {
-        setState(state: true)
+        setState(live: true)
 //        node.run(self.setLiveAction) { self.node.alpha = CellAlpha.live }
         node.run(self.setLiveAction) { self.node.isHidden = false }
         node.isHidden = false
@@ -91,7 +91,7 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func makeDead() {
-        setState(state: false)
+        setState(live: false)
 //        node.alpha = CellAlpha.dead
         node.isHidden = true
     }
@@ -99,7 +99,7 @@ public final class Cell {
     @inlinable
     @inline(__always)
     public final func makeDeadTouched() {
-        setState(state: false)
+        setState(live: false)
 //        node.run(self.setDeadAction) { self.node.alpha = CellAlpha.dead }
         node.run(self.setDeadAction) { self.node.isHidden = true }
         node.isHidden = true
@@ -107,8 +107,8 @@ public final class Cell {
     
     @inlinable
     @inline(__always)
-    public final func setState(state: Bool) {
-        currentState = state
+    public final func setState(live: Bool) {
+        currentState = live
         alive = currentState
         nextState = currentState
     }
