@@ -17,14 +17,14 @@ struct Point: Hashable {
 
 // Using Hashlife algorithm, as described here: https://johnhw.github.io/hashlife/index.md.html
 final class QuadTreeNode: Hashable, CustomStringConvertible {
-    static func == (lhs: QuadTreeNode, rhs: QuadTreeNode) -> Bool {
-        return lhs.ihash == rhs.ihash
-    }
-    
     static let PRIME_A: UInt64 = 5131830419411
     static let PRIME_B: UInt64 = 3758991985019
     static let PRIME_C: UInt64 = 8973110871315
     static let PRIME_D: UInt64 = 4318490180473
+    
+    static func == (lhs: QuadTreeNode, rhs: QuadTreeNode) -> Bool {
+        return lhs.ihash == rhs.ihash
+    }
     
     var k: Int
     var a: QuadTreeNode?
@@ -86,10 +86,14 @@ final class CellGrid {
     final let alive = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 1, hash: 1)
     final let dead  = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 0, hash: 0)
     
-    final var quadTreeHead: QuadTreeNode = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 0, hash: 0)
+    final var quadTreeHead: QuadTreeNode = QuadTreeNode(k: 0, a: nil, b: nil, c: nil, d: nil, n: 0, hash: 42)
     final var gridPoints = [(Point, Int)]()
-    final let cache = NSCache<AnyObject, QuadTreeNode>()
+//    final let cache = NSCache<NSNumber, QuadTreeNode>()
+    final let quadHashCache = NSCache<NSNumber, QuadTreeNode>()
+    final let zeroKCache = NSCache<NSNumber, QuadTreeNode>()
+    final let successorHashCache = NSCache<NSString, QuadTreeNode>()
     final let initPoint = Point(x: 0, y: 0)
+    final var initialPoints: [Point]
     
     
     init(xCells: Int, yCells: Int, cellSize: CGFloat) {
@@ -98,18 +102,21 @@ final class CellGrid {
         halfCountX = Int(xCells/2)
         halfCountY = Int(yCells/2)
         self.cellSize = cellSize
-        quadTreeHead = construct(points: [initPoint])
+        initialPoints = [initPoint, Point(x: xCells, y: yCells)]
+        quadTreeHead = construct(points: initialPoints)
         gridPoints = expand(node: quadTreeHead)
         grid = makeGrid(xCells: xCells, yCells: yCells)
         setNeighborsForAllCellsInGrid()
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
+        
+//        cache.setObject(alive, forKey: alive.ihash as NSNumber)
+//        cache.setObject(dead, forKey: dead.ihash as NSNumber)
     }
     
     // ---------------- Hashlife functions: ---------------- //
     
     // TODO: Implement cache function as decorator (like in Python)
     @inlinable
-    @inline(__always)
     final func getQuadHash(a: QuadTreeNode, b: QuadTreeNode, c: QuadTreeNode, d: QuadTreeNode) -> UInt64 {
         let ak2 = UInt64(a.k + 2)
         // TODO: Perhaps use smaller prime numbers to multiply here:
@@ -123,35 +130,60 @@ final class CellGrid {
     }
     
     @inlinable
-    @inline(__always)
     final func join(a: QuadTreeNode, b: QuadTreeNode, c: QuadTreeNode, d: QuadTreeNode) -> QuadTreeNode {
-        let n = a.n + b.n + c.n + d.n
+//        print("[join]")
         let newHash = getQuadHash(a: a, b: b, c: c, d: d)
-        if let cached = cache.object(forKey: newHash as NSNumber) {
+        if let cached = quadHashCache.object(forKey: newHash as NSNumber) {
+//            print("[join] HIT CACHE! cached = \(cached)")
             return cached
         } else {
+            let n = a.n + b.n + c.n + d.n
             let joined = QuadTreeNode(k: a.k + 1, a: a, b: b, c: c, d: d, n: n, hash: newHash)
-            cache.setObject(joined, forKey: newHash as NSNumber)
+//            print("[join] returning new: \(joined)")
+            quadHashCache.setObject(joined, forKey: newHash as NSNumber)
             return joined
         }
     }
     
     @inlinable
-    @inline(__always)
     final func getZero(k: Int) -> QuadTreeNode {
-        if let cached = cache.object(forKey: k as NSNumber) {
+//        print("[getZero] k = \(k)")
+        
+        if let cached = zeroKCache.object(forKey: k as NSNumber) {
+//            print("[getZero] HIT CACHE! cached: \(cached)")
             return cached
         } else {
-            let zero = k == 0 ? dead: join(a: getZero(k: k-1), b: getZero(k: k-1), c: getZero(k: k-1), d: getZero(k: k-1))
-            cache.setObject(zero, forKey: k as NSNumber)
+//            let zero = (k == 0) ? dead : join(a: getZero(k: k-1), b: getZero(k: k-1), c: getZero(k: k-1), d: getZero(k: k-1))
+            var zero: QuadTreeNode
+            if k == 0 {
+                zero = dead
+            } else {
+                zero = join(a: getZero(k: k-1), b: getZero(k: k-1), c: getZero(k: k-1), d: getZero(k: k-1))
+            }
+
+//            print("[getZero] Returning new zero: \(zero)")
+
+            zeroKCache.setObject(zero, forKey: k as NSNumber)
             return zero
         }
+        
+//        var zero: QuadTreeNode
+//        if k == 0 {
+//            zero = dead
+//        } else {
+//            zero = join(a: getZero(k: k-1), b: getZero(k: k-1), c: getZero(k: k-1), d: getZero(k: k-1))
+//        }
+//
+//        print("[getZero] Returning new zero for k:\(k) : \(zero)")
+//
+//        return zero
     }
     
     @inlinable
-    @inline(__always)
     final func getCenter(m: QuadTreeNode) -> QuadTreeNode {
+//        print("[getCenter] with m.k: \(m.k)")
         let z = getZero(k: m.k - 1)
+//        let z = getZero(k: m.a!.k)
         return join(a: join(a: z, b: z, c: z, d: m.a!),
                     b: join(a: z, b: z, c: m.b!, d: z),
                     c: join(a: z, b: m.c!, c: z, d: z),
@@ -160,16 +192,13 @@ final class CellGrid {
     
     // Life rule for 3x3 collection of cells:
     @inlinable
-    @inline(__always)
     final func life(a: QuadTreeNode, b: QuadTreeNode, c: QuadTreeNode, d: QuadTreeNode, E: QuadTreeNode,
               f: QuadTreeNode, g: QuadTreeNode, h: QuadTreeNode, i: QuadTreeNode) -> QuadTreeNode {
-        let mooreNeighborsLive = [a, b, c, d, f, g, h, i].lazy.filter({ $0.n == 1 }).count
+        let mooreNeighborsLive = [a, b, c, d, f, g, h, i].lazy.filter({ $0?.n == 1 }).count
         return (E.n == 1 && mooreNeighborsLive == 2) || mooreNeighborsLive == 3 ? alive: dead
     }
     
-    // TODO: So many force unwraps is nasty...
     @inlinable
-    @inline(__always)
     final func life4x4(m: QuadTreeNode) -> QuadTreeNode {
         let ad = life(a: m.a!.a!, b: m.a!.b!, c: m.b!.a!, d: m.a!.c!, E: m.a!.d!, f: m.b!.c!, g: m.c!.a!, h: m.c!.b!, i: m.d!.a!)
         let bc = life(a: m.a!.b!, b: m.b!.a!, c: m.b!.b!, d: m.a!.d!, E: m.b!.c!, f: m.b!.d!, g: m.c!.b!, h: m.d!.a!, i: m.d!.b!)
@@ -179,42 +208,55 @@ final class CellGrid {
     }
     
     @inlinable
-    @inline(__always)
     final func getSuccessorHash(m: QuadTreeNode, j: Int? = nil) -> String {
         return "\(m.ihash)-\(j ?? 0)"
     }
     
     // Return the 2^(k-1) x 2^(k-1) successor, 2^j generations in the future:
     @inlinable
-    @inline(__always)
     final func successor(m: QuadTreeNode, j: Int? = nil) -> QuadTreeNode {
-        if let cached = cache.object(forKey: getSuccessorHash(m: m, j: j) as NSString) {
+//        print("[successor] j = \(String(describing: j))")
+        if let cached = successorHashCache.object(forKey: getSuccessorHash(m: m, j: j) as NSString) {
             return cached
         } else {
             let successorNode: QuadTreeNode
             if m.n == 0 {
                 successorNode = m.a!
+//                print("[successor] Returning m.a")
             } else if m.k == 2 {
                 // Base case:
                 successorNode = life4x4(m: m)
+//                print("[successor] Returning life4x4 of m")
             } else {
+//                print("[successor] m.k = \(m.k)")
                 let jn: Int
-                if let j = j {
+                if let j {
                     jn = min(j, m.k - 2)
                 } else {
                     jn = m.k - 2
                 }
                 
+//                print("[successor] Getting c1...")
                 let c1 = successor(m: join(a: m.a!.a!, b: m.a!.b!, c: m.a!.c!, d: m.a!.d!), j: jn)
+//                print("[successor] Getting c2...")
                 let c2 = successor(m: join(a: m.a!.b!, b: m.b!.a!, c: m.a!.d!, d: m.b!.c!), j: jn)
+//                print("[successor] Getting c3...")
                 let c3 = successor(m: join(a: m.b!.a!, b: m.b!.b!, c: m.b!.c!, d: m.b!.d!), j: jn)
+//                print("[successor] Getting c4...")
                 let c4 = successor(m: join(a: m.a!.c!, b: m.a!.d!, c: m.c!.a!, d: m.c!.b!), j: jn)
+//                print("[successor] Getting c5...")
                 let c5 = successor(m: join(a: m.a!.d!, b: m.b!.c!, c: m.c!.b!, d: m.d!.a!), j: jn)
+//                print("[successor] Getting c6...")
                 let c6 = successor(m: join(a: m.b!.c!, b: m.b!.d!, c: m.d!.a!, d: m.d!.b!), j: jn)
+//                print("[successor] Getting c7...")
                 let c7 = successor(m: join(a: m.c!.a!, b: m.c!.b!, c: m.c!.c!, d: m.c!.d!), j: jn)
+//                print("[successor] Getting c8...")
                 let c8 = successor(m: join(a: m.c!.b!, b: m.d!.a!, c: m.c!.d!, d: m.d!.c!), j: jn)
+//                print("[successor] Getting c9...")
                 let c9 = successor(m: join(a: m.d!.a!, b: m.d!.b!, c: m.d!.c!, d: m.d!.d!), j: jn)
-
+                
+//                print("[successor] jn = \(jn)")
+                
                 if jn < m.k - 2 {
                     successorNode = join(a: join(a: c1.d!, b: c2.c!, c: c4.b!, d: c5.a!),
                                          b: join(a: c2.d!, b: c3.c!, c: c5.b!, d: c6.a!),
@@ -229,13 +271,13 @@ final class CellGrid {
             }
             
             let shash = getSuccessorHash(m: m, j: j)
-            cache.setObject(successorNode, forKey: shash as NSString)
+            successorHashCache.setObject(successorNode, forKey: shash as NSString)
+//            print("[successor] Returning from third case")
             return successorNode
         }
     }
     
     @inlinable
-    @inline(__always)
     final func advance(node: QuadTreeNode, n: Int) -> QuadTreeNode {
         if n == 0 {
             return node
@@ -269,7 +311,6 @@ final class CellGrid {
      as a grayscale level 0.0->1.0,  "zooming out" the display.
     */
     @inlinable
-    @inline(__always)
     final func expand(node: QuadTreeNode, x: Int = 0, y: Int = 0,
                       clip: (Int, Int, Int, Int)? = nil, level: Int = 0) ->[(Point, Int)] {
         if node.n == 0 {
@@ -300,51 +341,91 @@ final class CellGrid {
     
     // Turn a list of (x,y) coordinates into a quadtree:
     @inlinable
-    @inline(__always)
     final func construct(points: [Point]) -> QuadTreeNode {
+//        print("[construct] Num points: \(points.count)")
         // Force start at (0, 0)
         guard points.count > 0 else { return dead }
         let minX = points.lazy.map({ $0.x }).min()!
         let minY = points.lazy.map({ $0.y }).min()!
-        var pattern = points.reduce(into: [Point: QuadTreeNode]()) {
-            $0[Point(x: $1.x - minX, y: $1.y - minY)] = alive
+//        print("[construct] Mins: \((minX, minY))")
+        
+//        print("[construct] Creating pattern...")
+//        var pattern = points.reduce(into: [Point: QuadTreeNode]()) {
+//            $0[Point(x: $1.x - minX, y: $1.y - minY)] = alive
+//        }
+        
+        var pattern = [Point: QuadTreeNode]()
+        for point in points {
+            pattern[Point(x: point.x - minX, y: point.y - minY)] = alive
         }
+        
         var k = 0
-        var patternIter = pattern.makeIterator()
         var lastNode = dead
         
+//        print("[construct] Entering while loop...")
         while pattern.count != 1 {
+//            print("[construct] Pattern.count: \(pattern.count)")
+            
             // Bottom-up construction:
             var nextLevel = [Point: QuadTreeNode]()
             let zero = getZero(k: k)
+            print("[construct] zero for k: \(k) = \(zero)")
             
             while !pattern.isEmpty {
-                if let nxt = patternIter.next() {
+//                var patternIter = pattern.makeIterator()
+//                if let nxt = patternIter.next() {
+                if let nxt = pattern.first {
+//                    print("[construct] patternIter.next(): \(nxt)")
                     let point = nxt.key
+//                    print("[construct] patternIter point: \(point)")
                     let nPoint = Point(x: point.x - (point.x & 1), y: point.y - (point.y & 1))
+//                    print("[construct] nPoint: \(nPoint)")
                     let a = pattern.removeValue(forKey: nPoint) ?? zero
+//                    print("[construct] a: \(a)")
                     let b = pattern.removeValue(forKey: Point(x: nPoint.x + 1, y: nPoint.y)) ?? zero
                     let c = pattern.removeValue(forKey: Point(x: nPoint.x, y: nPoint.y + 1)) ?? zero
                     let d = pattern.removeValue(forKey: Point(x: nPoint.x + 1, y: nPoint.y + 1)) ?? zero
+                    let lastNodePoint = Point(x: nPoint.x >> 1, y: nPoint.y >> 1)
                     lastNode = join(a: a, b: b, c: c, d: d)
-                    nextLevel[Point(x: nPoint.x >> 1, y: nPoint.y >> 1)] = lastNode
+//                    print("[construct] adding node: \(lastNode) for point: \(lastNodePoint)")
+                    nextLevel[lastNodePoint] = lastNode
                 } else {
                     break
                 }
             }
             
             // Merge at next level:
+            print("[construct] Merging at next level: \(k+1)")
             pattern = nextLevel
             k += 1
         }
         
+        print("[construct] returning...")
         return lastNode
+//        return pad(node: lastNode)
+    }
+    
+    @inlinable
+    final func isPadded(node: QuadTreeNode) -> Bool {
+        let c1: Bool = node.a?.n == node.a?.d?.d?.n
+        let c2: Bool = node.b?.n == node.b?.c?.c?.n
+        let c3: Bool = node.c?.n == node.c?.b?.b?.n
+        let c4: Bool = node.d?.n == node.d?.a?.a?.n
+        return c1 && c2 && c3 && c4
+    }
+    
+    @inlinable
+    final func pad(node: QuadTreeNode) -> QuadTreeNode {
+        if node.k <= 3 || !isPadded(node: node) {
+            return pad(node: getCenter(m: node))
+        } else {
+            return node
+        }
     }
     
     // ----------------------------------------------------- //
     
     @inlinable
-    @inline(__always)
     final func makeGrid(xCells: Int, yCells: Int) -> ContiguousArray<ContiguousArray<Cell>> {
         let initialCell = Cell(frame: CGRect(x: 0, y: 0, width: 0, height: 0),
                                color: aliveColor,
@@ -451,7 +532,6 @@ final class CellGrid {
     // 4) Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
     // Must apply changes all at once for each generation, so will need copy of current cell grid
     @inlinable
-    @inline(__always)
     final func updateCells() -> UInt64 {
         // 20-43 FPS on 200x200 grid:
         // 9-26 FPS, 150-300% CPU on 400x400 grid:
@@ -486,7 +566,30 @@ final class CellGrid {
         print("Killing all...")
         killAll()
         gridPoints.lazy.forEach { (point, _) in
-            grid[point.x][point.y].makeLive()
+//            print("[updateCells] Making live point \(point)")
+//            grid[point.x][point.y].makeLive()
+            
+            // HACK:
+            var px: Int
+            var py: Int
+            
+            if point.x >= xCount {
+                px = xCount - 1
+            } else if point.x < 0 {
+                px = 0
+            } else {
+                px = point.x
+            }
+            
+            if point.y >= yCount {
+                py = yCount - 1
+            } else if point.y < 0 {
+                py = 0
+            } else {
+                py = point.y
+            }
+            
+            grid[px][py].makeLive()
         }
         
         generation += 1
@@ -502,7 +605,6 @@ final class CellGrid {
         
     // TODO: Fix index out of bounds bug here:
     @inlinable
-    @inline(__always)
     final func touchedCell(at: CGPoint, gameRunning: Bool, withAltAction: Bool = false) {
         // Find the cell that contains the touch point and make it live:
         //        let (x, y) = self.getGridIndicesFromPoint(at: at)
@@ -595,7 +697,6 @@ final class CellGrid {
     }
     
     @inlinable
-    @inline(__always)
     final func killAll() {
         updateQueue.sync(flags: .barrier) {
             DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
@@ -607,11 +708,10 @@ final class CellGrid {
     }
     
     @inlinable
-    @inline(__always)
     final func reset() {
         // Reset the game to initial state with no cells alive:
         killAll()
-        quadTreeHead = construct(points: [initPoint])
+        quadTreeHead = construct(points: initialPoints)
         gridPoints = expand(node: quadTreeHead)
         generation = 0
     }
@@ -629,8 +729,8 @@ final class CellGrid {
     }
     
     @inlinable
-    @inline(__always)
     final func randomState(liveProbability: Double) {
+        print("[randomState]")
         reset()
         if liveProbability == 1.0 {
             makeAllLive()
@@ -638,22 +738,48 @@ final class CellGrid {
             if liveProbability > 0.0 {
                 let liveProb = Int(liveProbability*100)
                 var randPoints = [Point]()
-                updateQueue.sync {
-                    DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
-                        DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                            let randInt = Int.random(in: 0...100)
-                            if randInt <= liveProb {
-                                self.grid[x][y].makeLive()
-                                arrayQueue.sync(flags: .barrier) {
-                                    randPoints.append(Point(x: x, y: y))
-                                }
-                            }
+                randPoints.reserveCapacity(xCount*yCount)
+                
+                // TODO: Parallel code does not work
+//                updateQueue.sync {
+//                    randPoints.withUnsafeMutableBufferPointer { pointsBuffer in
+//                        DispatchQueue.concurrentPerform(iterations: self.xCount) { x in
+//                            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                                let randInt = Int.random(in: 0...100)
+//                                if randInt <= liveProb {
+//                                    self.grid[x][y].makeLive()
+//    //                                arrayQueue.sync(flags: .barrier) {
+//    //                                    randPoints.append(Point(x: x, y: y))
+//    //                                }
+//                                    pointsBuffer[x + y*self.xCount] = Point(x: x, y: y)
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+                
+                for x in 0..<xCount {
+                    for y in 0..<yCount {
+                        let randInt = Int.random(in: 0...100)
+                        if randInt <= liveProb {
+                            self.grid[x][y].makeLive()
+                            randPoints.append(Point(x: x, y: y))
                         }
                     }
                 }
                 
+//                updateQueue.sync {
+//                    print("Constructing quad tree")
+//                    quadTreeHead = construct(points: randPoints)
+//                    print("Expanding...")
+//                    gridPoints = expand(node: quadTreeHead)
+//                }
+                
+                print("Constructing quad tree")
                 quadTreeHead = construct(points: randPoints)
+                print("Expanding...")
                 gridPoints = expand(node: quadTreeHead)
+                
             }
         }
     }

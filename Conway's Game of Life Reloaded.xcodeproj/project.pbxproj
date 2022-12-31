@@ -38,7 +38,7 @@
 		CECAD50A2446E00C00E07A8B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5082446E00C00E07A8B /* LaunchScreen.storyboard */; };
 		CECAD50F2446E00D00E07A8B /* Conway's Game of Life Reloaded.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = CECAD50E2446E00D00E07A8B /* Conway's Game of Life Reloaded.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CECAD5152446E00D00E07A8B /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5132446E00D00E07A8B /* Interface.storyboard */; };
-		CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CECAD51B2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CECAD51B2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CECAD5212446E00D00E07A8B /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5202446E00D00E07A8B /* InterfaceController.swift */; };
 		CECAD5232446E00D00E07A8B /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5222446E00D00E07A8B /* ExtensionDelegate.swift */; };
 		CECAD52C2446E00D00E07A8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD52B2446E00D00E07A8B /* AppDelegate.swift */; };
@@ -89,15 +89,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		CECAD5582446E00D00E07A8B /* Embed App Extensions */ = {
+		CECAD5582446E00D00E07A8B /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed App Extensions */,
+				CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CECAD55C2446E00D00E07A8B /* Embed Watch Content */ = {
@@ -317,7 +317,7 @@
 			buildConfigurationList = CECAD5592446E00D00E07A8B /* Build configuration list for PBXNativeTarget "Conway's Game of Life Reloaded watchOS App" */;
 			buildPhases = (
 				CECAD50C2446E00D00E07A8B /* Resources */,
-				CECAD5582446E00D00E07A8B /* Embed App Extensions */,
+				CECAD5582446E00D00E07A8B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -387,7 +387,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = "Albertino Padin";
 				TargetAttributes = {
 					CECAD4FD2446E00C00E07A8B = {
@@ -649,6 +649,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -656,6 +657,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -710,6 +712,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -717,6 +720,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -906,8 +910,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded macOS/Info.plist";
@@ -928,8 +934,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded macOS/Info.plist";
