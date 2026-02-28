@@ -3,80 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 74;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE06A793285DEB1700E7A361 /* TimeIt.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE06A792285DEB1700E7A361 /* TimeIt.swift */; };
-		CE06A794285DEB1700E7A361 /* TimeIt.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE06A792285DEB1700E7A361 /* TimeIt.swift */; };
-		CE06A795285DEB1700E7A361 /* TimeIt.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE06A792285DEB1700E7A361 /* TimeIt.swift */; };
-		CE185B5C264924F3008FD4A9 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
-		CE2632DF277751EF00E05C04 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
-		CE2632E02777521B00E05C04 /* SpaceshipFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */; };
-		CE2632E12777521B00E05C04 /* GunFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA02708572400984288 /* GunFactory.swift */; };
-		CE2632E22777521B00E05C04 /* ShapeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA2270858D700984288 /* ShapeFactory.swift */; };
-		CE2632E32777521B00E05C04 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
-		CE2632E42777521B00E05C04 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
-		CE527EA12708572400984288 /* GunFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA02708572400984288 /* GunFactory.swift */; };
-		CE527EA3270858D700984288 /* ShapeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA2270858D700984288 /* ShapeFactory.swift */; };
-		CE527EA427085FF900984288 /* GunFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA02708572400984288 /* GunFactory.swift */; };
-		CE527EA527085FF900984288 /* ShapeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA2270858D700984288 /* ShapeFactory.swift */; };
-		CE527EA7270860E200984288 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
-		CE527EA82708629600984288 /* CGPointExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE527EA6270860E200984288 /* CGPointExtension.swift */; };
-		CE6D271B274C42C40082AA18 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
-		CE6D271C274C433F0082AA18 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D271A274C42C40082AA18 /* CollectionExtension.swift */; };
-		CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
-		CE7E89EC2447E2010036F64C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
-		CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
-		CE7E89EF2447F83E0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
-		CE7E89F02447F83F0036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
-		CE7E89F12447F8550036F64C /* CellGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89ED2447F50C0036F64C /* CellGrid.swift */; };
-		CE7E89F3244D94FC0036F64C /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F2244D94FC0036F64C /* GameWindowController.swift */; };
-		CE7E89F5244D9EE80036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
-		CE7E89F7244D9F0D0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
-		CE7E89F8244E4E2A0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
-		CE7E89F9244E4E310036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
-		CE7E89FA244E4E560036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
-		CE7E89FB244E4E570036F64C /* GameWindowDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */; };
-		CE7E89FC244E4E5C0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
-		CE7E89FD244E4E5D0036F64C /* GameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */; };
-		CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5012446E00C00E07A8B /* AppDelegate.swift */; };
-		CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5032446E00C00E07A8B /* GameViewController.swift */; };
-		CECAD5072446E00C00E07A8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5052446E00C00E07A8B /* Main.storyboard */; };
-		CECAD50A2446E00C00E07A8B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5082446E00C00E07A8B /* LaunchScreen.storyboard */; };
 		CECAD50F2446E00D00E07A8B /* Conway's Game of Life Reloaded.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = CECAD50E2446E00D00E07A8B /* Conway's Game of Life Reloaded.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		CECAD5152446E00D00E07A8B /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5132446E00D00E07A8B /* Interface.storyboard */; };
-		CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CECAD51B2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		CECAD5212446E00D00E07A8B /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5202446E00D00E07A8B /* InterfaceController.swift */; };
-		CECAD5232446E00D00E07A8B /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5222446E00D00E07A8B /* ExtensionDelegate.swift */; };
-		CECAD52C2446E00D00E07A8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD52B2446E00D00E07A8B /* AppDelegate.swift */; };
-		CECAD52E2446E00D00E07A8B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD52D2446E00D00E07A8B /* GameViewController.swift */; };
-		CECAD5312446E00D00E07A8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD52F2446E00D00E07A8B /* Main.storyboard */; };
-		CECAD5342446E00D00E07A8B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5322446E00D00E07A8B /* LaunchScreen.storyboard */; };
-		CECAD53D2446E00D00E07A8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD53C2446E00D00E07A8B /* AppDelegate.swift */; };
-		CECAD53F2446E00D00E07A8B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD53E2446E00D00E07A8B /* GameViewController.swift */; };
-		CECAD5422446E00D00E07A8B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECAD5402446E00D00E07A8B /* Main.storyboard */; };
-		CECAD5442446E00D00E07A8B /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F62446E00A00E07A8B /* Actions.sks */; };
-		CECAD5452446E00D00E07A8B /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F62446E00A00E07A8B /* Actions.sks */; };
-		CECAD5462446E00D00E07A8B /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F62446E00A00E07A8B /* Actions.sks */; };
-		CECAD5472446E00D00E07A8B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F72446E00A00E07A8B /* GameScene.sks */; };
-		CECAD5482446E00D00E07A8B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F72446E00A00E07A8B /* GameScene.sks */; };
-		CECAD5492446E00D00E07A8B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F72446E00A00E07A8B /* GameScene.sks */; };
-		CECAD54A2446E00D00E07A8B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F72446E00A00E07A8B /* GameScene.sks */; };
-		CECAD54B2446E00D00E07A8B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD4F82446E00A00E07A8B /* GameScene.swift */; };
-		CECAD54C2446E00D00E07A8B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD4F82446E00A00E07A8B /* GameScene.swift */; };
-		CECAD54D2446E00D00E07A8B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD4F82446E00A00E07A8B /* GameScene.swift */; };
-		CECAD54E2446E00D00E07A8B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD4F82446E00A00E07A8B /* GameScene.swift */; };
-		CECAD54F2446E00D00E07A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CECAD4F92446E00C00E07A8B /* Assets.xcassets */; };
-		CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
-		CECAD56A244703BB00E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
-		CECAD56B244703BD00E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
-		CECAD56C244703C400E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
-		CECAD56D244703C500E07A8B /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5682446FB7E00E07A8B /* Cell.swift */; };
-		CECAD56E244703CB00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
-		CECAD56F244703CC00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
-		CECAD570244703CC00E07A8B /* ResettableScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECAD5662446E05600E07A8B /* ResettableScene.swift */; };
-		CED7FB7F248E444D00BDB0F4 /* SpeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED7FB7E248E444D00BDB0F4 /* SpeedViewController.swift */; };
+		CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CECAD51B2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,15 +29,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		CECAD5582446E00D00E07A8B /* Embed App Extensions */ = {
+		CECAD5582446E00D00E07A8B /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed App Extensions */,
+				CECAD51C2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CECAD55C2446E00D00E07A8B /* Embed Watch Content */ = {
@@ -122,48 +54,79 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CE06A792285DEB1700E7A361 /* TimeIt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeIt.swift; sourceTree = "<group>"; };
-		CE527EA02708572400984288 /* GunFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunFactory.swift; sourceTree = "<group>"; };
-		CE527EA2270858D700984288 /* ShapeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeFactory.swift; sourceTree = "<group>"; };
-		CE527EA6270860E200984288 /* CGPointExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPointExtension.swift; sourceTree = "<group>"; };
-		CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceshipFactory.swift; sourceTree = "<group>"; };
-		CE6D271A274C42C40082AA18 /* CollectionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
-		CE7E89ED2447F50C0036F64C /* CellGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellGrid.swift; sourceTree = "<group>"; };
-		CE7E89F2244D94FC0036F64C /* GameWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
-		CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWindowDelegate.swift; sourceTree = "<group>"; };
-		CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSceneDelegate.swift; sourceTree = "<group>"; };
-		CECAD4F62446E00A00E07A8B /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
-		CECAD4F72446E00A00E07A8B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		CECAD4F82446E00A00E07A8B /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
-		CECAD4F92446E00C00E07A8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CECAD4FE2446E00C00E07A8B /* Conway's Game of Life Reloaded.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Conway's Game of Life Reloaded.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CECAD5012446E00C00E07A8B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CECAD5032446E00C00E07A8B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		CECAD5062446E00C00E07A8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		CECAD5092446E00C00E07A8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		CECAD50B2446E00C00E07A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CECAD50E2446E00D00E07A8B /* Conway's Game of Life Reloaded.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Conway's Game of Life Reloaded.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CECAD5142446E00D00E07A8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
-		CECAD5162446E00D00E07A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CECAD51B2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Conway's Game of Life Reloaded Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CECAD5202446E00D00E07A8B /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
-		CECAD5222446E00D00E07A8B /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
-		CECAD5242446E00D00E07A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CECAD5292446E00D00E07A8B /* Conway's Game of Life Reloaded.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Conway's Game of Life Reloaded.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CECAD52B2446E00D00E07A8B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CECAD52D2446E00D00E07A8B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		CECAD5302446E00D00E07A8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		CECAD5332446E00D00E07A8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		CECAD5352446E00D00E07A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CECAD53A2446E00D00E07A8B /* Conway's Game of Life Reloaded.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Conway's Game of Life Reloaded.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CECAD53C2446E00D00E07A8B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CECAD53E2446E00D00E07A8B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		CECAD5412446E00D00E07A8B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		CECAD5432446E00D00E07A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CECAD5662446E05600E07A8B /* ResettableScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResettableScene.swift; sourceTree = "<group>"; };
-		CECAD5682446FB7E00E07A8B /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
-		CED7FB7E248E444D00BDB0F4 /* SpeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CEA4196E2F5311B40074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Actions.sks,
+				Assets.xcassets,
+			);
+			target = CECAD51A2446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App Extension */;
+		};
+		CEA4196F2F5311B40074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				CGPointExtension.swift,
+				CollectionExtension.swift,
+				GunFactory.swift,
+				ShapeFactory.swift,
+				SpaceshipFactory.swift,
+				TimeIt.swift,
+			);
+			target = CECAD5282446E00D00E07A8B /* Conway's Game of Life Reloaded tvOS */;
+		};
+		CEA419A42F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CECAD51A2446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App Extension */;
+		};
+		CEA419A52F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CECAD5282446E00D00E07A8B /* Conway's Game of Life Reloaded tvOS */;
+		};
+		CEA419A62F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CECAD4FD2446E00C00E07A8B /* Conway's Game of Life Reloaded iOS */;
+		};
+		CEA419A72F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				/Localized/Interface.storyboard,
+			);
+			target = CECAD50D2446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App */;
+		};
+		CEA419A82F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CECAD5392446E00D00E07A8B /* Conway's Game of Life Reloaded macOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		CEA419312F5311B40074DD94 /* Conway's Game of Life Reloaded Shared */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (CEA4196E2F5311B40074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, CEA4196F2F5311B40074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Conway's Game of Life Reloaded Shared"; sourceTree = "<group>"; };
+		CEA419732F5311BE0074DD94 /* Conway's Game of Life Reloaded watchOS App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (CEA419A72F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Conway's Game of Life Reloaded watchOS App"; sourceTree = "<group>"; };
+		CEA4197B2F5311BE0074DD94 /* Conway's Game of Life Reloaded macOS */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (CEA419A82F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Conway's Game of Life Reloaded macOS"; sourceTree = "<group>"; };
+		CEA419882F5311BE0074DD94 /* Conway's Game of Life Reloaded tvOS */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (CEA419A52F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Conway's Game of Life Reloaded tvOS"; sourceTree = "<group>"; };
+		CEA419912F5311BE0074DD94 /* Conway's Game of Life Reloaded watchOS App Extension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (CEA419A42F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Conway's Game of Life Reloaded watchOS App Extension"; sourceTree = "<group>"; };
+		CEA4199D2F5311BE0074DD94 /* Conway's Game of Life Reloaded iOS */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (CEA419A62F5311BE0074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Conway's Game of Life Reloaded iOS"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		CECAD4FB2446E00C00E07A8B /* Frameworks */ = {
@@ -200,36 +163,14 @@
 		CECAD4F02446E00A00E07A8B = {
 			isa = PBXGroup;
 			children = (
-				CECAD4F52446E00A00E07A8B /* Conway's Game of Life Reloaded Shared */,
-				CECAD5002446E00C00E07A8B /* Conway's Game of Life Reloaded iOS */,
-				CECAD5122446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App */,
-				CECAD51F2446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App Extension */,
-				CECAD52A2446E00D00E07A8B /* Conway's Game of Life Reloaded tvOS */,
-				CECAD53B2446E00D00E07A8B /* Conway's Game of Life Reloaded macOS */,
+				CEA419312F5311B40074DD94 /* Conway's Game of Life Reloaded Shared */,
+				CEA4199D2F5311BE0074DD94 /* Conway's Game of Life Reloaded iOS */,
+				CEA419732F5311BE0074DD94 /* Conway's Game of Life Reloaded watchOS App */,
+				CEA419912F5311BE0074DD94 /* Conway's Game of Life Reloaded watchOS App Extension */,
+				CEA419882F5311BE0074DD94 /* Conway's Game of Life Reloaded tvOS */,
+				CEA4197B2F5311BE0074DD94 /* Conway's Game of Life Reloaded macOS */,
 				CECAD4FF2446E00C00E07A8B /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		CECAD4F52446E00A00E07A8B /* Conway's Game of Life Reloaded Shared */ = {
-			isa = PBXGroup;
-			children = (
-				CECAD4F62446E00A00E07A8B /* Actions.sks */,
-				CECAD4F72446E00A00E07A8B /* GameScene.sks */,
-				CECAD4F82446E00A00E07A8B /* GameScene.swift */,
-				CECAD4F92446E00C00E07A8B /* Assets.xcassets */,
-				CECAD5662446E05600E07A8B /* ResettableScene.swift */,
-				CECAD5682446FB7E00E07A8B /* Cell.swift */,
-				CE7E89ED2447F50C0036F64C /* CellGrid.swift */,
-				CE7E89F4244D9EE80036F64C /* GameWindowDelegate.swift */,
-				CE7E89F6244D9F0D0036F64C /* GameSceneDelegate.swift */,
-				CE57E6A32600CD940014CE14 /* SpaceshipFactory.swift */,
-				CE527EA02708572400984288 /* GunFactory.swift */,
-				CE527EA2270858D700984288 /* ShapeFactory.swift */,
-				CE527EA6270860E200984288 /* CGPointExtension.swift */,
-				CE6D271A274C42C40082AA18 /* CollectionExtension.swift */,
-				CE06A792285DEB1700E7A361 /* TimeIt.swift */,
-			);
-			path = "Conway's Game of Life Reloaded Shared";
 			sourceTree = "<group>";
 		};
 		CECAD4FF2446E00C00E07A8B /* Products */ = {
@@ -242,62 +183,6 @@
 				CECAD53A2446E00D00E07A8B /* Conway's Game of Life Reloaded.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CECAD5002446E00C00E07A8B /* Conway's Game of Life Reloaded iOS */ = {
-			isa = PBXGroup;
-			children = (
-				CECAD5012446E00C00E07A8B /* AppDelegate.swift */,
-				CECAD5032446E00C00E07A8B /* GameViewController.swift */,
-				CED7FB7E248E444D00BDB0F4 /* SpeedViewController.swift */,
-				CECAD5052446E00C00E07A8B /* Main.storyboard */,
-				CECAD5082446E00C00E07A8B /* LaunchScreen.storyboard */,
-				CECAD50B2446E00C00E07A8B /* Info.plist */,
-			);
-			path = "Conway's Game of Life Reloaded iOS";
-			sourceTree = "<group>";
-		};
-		CECAD5122446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App */ = {
-			isa = PBXGroup;
-			children = (
-				CECAD5132446E00D00E07A8B /* Interface.storyboard */,
-				CECAD5162446E00D00E07A8B /* Info.plist */,
-			);
-			path = "Conway's Game of Life Reloaded watchOS App";
-			sourceTree = "<group>";
-		};
-		CECAD51F2446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App Extension */ = {
-			isa = PBXGroup;
-			children = (
-				CECAD5202446E00D00E07A8B /* InterfaceController.swift */,
-				CECAD5222446E00D00E07A8B /* ExtensionDelegate.swift */,
-				CECAD5242446E00D00E07A8B /* Info.plist */,
-			);
-			path = "Conway's Game of Life Reloaded watchOS App Extension";
-			sourceTree = "<group>";
-		};
-		CECAD52A2446E00D00E07A8B /* Conway's Game of Life Reloaded tvOS */ = {
-			isa = PBXGroup;
-			children = (
-				CECAD52B2446E00D00E07A8B /* AppDelegate.swift */,
-				CECAD52D2446E00D00E07A8B /* GameViewController.swift */,
-				CECAD52F2446E00D00E07A8B /* Main.storyboard */,
-				CECAD5322446E00D00E07A8B /* LaunchScreen.storyboard */,
-				CECAD5352446E00D00E07A8B /* Info.plist */,
-			);
-			path = "Conway's Game of Life Reloaded tvOS";
-			sourceTree = "<group>";
-		};
-		CECAD53B2446E00D00E07A8B /* Conway's Game of Life Reloaded macOS */ = {
-			isa = PBXGroup;
-			children = (
-				CECAD53C2446E00D00E07A8B /* AppDelegate.swift */,
-				CECAD53E2446E00D00E07A8B /* GameViewController.swift */,
-				CE7E89F2244D94FC0036F64C /* GameWindowController.swift */,
-				CECAD5402446E00D00E07A8B /* Main.storyboard */,
-				CECAD5432446E00D00E07A8B /* Info.plist */,
-			);
-			path = "Conway's Game of Life Reloaded macOS";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -317,6 +202,10 @@
 			dependencies = (
 				CECAD5112446E00D00E07A8B /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				CEA419312F5311B40074DD94 /* Conway's Game of Life Reloaded Shared */,
+				CEA4199D2F5311BE0074DD94 /* Conway's Game of Life Reloaded iOS */,
+			);
 			name = "Conway's Game of Life Reloaded iOS";
 			productName = "Conway's Game of Life Reloaded iOS";
 			productReference = CECAD4FE2446E00C00E07A8B /* Conway's Game of Life Reloaded.app */;
@@ -327,7 +216,7 @@
 			buildConfigurationList = CECAD5592446E00D00E07A8B /* Build configuration list for PBXNativeTarget "Conway's Game of Life Reloaded watchOS App" */;
 			buildPhases = (
 				CECAD50C2446E00D00E07A8B /* Resources */,
-				CECAD5582446E00D00E07A8B /* Embed App Extensions */,
+				CECAD5582446E00D00E07A8B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -351,6 +240,10 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				CEA419312F5311B40074DD94 /* Conway's Game of Life Reloaded Shared */,
+				CEA419912F5311BE0074DD94 /* Conway's Game of Life Reloaded watchOS App Extension */,
+			);
 			name = "Conway's Game of Life Reloaded watchOS App Extension";
 			productName = "Conway's Game of Life Reloaded watchOS App Extension";
 			productReference = CECAD51B2446E00D00E07A8B /* Conway's Game of Life Reloaded Extension.appex */;
@@ -367,6 +260,10 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CEA419312F5311B40074DD94 /* Conway's Game of Life Reloaded Shared */,
+				CEA419882F5311BE0074DD94 /* Conway's Game of Life Reloaded tvOS */,
 			);
 			name = "Conway's Game of Life Reloaded tvOS";
 			productName = "Conway's Game of Life Reloaded tvOS";
@@ -385,6 +282,10 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				CEA419312F5311B40074DD94 /* Conway's Game of Life Reloaded Shared */,
+				CEA4197B2F5311BE0074DD94 /* Conway's Game of Life Reloaded macOS */,
+			);
 			name = "Conway's Game of Life Reloaded macOS";
 			productName = "Conway's Game of Life Reloaded macOS";
 			productReference = CECAD53A2446E00D00E07A8B /* Conway's Game of Life Reloaded.app */;
@@ -396,8 +297,9 @@
 		CECAD4F12446E00A00E07A8B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 2630;
 				ORGANIZATIONNAME = "Albertino Padin";
 				TargetAttributes = {
 					CECAD4FD2446E00C00E07A8B = {
@@ -418,7 +320,6 @@
 				};
 			};
 			buildConfigurationList = CECAD4F42446E00A00E07A8B /* Build configuration list for PBXProject "Conway's Game of Life Reloaded" */;
-			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -426,6 +327,7 @@
 				Base,
 			);
 			mainGroup = CECAD4F02446E00A00E07A8B;
+			preferredProjectObjectVersion = 52;
 			productRefGroup = CECAD4FF2446E00C00E07A8B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -444,11 +346,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CECAD5472446E00D00E07A8B /* GameScene.sks in Resources */,
-				CECAD5072446E00C00E07A8B /* Main.storyboard in Resources */,
-				CECAD5442446E00D00E07A8B /* Actions.sks in Resources */,
-				CECAD50A2446E00C00E07A8B /* LaunchScreen.storyboard in Resources */,
-				CECAD54F2446E00D00E07A8B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,7 +353,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CECAD5152446E00D00E07A8B /* Interface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,7 +360,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CECAD5482446E00D00E07A8B /* GameScene.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,11 +367,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CECAD5492446E00D00E07A8B /* GameScene.sks in Resources */,
-				CECAD5312446E00D00E07A8B /* Main.storyboard in Resources */,
-				CECAD5452446E00D00E07A8B /* Actions.sks in Resources */,
-				CECAD5342446E00D00E07A8B /* LaunchScreen.storyboard in Resources */,
-				CE7E89EC2447E2010036F64C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,10 +374,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CECAD5422446E00D00E07A8B /* Main.storyboard in Resources */,
-				CECAD54A2446E00D00E07A8B /* GameScene.sks in Resources */,
-				CE7E89EB2447E1EF0036F64C /* Assets.xcassets in Resources */,
-				CECAD5462446E00D00E07A8B /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,21 +384,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE2632DF277751EF00E05C04 /* SpaceshipFactory.swift in Sources */,
-				CE7E89F9244E4E310036F64C /* GameWindowDelegate.swift in Sources */,
-				CE6D271B274C42C40082AA18 /* CollectionExtension.swift in Sources */,
-				CECAD54B2446E00D00E07A8B /* GameScene.swift in Sources */,
-				CE7E89F8244E4E2A0036F64C /* GameSceneDelegate.swift in Sources */,
-				CE7E89EE2447F50C0036F64C /* CellGrid.swift in Sources */,
-				CECAD5672446E05600E07A8B /* ResettableScene.swift in Sources */,
-				CECAD56B244703BD00E07A8B /* Cell.swift in Sources */,
-				CE527EA3270858D700984288 /* ShapeFactory.swift in Sources */,
-				CED7FB7F248E444D00BDB0F4 /* SpeedViewController.swift in Sources */,
-				CE527EA7270860E200984288 /* CGPointExtension.swift in Sources */,
-				CECAD5042446E00C00E07A8B /* GameViewController.swift in Sources */,
-				CE527EA12708572400984288 /* GunFactory.swift in Sources */,
-				CECAD5022446E00C00E07A8B /* AppDelegate.swift in Sources */,
-				CE06A793285DEB1700E7A361 /* TimeIt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -520,20 +391,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE2632E02777521B00E05C04 /* SpaceshipFactory.swift in Sources */,
-				CE2632E12777521B00E05C04 /* GunFactory.swift in Sources */,
-				CE2632E22777521B00E05C04 /* ShapeFactory.swift in Sources */,
-				CE2632E32777521B00E05C04 /* CGPointExtension.swift in Sources */,
-				CE2632E42777521B00E05C04 /* CollectionExtension.swift in Sources */,
-				CE7E89FA244E4E560036F64C /* GameWindowDelegate.swift in Sources */,
-				CECAD54C2446E00D00E07A8B /* GameScene.swift in Sources */,
-				CE7E89F12447F8550036F64C /* CellGrid.swift in Sources */,
-				CECAD56E244703CB00E07A8B /* ResettableScene.swift in Sources */,
-				CECAD56C244703C400E07A8B /* Cell.swift in Sources */,
-				CE7E89FC244E4E5C0036F64C /* GameSceneDelegate.swift in Sources */,
-				CE06A794285DEB1700E7A361 /* TimeIt.swift in Sources */,
-				CECAD5232446E00D00E07A8B /* ExtensionDelegate.swift in Sources */,
-				CECAD5212446E00D00E07A8B /* InterfaceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -541,14 +398,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE7E89FB244E4E570036F64C /* GameWindowDelegate.swift in Sources */,
-				CECAD54D2446E00D00E07A8B /* GameScene.swift in Sources */,
-				CE7E89F02447F83F0036F64C /* CellGrid.swift in Sources */,
-				CECAD56F244703CC00E07A8B /* ResettableScene.swift in Sources */,
-				CECAD56D244703C500E07A8B /* Cell.swift in Sources */,
-				CE7E89FD244E4E5D0036F64C /* GameSceneDelegate.swift in Sources */,
-				CECAD52E2446E00D00E07A8B /* GameViewController.swift in Sources */,
-				CECAD52C2446E00D00E07A8B /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -556,21 +405,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE6D271C274C433F0082AA18 /* CollectionExtension.swift in Sources */,
-				CE527EA82708629600984288 /* CGPointExtension.swift in Sources */,
-				CE527EA427085FF900984288 /* GunFactory.swift in Sources */,
-				CE527EA527085FF900984288 /* ShapeFactory.swift in Sources */,
-				CE185B5C264924F3008FD4A9 /* SpaceshipFactory.swift in Sources */,
-				CE7E89F5244D9EE80036F64C /* GameWindowDelegate.swift in Sources */,
-				CE7E89F7244D9F0D0036F64C /* GameSceneDelegate.swift in Sources */,
-				CECAD54E2446E00D00E07A8B /* GameScene.swift in Sources */,
-				CE7E89EF2447F83E0036F64C /* CellGrid.swift in Sources */,
-				CECAD570244703CC00E07A8B /* ResettableScene.swift in Sources */,
-				CECAD56A244703BB00E07A8B /* Cell.swift in Sources */,
-				CECAD53F2446E00D00E07A8B /* GameViewController.swift in Sources */,
-				CECAD53D2446E00D00E07A8B /* AppDelegate.swift in Sources */,
-				CE7E89F3244D94FC0036F64C /* GameWindowController.swift in Sources */,
-				CE06A795285DEB1700E7A361 /* TimeIt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,57 +422,6 @@
 			targetProxy = CECAD51D2446E00D00E07A8B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		CECAD5052446E00C00E07A8B /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CECAD5062446E00C00E07A8B /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		CECAD5082446E00C00E07A8B /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CECAD5092446E00C00E07A8B /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-		CECAD5132446E00D00E07A8B /* Interface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CECAD5142446E00D00E07A8B /* Base */,
-			);
-			name = Interface.storyboard;
-			sourceTree = "<group>";
-		};
-		CECAD52F2446E00D00E07A8B /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CECAD5302446E00D00E07A8B /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		CECAD5322446E00D00E07A8B /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CECAD5332446E00D00E07A8B /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-		CECAD5402446E00D00E07A8B /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CECAD5412446E00D00E07A8B /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		CECAD5532446E00D00E07A8B /* Debug */ = {
@@ -675,9 +458,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -698,6 +484,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_DISABLE_SAFETY_CHECKS = NO;
@@ -740,9 +527,12 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -757,6 +547,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_DISABLE_SAFETY_CHECKS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -768,7 +559,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded watchOS App Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -789,7 +579,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded watchOS App Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -810,10 +599,8 @@
 		CECAD55A2446E00D00E07A8B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				IBSC_MODULE = Conway_s_Game_of_Life_Reloaded_Extension;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded watchOS App/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Albertino.Conway-s-Game-of-Life-Reloaded.watchkitapp";
@@ -829,10 +616,8 @@
 		CECAD55B2446E00D00E07A8B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				IBSC_MODULE = Conway_s_Game_of_Life_Reloaded_Extension;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded watchOS App/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Albertino.Conway-s-Game-of-Life-Reloaded.watchkitapp";
@@ -851,7 +636,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -871,7 +655,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -892,7 +675,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "tvOS App Icon & Top Shelf Image";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -912,7 +694,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "tvOS App Icon & Top Shelf Image";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -935,7 +716,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -958,7 +739,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = W6KXUJP8M6;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Conway's Game of Life Reloaded macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
