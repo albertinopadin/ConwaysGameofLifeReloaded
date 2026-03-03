@@ -65,20 +65,20 @@
 		CEA4196E2F5311B40074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Actions.sks,
 				Assets.xcassets,
+				Scene/Actions.sks,
 			);
 			target = CECAD51A2446E00D00E07A8B /* Conway's Game of Life Reloaded watchOS App Extension */;
 		};
 		CEA4196F2F5311B40074DD94 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				CGPointExtension.swift,
-				CollectionExtension.swift,
-				GunFactory.swift,
-				ShapeFactory.swift,
-				SpaceshipFactory.swift,
-				TimeIt.swift,
+				Extensions/CGPointExtension.swift,
+				Extensions/CollectionExtension.swift,
+				Factories/GunFactory.swift,
+				Factories/ShapeFactory.swift,
+				Factories/SpaceshipFactory.swift,
+				Utils/TimeIt.swift,
 			);
 			target = CECAD5282446E00D00E07A8B /* Conway's Game of Life Reloaded tvOS */;
 		};

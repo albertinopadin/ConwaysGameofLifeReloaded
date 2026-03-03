@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__think-mcp__think",
+      "WebSearch",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:infinum.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:forums.swift.org)",
+      "WebFetch(domain:swiftrocks.com)",
+      "WebFetch(domain:wwdcnotes.com)",
+      "WebFetch(domain:johnhw.github.io)",
+      "WebFetch(domain:www.dev-mind.blog)",
+      "WebFetch(domain:www.drdobbs.com)",
+      "WebFetch(domain:www.ifuxyl.dev)",
+      "WebFetch(domain:tomas.rokicki.com)",
+      "WebFetch(domain:docs.rs)",
+      "WebFetch(domain:conwaylife.com)",
+      "WebFetch(domain:crypto.stanford.edu)",
+      "WebFetch(domain:www.thelowlyprogrammer.com)",
+      "WebFetch(domain:dotat.at)",
+      "WebFetch(domain:recursiveuniverse.github.io)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:massivealgorithms.blogspot.com)",
+      "WebFetch(domain:gist.github.com)",
+      "WebFetch(domain:fanf.livejournal.com)",
+      "WebFetch(domain:www.gathering4gardner.org)",
+      "WebFetch(domain:grokipedia.com)",
+      "WebFetch(domain:golly.sourceforge.io)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}
