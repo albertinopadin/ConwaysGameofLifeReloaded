@@ -63,7 +63,7 @@ public final class Hashlife: LifeAlgorithm {
         
         let neStartX = nwEndX
         let neEndX = neStartX + xCount
-        let neStartY = nwEndY
+        let neStartY = yStart
         let neEndY = neStartY + yCount
 //        let cellsSliceNE = grid[(neStartX as! C.Index)..<(neEndX as! C.Index)][(neStartY as! C.Index)..<(neEndY as! C.Index)]
         
@@ -146,8 +146,7 @@ public final class Hashlife: LifeAlgorithm {
     func applyLifeRules(for node: HLNode, neighbors: [HLNode]) -> HLNode {
         let liveNeighbors = neighbors.map((\.population)).reduce(0, +)
         let alive = liveNeighbors == 3 || (liveNeighbors == 2 && node.population == 1)
-        node.population = alive ? 1 : 0
-        return node
+        return alive ? Self.alive : Self.dead
     }
     
     // This should only be called on level 2 nodes:
@@ -272,22 +271,49 @@ public final class Hashlife: LifeAlgorithm {
         return join(nw: nw, ne: ne, sw: sw, se: se)
     }
     
+//    public func update(generation: UInt64) -> UInt64 {
+//        updateQueue.sync {
+//            // Compute next generation:
+//            let nextGen = nextGeneration(for: self.root)
+////            print("[Hashlife update] nextGen level: \(nextGen.level)")
+//            let nextGenCentered = Self.center(node: nextGen)
+//            let lifeBitmap = Self.expand(node: nextGenCentered)
+//            self.root = nextGenCentered
+//            
+//            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
+//                for (x, cell) in self.grid[y].enumerated() {
+//                    cell.nextState = lifeBitmap[y*xCount + x]
+//                    cell.update()
+//                }
+//            }
+//        }
+//
+//        return generation + 1
+//    }
+    
+    private func updateCells(node: HLNode, xStart: Int, yStart: Int, size: Int) {
+        if node.level == 0 {
+            grid[yStart][xStart].nextState = node.population == 1
+            grid[yStart][xStart].update()
+        } else {
+            let half = size / 2
+            
+            // TODO: Make these 4 calls concurrent ???
+            updateCells(node: node.nw!, xStart: xStart,         yStart: yStart,        size: half)
+            updateCells(node: node.ne!, xStart: xStart + half,  yStart: yStart,        size: half)
+            updateCells(node: node.sw!, xStart: xStart,         yStart: yStart + half, size: half)
+            updateCells(node: node.se!, xStart: xStart + half,  yStart: yStart + half, size: half)
+        }
+    }
+    
     public func update(generation: UInt64) -> UInt64 {
         updateQueue.sync {
             // Compute next generation:
-            let nextGen = nextGeneration(for: self.root)
-//            print("[Hashlife update] nextGen level: \(nextGen.level)")
-            let nextGenCentered = Self.center(node: nextGen)
-            let lifeBitmap = Self.expand(node: nextGenCentered)
-            self.root = nextGenCentered
-            
-            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-                for (x, cell) in self.grid[y].enumerated() {
-                    cell.nextState = lifeBitmap[y*xCount + x]
-                    cell.update()
-                }
-            }
+            let centeredRoot = Self.center(node: root)
+            root = nextGeneration(for: centeredRoot)
+            updateCells(node: root, xStart: 0, yStart: 0, size: xCount)
         }
+        
         return generation + 1
     }
 }
