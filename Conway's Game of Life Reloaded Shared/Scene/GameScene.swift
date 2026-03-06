@@ -20,6 +20,9 @@ class GameScene: SKScene {
 //    let defaultCellSize: CGFloat = 23.0
     let defaultCellSize: CGFloat = 6.0
     
+    static let defaultXCells: Int = 1 << 8
+    static let defaultYCells: Int = 1 << 8
+    
     // Can run @ 120 FPS
 //    static let defaultXCells: Int = 100
 //    static let defaultYCells: Int = 100
@@ -38,8 +41,8 @@ class GameScene: SKScene {
     
     // Can run @25-40 FPS:
     // TODO: Mouse drag seems laggier the bigger the grid
-    static let defaultXCells: Int = 800
-    static let defaultYCells: Int = 800
+//    static let defaultXCells: Int = 800
+//    static let defaultYCells: Int = 800
     
     // Can run @20-25 FPS:
 //    static let defaultXCells: Int = 1000

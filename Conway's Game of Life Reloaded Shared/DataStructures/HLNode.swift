@@ -88,4 +88,10 @@ public final class HLNode {
         }
     }
     
+    public func synchronizePopulation() {
+        self.population = (self.nw?.population ?? 0) +
+                          (self.ne?.population ?? 0) +
+                          (self.sw?.population ?? 0) +
+                          (self.se?.population ?? 0)
+    }
 }

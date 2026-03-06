@@ -9,11 +9,11 @@
 import Foundation
 
 public final class NaiveConcurrent: LifeAlgorithm {
-    let updateQueue: DispatchQueue
+    let updateQueue: DispatchQueue  // Note: if both this and CellGrid call sync on this queue might deadlock
     
     let xCount: Int
     let yCount: Int
-    let grid: ContiguousArray<ContiguousArray<Cell>> // Note: if both this and CellGrid call sync on this queue might deadlock
+    let grid: ContiguousArray<ContiguousArray<Cell>>
     
     init(grid: ContiguousArray<ContiguousArray<Cell>>, xCount: Int, yCount: Int, queue: DispatchQueue) {
         self.grid = grid
@@ -213,4 +213,7 @@ public final class NaiveConcurrent: LifeAlgorithm {
         return generation + 1
     }
 
+    public func synchronizeState() {
+        // Empty for this algo
+    }
 }

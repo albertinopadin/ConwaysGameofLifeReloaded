@@ -48,7 +48,8 @@ final class CellGrid {
                              shadowColor: shadowColor,
                              liveAction: liveAction,
                              deadAction: deadAction)
-        algorithm = NaiveConcurrent(grid: grid, xCount: xCount, yCount: yCount, queue: updateQueue)
+//        algorithm = NaiveConcurrent(grid: grid, xCount: xCount, yCount: yCount, queue: updateQueue)
+        algorithm = Hashlife(grid: grid, xCount: xCount, yCount: yCount, queue: updateQueue)
         setNeighborsForAllCellsInGrid()
         spaceshipFactory = SpaceshipFactory(cellSize: cellSize)
     }
@@ -306,6 +307,8 @@ final class CellGrid {
 //                }
             }
         }
+        
+        algorithm.synchronizeState()
     }
     
     final func makeAllLive() {

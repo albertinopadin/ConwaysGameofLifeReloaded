@@ -8,4 +8,5 @@
 
 public protocol LifeAlgorithm {
     func update(generation: UInt64) -> UInt64
+    func synchronizeState()
 }
