@@ -33,9 +33,7 @@ The game engine is entirely in the Shared directory. Platform targets only conta
 - An `SKSpriteNode` for rendering (uses `isHidden` toggle, not alpha — this is a deliberate performance optimization)
 - `prepareUpdate()` counts live neighbors and computes `nextState`; `update()` applies the change only if `needsUpdate()` returns true
 
-**CellGrid** (`CellGrid.swift`) — Owns a 2D `ContiguousArray<ContiguousArray<Cell>>` grid. The simulation loop in `updateCells()` runs two phases:
-1. `prepareUpdate()` on all cells (parallel via `DispatchQueue.concurrentPerform` over x-axis)
-2. `update()` only on cells where state changed (lazy-filtered, also parallel over x-axis)
+**CellGrid** (`CellGrid.swift`) — Owns a 2D `ContiguousArray<ContiguousArray<Cell>>` grid. Delegates simulation to a `LifeAlgorithm` instance (currently `Hashlife`, previously `NaiveConcurrent`). The `updateCells()` method calls `algorithm.update(generation:)`. After user-initiated state changes (reset, pattern placement, random state), `algorithm.synchronizeState()` is called to keep the algorithm's internal representation in sync with the grid.
 
 Uses two separate dispatch queues: `updateQueue` for the simulation loop, `userInputQueue` with barrier flags for thread-safe touch/mouse input during simulation.
 
@@ -43,11 +41,41 @@ Uses two separate dispatch queues: `updateQueue` for the simulation loop, `userI
 
 **Pattern Factories** — `SpaceshipFactory` creates Glider and Square patterns. `ShapeFactory` builds basic rectangles. `GunFactory` creates a Gosper Glider Gun. All factories work by computing `[CGPoint]` arrays that map to grid coordinates.
 
+### Algorithm Layer (`Algorithms/`, `Protocols/`, `DataStructures/`)
+
+**LifeAlgorithm** (`Protocols/LifeAlgorithm.swift`) — Protocol defining the simulation interface:
+- `update(generation:) -> UInt64` — advance one generation and return the new generation count
+- `synchronizeState()` — re-read the Cell grid to rebuild internal state (called after user edits like reset, pattern placement, random fill)
+
+**NaiveConcurrent** (`Algorithms/NaiveConcurrent.swift`) — The original brute-force algorithm. Two-phase concurrent update: `prepareUpdate()` on all cells, then `update()` on changed cells only. Both phases parallelized via `DispatchQueue.concurrentPerform` over the x-axis. `synchronizeState()` is a no-op since this algorithm reads directly from the Cell grid. Contains extensive commented-out performance experiments (buffer pointers, quadrant splitting, double concurrentPerform).
+
+**Hashlife** (`Algorithms/Hashlife.swift`) — HashLife algorithm implementation using a quadtree with memoization. Key design:
+- Builds a quadtree (`HLNode`) from the Cell grid via recursive `construct()`, splitting the grid into NW/NE/SW/SE quadrants down to 2x2 base cases
+- **Canonical node table**: `canonicalNodes: [Int: HLNode]` maps hash values to shared node instances, enabling structural sharing and memoization
+- `join(nw:ne:sw:se:)` — creates or retrieves a canonical node from four children, keyed by `NodeKey` (uses `ObjectIdentifier` of child nodes)
+- `nextGeneration(for:)` — recursive HashLife step: at level 2, applies life rules directly via `applyLifeRules4x4()`; at higher levels, computes 9 overlapping sub-results (sliding window pattern) and combines inner quadrants
+- `applyLifeRules(for:neighbors:)` — applies B3/S23 rules to a single leaf node given its 8 neighbors
+- `center(node:)` — expands the universe by one level, padding with dead nodes (used before `nextGeneration` to prevent boundary loss)
+- `synchronizeState()` — walks the quadtree and re-reads `Cell.alive` from the grid to update leaf nodes, then propagates population counts up
+- `updateCells(node:xStart:yStart:size:)` — walks the result quadtree and writes `nextState`/`update()` back to each Cell for rendering
+- `expand(node:)` — flattens a quadtree back to a `[Bool]` array (used for debugging)
+- **Status**: Work in progress on `tino/hashlife` branch — functional but still being debugged and optimized
+
+**HLNode** (`DataStructures/HLNode.swift`) — Quadtree node for HashLife:
+- `level: UInt64` — 0 for leaf (single cell), 1 for 2x2, 2 for 4x4, etc.
+- `population: UInt64` — total live cells in subtree
+- `nw`, `ne`, `sw`, `se` — four child nodes (nil for level-0 leaves)
+- `id: Int` — hash-based identity for canonical table lookup
+- Level-0 nodes use population (0 or 1) as id; higher levels use `NodeKey.hashValue`
+- `synchronizePopulation()` — recomputes population from children (used during state sync)
+- `NodeKey` struct uses `ObjectIdentifier` of child nodes for identity-based hashing
+
 ### Platform Targets
 
 Each platform directory contains `AppDelegate`, `GameViewController`, and UI resources (storyboards/XIBs). The macOS target additionally has `GameWindowController` with toolbar controls (zoom slider, speed slider, spaceship selector popup). The iOS target has a speed popup (`SpeedViewController`) and pinch-to-zoom gesture support.
 
 ### Key Protocols
+- `LifeAlgorithm` — simulation algorithm interface (`update`, `synchronizeState`)
 - `GameSceneDelegate` — callbacks from scene to controller (e.g., `setGeneration(_:)`)
 - `GameWindowDelegate` — window-level event handling
 - `ResettableScene` — scene reset protocol
@@ -61,9 +89,14 @@ This codebase is heavily performance-optimized. When making changes:
 - The `isHidden` approach for cell visibility is ~2x faster than changing alpha — do not switch back to alpha-based rendering
 - `.replace` blend mode on sprite nodes avoids costly blending
 - `lazy.filter` in update loops prevents intermediate array allocation
-- The commented-out code blocks in `CellGrid.updateCells()` are preserved performance experiments (double concurrentPerform, buffer pointer approaches, quadrant splitting) — these document optimization history
+- The commented-out code blocks in `NaiveConcurrent.update()` are preserved performance experiments (double concurrentPerform, buffer pointer approaches, quadrant splitting) — these document optimization history
 - `timeit()` calls throughout are active profiling instrumentation
 
 ## Current Branch Context
 
-The `tino/hashlife` branch indicates exploration of the HashLife algorithm for more efficient simulation of large/sparse grids.
+The `tino/hashlife` branch contains an in-progress HashLife algorithm implementation. The algorithm is functional — it builds a quadtree from the cell grid, computes next generations via recursive memoized decomposition, and writes results back to the Cell grid for rendering. CellGrid currently uses `Hashlife` as its algorithm (switchable back to `NaiveConcurrent` by changing one line in `CellGrid.init`). Known areas still being worked on:
+- Grid requires power-of-2 dimensions for the quadtree decomposition
+- Canonical node table uses `hashValue` as dictionary key (potential hash collisions)
+- Result caching/memoization of `nextGeneration` results not yet implemented (this is the key HashLife speedup)
+- `updateCells` tree walk is sequential (TODO comment about making concurrent)
+- `synchronizeState` replaces leaf nodes rather than mutating population in-place (earlier approach was commented out)
