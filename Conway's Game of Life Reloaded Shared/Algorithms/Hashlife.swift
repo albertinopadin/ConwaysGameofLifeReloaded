@@ -11,10 +11,10 @@ import Foundation
 public final class Hashlife: LifeAlgorithm {
     let updateQueue: DispatchQueue  // Note: if both this and CellGrid call sync on this queue might deadlock
     
-    private static var canonicalNodes: [Int: HLNode] = [:]
+    private static var canonicalNodes: [NodeKey: HLNode] = [:]
     
-    public static let alive = HLNode(level: 0, id: 1, population: 1)
-    public static let dead  = HLNode(level: 0, id: 0, population: 0)
+    public static let alive = HLNode(level: 0, population: 1)
+    public static let dead  = HLNode(level: 0, population: 0)
     
     let xCount: Int
     let yCount: Int
@@ -40,8 +40,6 @@ public final class Hashlife: LifeAlgorithm {
                                   xEnd: Int,
                                   yStart: Int,
                                   yEnd: Int) -> HLNode {
-//        print("[constructHelper] xStart: \(xStart), xEnd: \(xEnd), yStart: \(yStart), yEnd: \(yEnd)")
-        
         if xEnd - xStart == 2 {
             let nw = HLNode(level: 0, population: grid[xStart][yStart].alive ? 1 : 0)
             let ne = HLNode(level: 0, population: grid[xStart + 1][yStart].alive ? 1 : 0)
@@ -57,7 +55,6 @@ public final class Hashlife: LifeAlgorithm {
         let nwEndX = xStart + xCount
         let nwStartY = yStart
         let nwEndY = yStart + yCount
-//        let cellsSliceNW = grid[(nwStartX as! C.Index)..<(nwEndX as! C.Index)][(nwStartY as! C.Index)..<(nwEndY as! C.Index)]
         
         let nw = construct(grid: grid, xStart: nwStartX, xEnd: nwEndX, yStart: nwStartY, yEnd: nwEndY)
         
@@ -65,7 +62,6 @@ public final class Hashlife: LifeAlgorithm {
         let neEndX = neStartX + xCount
         let neStartY = yStart
         let neEndY = neStartY + yCount
-//        let cellsSliceNE = grid[(neStartX as! C.Index)..<(neEndX as! C.Index)][(neStartY as! C.Index)..<(neEndY as! C.Index)]
         
         let ne = construct(grid: grid, xStart: neStartX, xEnd: neEndX, yStart: neStartY, yEnd: neEndY)
         
@@ -74,18 +70,12 @@ public final class Hashlife: LifeAlgorithm {
         let swStartY = nwEndY
         let swEndY = swStartY + yCount
         
-//        print("[constructHelper] swStartX: \(swStartX), swEndX: \(swEndX), swStartY: \(swStartY), swEndY: \(swEndY)")
-//        print("[constructHelper] grid count: \(grid.count), grid[0].count: \(grid[0 as! C.Index].count), start: \(grid.startIndex), end: \(grid.endIndex)")
-        
-//        let cellsSliceSW = grid[(swStartX as! C.Index)..<(swEndX as! C.Index)][(swStartY as! C.Index)..<(swEndY as! C.Index)]
-        
         let sw = construct(grid: grid, xStart: swStartX, xEnd: swEndX, yStart: swStartY, yEnd: swEndY)
         
         let seStartX = neStartX
         let seEndX = seStartX + xCount
         let seStartY = swStartY
         let seEndY = seStartY + yCount
-//        let cellsSliceSE = grid[(seStartX as! C.Index)..<(seEndX as! C.Index)][(seStartY as! C.Index)..<(seEndY as! C.Index)]
         
         let se = construct(grid: grid, xStart: seStartX, xEnd: seEndX, yStart: seStartY, yEnd: seEndY)
         
@@ -104,20 +94,26 @@ public final class Hashlife: LifeAlgorithm {
     }
     
     public func synchronizeState() {
-        print("[synchronizeState] Population before update: \(root.population)")
-        
         synchronizeState(node: root, xStart: 0, xCount: xCount, yStart: 0, yCount: yCount)
-        
-        print("[synchronizeState] Population after update: \(root.population)")
     }
     
     private func synchronizeState(node: HLNode, xStart: Int, xCount: Int, yStart: Int, yCount: Int) {
         // This assumption will break horribly if xCount or yCount are not the same power of 2:
         if node.level == 1 && xCount == 2 {
-            node.nw!.population = grid[xStart][yStart].alive ? 1 : 0
-            node.ne!.population = grid[xStart + 1][yStart].alive ? 1 : 0
-            node.sw!.population = grid[xStart][yStart + 1].alive ? 1 : 0
-            node.se!.population = grid[xStart + 1][yStart + 1].alive ? 1 : 0
+//            node.nw!.population = grid[xStart][yStart].alive ? 1 : 0
+//            node.ne!.population = grid[xStart + 1][yStart].alive ? 1 : 0
+//            node.sw!.population = grid[xStart][yStart + 1].alive ? 1 : 0
+//            node.se!.population = grid[xStart + 1][yStart + 1].alive ? 1 : 0
+            
+//            node.nw!.population = grid[yStart][xStart].alive ? 1 : 0
+//            node.ne!.population = grid[yStart + 1][xStart].alive ? 1 : 0
+//            node.sw!.population = grid[yStart][xStart + 1].alive ? 1 : 0
+//            node.se!.population = grid[yStart + 1][xStart + 1].alive ? 1 : 0
+            
+            node.nw = grid[yStart][xStart].alive ? Self.alive : Self.dead
+            node.ne = grid[yStart][xStart + 1].alive ? Self.alive : Self.dead
+            node.sw = grid[yStart + 1][xStart].alive ? Self.alive : Self.dead
+            node.se = grid[yStart + 1][xStart + 1].alive ? Self.alive : Self.dead
         } else {
             let nCountX = Int(xCount / 2)
             let nCountY = Int(yCount / 2)
@@ -143,76 +139,106 @@ public final class Hashlife: LifeAlgorithm {
     }
     
     // This should only apply to leaf (level 0) nodes in the quadtree:
-    func applyLifeRules(for node: HLNode, neighbors: [HLNode]) -> HLNode {
-        let liveNeighbors = neighbors.map((\.population)).reduce(0, +)
+//    func applyLifeRules(for node: HLNode, neighbors: [HLNode]) -> HLNode {
+//        let liveNeighbors = neighbors.map((\.population)).reduce(0, +)
+//        let alive = liveNeighbors == 3 || (liveNeighbors == 2 && node.population == 1)
+//        return alive ? Self.alive : Self.dead
+//    }
+    
+    // This should only apply to leaf (level 0) nodes in the quadtree:
+    @inlinable @inline(__always)
+    func applyLifeRules(for node: HLNode,
+                        n0: HLNode,
+                        n1: HLNode,
+                        n2: HLNode,
+                        n3: HLNode,
+                        n4: HLNode,
+                        n5: HLNode,
+                        n6: HLNode,
+                        n7: HLNode) -> HLNode {
+        let liveNeighbors = n0.population &+ n1.population &+ n2.population &+ n3.population
+                            &+ n4.population &+ n5.population &+ n6.population &+ n7.population
         let alive = liveNeighbors == 3 || (liveNeighbors == 2 && node.population == 1)
         return alive ? Self.alive : Self.dead
     }
     
     // This should only be called on level 2 nodes:
     func applyLifeRules4x4(node: HLNode) -> HLNode {
-        let nw = applyLifeRules(for: node.nw!.se!, neighbors: [node.nw!.nw!,
-                                                               node.nw!.ne!,
-                                                               node.nw!.sw!,
-                                                               node.ne!.nw!,
-                                                               node.ne!.sw!,
-                                                               node.sw!.nw!,
-                                                               node.sw!.ne!,
-                                                               node.se!.nw!])
+        let nw = applyLifeRules(for: node.nw!.se!,
+                                n0: node.nw!.nw!,
+                                n1: node.nw!.ne!,
+                                n2: node.nw!.sw!,
+                                n3: node.ne!.nw!,
+                                n4: node.ne!.sw!,
+                                n5: node.sw!.nw!,
+                                n6: node.sw!.ne!,
+                                n7: node.se!.nw!)
         
-        let ne = applyLifeRules(for: node.ne!.sw!, neighbors: [node.ne!.nw!,
-                                                               node.ne!.ne!,
-                                                               node.ne!.se!,
-                                                               node.se!.nw!,
-                                                               node.se!.ne!,
-                                                               node.sw!.ne!,
-                                                               node.nw!.ne!,
-                                                               node.nw!.se!])
+        let ne = applyLifeRules(for: node.ne!.sw!,
+                                n0: node.ne!.nw!,
+                                n1: node.ne!.ne!,
+                                n2: node.ne!.se!,
+                                n3: node.se!.nw!,
+                                n4: node.se!.ne!,
+                                n5: node.sw!.ne!,
+                                n6: node.nw!.ne!,
+                                n7: node.nw!.se!)
         
-        let sw = applyLifeRules(for: node.sw!.ne!, neighbors: [node.sw!.nw!,
-                                                               node.sw!.sw!,
-                                                               node.sw!.se!,
-                                                               node.se!.nw!,
-                                                               node.se!.sw!,
-                                                               node.ne!.sw!,
-                                                               node.nw!.se!,
-                                                               node.nw!.sw!])
+        let sw = applyLifeRules(for: node.sw!.ne!,
+                                n0: node.sw!.nw!,
+                                n1: node.sw!.sw!,
+                                n2: node.sw!.se!,
+                                n3: node.se!.nw!,
+                                n4: node.se!.sw!,
+                                n5: node.ne!.sw!,
+                                n6: node.nw!.se!,
+                                n7: node.nw!.sw!)
         
-        let se = applyLifeRules(for: node.se!.nw!, neighbors: [node.se!.ne!,
-                                                               node.se!.se!,
-                                                               node.se!.sw!,
-                                                               node.ne!.sw!,
-                                                               node.ne!.se!,
-                                                               node.nw!.se!,
-                                                               node.sw!.ne!,
-                                                               node.sw!.se!])
+        let se = applyLifeRules(for: node.se!.nw!,
+                                n0: node.se!.ne!,
+                                n1: node.se!.se!,
+                                n2: node.se!.sw!,
+                                n3: node.ne!.sw!,
+                                n4: node.ne!.se!,
+                                n5: node.nw!.se!,
+                                n6: node.sw!.ne!,
+                                n7: node.sw!.se!)
         
         return Self.join(nw: nw, ne: ne, sw: sw, se: se)
     }
     
     static func join(nw: HLNode, ne: HLNode, sw: HLNode, se: HLNode) -> HLNode {
-        let key = NodeKey(nw: ObjectIdentifier(nw),
+        let key = NodeKey(population: nw.population + ne.population + sw.population + se.population,
+                          nw: ObjectIdentifier(nw),
                           ne: ObjectIdentifier(ne),
                           sw: ObjectIdentifier(sw),
                           se: ObjectIdentifier(se))
         
-        if let existing = canonicalNodes[key.hashValue] {
+        if let existing = canonicalNodes[key] {
             return existing
         }
         
-        let node = HLNode(level: nw.level + 1, id: key.hashValue, nw: nw, ne: ne, sw: sw, se: se)
-        canonicalNodes[key.hashValue] = node
+        let node = HLNode(level: nw.level + 1, id: key, nw: nw, ne: ne, sw: sw, se: se)
+        canonicalNodes[key] = node
         return node
     }
     
     public func nextGeneration(for node: HLNode) -> HLNode {
+        if let cached = node.result {
+            return cached
+        }
+        
         // Empty node:
         if node.population == 0 {
             return node.nw!
         }
         
+        let nextGenResult: HLNode
+        
         if node.level == 2 {
-            return applyLifeRules4x4(node: node)
+            nextGenResult = applyLifeRules4x4(node: node)
+            node.result = nextGenResult
+            return nextGenResult
         }
         
         // Sliding window Z pattern, left-to-right and top-to-bottom, with grandchildren of node:
@@ -232,7 +258,9 @@ public final class Hashlife: LifeAlgorithm {
         let ngSW = Self.join(nw: window4.se!, ne: window5.sw!, sw: window7.ne!, se: window8.nw!)
         let ngSE = Self.join(nw: window5.se!, ne: window6.sw!, sw: window8.ne!, se: window9.nw!)
         
-        return Self.join(nw: ngNW, ne: ngNE, sw: ngSW, se: ngSE)
+        nextGenResult = Self.join(nw: ngNW, ne: ngNE, sw: ngSW, se: ngSE)
+        node.result = nextGenResult
+        return nextGenResult
     }
     
 //    public func successor(for node: HLNode) -> HLNode {
@@ -271,30 +299,35 @@ public final class Hashlife: LifeAlgorithm {
         return join(nw: nw, ne: ne, sw: sw, se: se)
     }
     
-//    public func update(generation: UInt64) -> UInt64 {
-//        updateQueue.sync {
-//            // Compute next generation:
-//            let nextGen = nextGeneration(for: self.root)
-////            print("[Hashlife update] nextGen level: \(nextGen.level)")
-//            let nextGenCentered = Self.center(node: nextGen)
-//            let lifeBitmap = Self.expand(node: nextGenCentered)
-//            self.root = nextGenCentered
+//    private func updateCells(node: HLNode, xStart: Int, yStart: Int, size: Int) {
+//        if node.level == 0 {
+////            grid[yStart][xStart].nextState = node.population == 1
+//            grid[yStart][xStart].nextState = (node === Self.alive)
+//            grid[yStart][xStart].update()
+//        } else {
+//            let half = size / 2
 //            
-//            DispatchQueue.concurrentPerform(iterations: self.yCount) { y in
-//                for (x, cell) in self.grid[y].enumerated() {
-//                    cell.nextState = lifeBitmap[y*xCount + x]
-//                    cell.update()
-//                }
-//            }
+//            // TODO: Make these 4 calls concurrent ???
+//            updateCells(node: node.nw!, xStart: xStart,         yStart: yStart,        size: half)
+//            updateCells(node: node.ne!, xStart: xStart + half,  yStart: yStart,        size: half)
+//            updateCells(node: node.sw!, xStart: xStart,         yStart: yStart + half, size: half)
+//            updateCells(node: node.se!, xStart: xStart + half,  yStart: yStart + half, size: half)
 //        }
-//
-//        return generation + 1
 //    }
     
     private func updateCells(node: HLNode, xStart: Int, yStart: Int, size: Int) {
-        if node.level == 0 {
-            grid[yStart][xStart].nextState = node.population == 1
+        if node.level == 1 {
+            grid[yStart][xStart].nextState = (node.nw! === Self.alive)
             grid[yStart][xStart].update()
+            
+            grid[yStart][xStart + 1].nextState = (node.ne! === Self.alive)
+            grid[yStart][xStart + 1].update()
+            
+            grid[yStart + 1][xStart].nextState = (node.sw! === Self.alive)
+            grid[yStart + 1][xStart].update()
+            
+            grid[yStart + 1][xStart + 1].nextState = (node.se! === Self.alive)
+            grid[yStart + 1][xStart + 1].update()
         } else {
             let half = size / 2
             

@@ -9,10 +9,23 @@
 import Foundation
 
 public struct NodeKey: Hashable {
-    let nw: ObjectIdentifier
-    let ne: ObjectIdentifier
-    let sw: ObjectIdentifier
-    let se: ObjectIdentifier
+    let population: UInt64
+    let nw: ObjectIdentifier?
+    let ne: ObjectIdentifier?
+    let sw: ObjectIdentifier?
+    let se: ObjectIdentifier?
+    
+    init(population: UInt64,
+         nw: ObjectIdentifier? = nil,
+         ne: ObjectIdentifier? = nil,
+         sw: ObjectIdentifier? = nil,
+         se: ObjectIdentifier? = nil) {
+        self.population = population
+        self.nw = nw
+        self.ne = ne
+        self.sw = sw
+        self.se = se
+    }
 }
 
 public final class HLNode {
@@ -50,24 +63,26 @@ public final class HLNode {
     }
     /* ==================================================================== */
     
-    let id: Int
-    let level: UInt64
-    var population: UInt64
-    let nw: HLNode?
-    let ne: HLNode?
-    let sw: HLNode?
-    let se: HLNode?
+    public let id: NodeKey
+    public let level: UInt64
+    public var population: UInt64
+    public var nw: HLNode?
+    public var ne: HLNode?
+    public var sw: HLNode?
+    public var se: HLNode?
+    
+    public var result: HLNode?  // cached nextGeneration output
     
     init(level: UInt64,
-         id: Int? = nil,
+         id: NodeKey? = nil,
          population: UInt64? = nil,
          nw: HLNode? = nil,
          ne: HLNode? = nil,
          sw: HLNode? = nil,
          se: HLNode? = nil) {
         
-        if level == 0 {
-            self.id = Int(population!)
+        if level == 0, let population {
+            self.id = NodeKey(population: population)
         } else {
             self.id = id!
         }

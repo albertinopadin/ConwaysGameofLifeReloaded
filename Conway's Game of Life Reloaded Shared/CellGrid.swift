@@ -267,6 +267,8 @@ final class CellGrid {
 //        grid.lazy.joined().forEach({ $0.makeDead() })
         
         generation = 0
+        
+        algorithm.synchronizeState()
     }
     
     func shadowSpaceship(at point: CGPoint, type: SpaceshipType) {
@@ -279,6 +281,8 @@ final class CellGrid {
         resetShadowed()
         let spaceshipPoints = spaceshipFactory!.createSpaceship(at: point, type: type)
         createPattern(with: spaceshipPoints)
+        
+        algorithm.synchronizeState()
     }
     
     final func randomState(liveProbability: Double) {
@@ -319,6 +323,8 @@ final class CellGrid {
                 }
             }
         }
+        
+        algorithm.synchronizeState()
     }
     
 }
