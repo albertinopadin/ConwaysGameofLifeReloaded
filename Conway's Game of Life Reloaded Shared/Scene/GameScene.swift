@@ -20,8 +20,8 @@ class GameScene: SKScene {
 //    let defaultCellSize: CGFloat = 23.0
     let defaultCellSize: CGFloat = 6.0
     
-    static let defaultXCells: Int = 1 << 8
-    static let defaultYCells: Int = 1 << 8
+    static let defaultXCells: Int = 1 << 9
+    static let defaultYCells: Int = 1 << 9
     
     // Can run @ 120 FPS
 //    static let defaultXCells: Int = 100
@@ -87,6 +87,8 @@ class GameScene: SKScene {
         cellGrid = CellGrid(xCells: xCells, yCells: yCells, cellSize: defaultCellSize)
         addCellGridToScene(cellGrid: cellGrid.grid)
         positionCameraAtCenter(camera: cameraNode, grid: cellGrid)
+        
+        print("[GameScene setUpScene] xCells: \(xCells), yCells: \(yCells)")
     }
     
     func setUpCamera() {

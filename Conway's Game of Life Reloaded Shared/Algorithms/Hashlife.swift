@@ -21,6 +21,7 @@ public final class Hashlife: LifeAlgorithm {
     let grid: ContiguousArray<ContiguousArray<Cell>>
     
     var root: HLNode  // Is this right???
+    var rootCenterZeroNode: HLNode
     
     init(grid: ContiguousArray<ContiguousArray<Cell>>, xCount: Int, yCount: Int, queue: DispatchQueue) {
         self.grid = grid
@@ -32,6 +33,9 @@ public final class Hashlife: LifeAlgorithm {
         Self.canonicalNodes[Self.alive.id] = Self.alive
         
         self.root = Self.construct(grid: grid, xStart: 0, xEnd: xCount, yStart: 0, yEnd: yCount)
+        
+        self.rootCenterZeroNode = Self.getZeroNode(at: root.level - 1)
+        
         print("[Hashlife init] Root level: \(self.root.level)")
     }
     
@@ -41,15 +45,15 @@ public final class Hashlife: LifeAlgorithm {
                                   yStart: Int,
                                   yEnd: Int) -> HLNode {
         if xEnd - xStart == 2 {
-            let nw = HLNode(level: 0, population: grid[xStart][yStart].alive ? 1 : 0)
-            let ne = HLNode(level: 0, population: grid[xStart + 1][yStart].alive ? 1 : 0)
-            let sw = HLNode(level: 0, population: grid[xStart][yStart + 1].alive ? 1 : 0)
-            let se = HLNode(level: 0, population: grid[xStart + 1][yStart + 1].alive ? 1 : 0)
+            let nw = grid[yStart    ][xStart    ].alive ? Self.alive : Self.dead
+            let ne = grid[yStart    ][xStart + 1].alive ? Self.alive : Self.dead
+            let sw = grid[yStart + 1][xStart    ].alive ? Self.alive : Self.dead
+            let se = grid[yStart + 1][xStart + 1].alive ? Self.alive : Self.dead
             return join(nw: nw, ne: ne, sw: sw, se: se)
         }
         
-        let xCount = Int((xEnd - xStart) / 2)
-        let yCount = Int((yEnd - yStart) / 2)
+        let xCount = (xEnd - xStart) >> 1
+        let yCount = (yEnd - yStart) >> 1
         
         let nwStartX = xStart
         let nwEndX = xStart + xCount
@@ -94,48 +98,21 @@ public final class Hashlife: LifeAlgorithm {
     }
     
     public func synchronizeState() {
-        synchronizeState(node: root, xStart: 0, xCount: xCount, yStart: 0, yCount: yCount)
-    }
-    
-    private func synchronizeState(node: HLNode, xStart: Int, xCount: Int, yStart: Int, yCount: Int) {
-        // This assumption will break horribly if xCount or yCount are not the same power of 2:
-        if node.level == 1 && xCount == 2 {
-//            node.nw!.population = grid[xStart][yStart].alive ? 1 : 0
-//            node.ne!.population = grid[xStart + 1][yStart].alive ? 1 : 0
-//            node.sw!.population = grid[xStart][yStart + 1].alive ? 1 : 0
-//            node.se!.population = grid[xStart + 1][yStart + 1].alive ? 1 : 0
-            
-//            node.nw!.population = grid[yStart][xStart].alive ? 1 : 0
-//            node.ne!.population = grid[yStart + 1][xStart].alive ? 1 : 0
-//            node.sw!.population = grid[yStart][xStart + 1].alive ? 1 : 0
-//            node.se!.population = grid[yStart + 1][xStart + 1].alive ? 1 : 0
-            
-            node.nw = grid[yStart][xStart].alive ? Self.alive : Self.dead
-            node.ne = grid[yStart][xStart + 1].alive ? Self.alive : Self.dead
-            node.sw = grid[yStart + 1][xStart].alive ? Self.alive : Self.dead
-            node.se = grid[yStart + 1][xStart + 1].alive ? Self.alive : Self.dead
-        } else {
-            let nCountX = Int(xCount / 2)
-            let nCountY = Int(yCount / 2)
-            
-            let nwStartX = xStart
-            let nwStartY = yStart
-            synchronizeState(node: node.nw!, xStart: nwStartX, xCount: nCountX, yStart: nwStartY, yCount: nCountY)
-            
-            let neStartX = xStart + nCountX
-            let neStartY = yStart
-            synchronizeState(node: node.ne!, xStart: neStartX, xCount: nCountX, yStart: neStartY, yCount: nCountY)
-            
-            let swStartX = xStart
-            let swStartY = yStart + nCountY
-            synchronizeState(node: node.sw!, xStart: swStartX, xCount: nCountX, yStart: swStartY, yCount: nCountY)
-            
-            let seStartX = xStart + nCountX
-            let seStartY = yStart + nCountY
-            synchronizeState(node: node.se!, xStart: seStartX, xCount: nCountX, yStart: seStartY, yCount: nCountY)
-        }
+        print("[Hashlife synchronizeState] Root level before sync: \(root.level)")
+        print("[Hashlife synchronizeState] Population before sync: \(root.population)")
         
-        node.synchronizePopulation()
+        // Clear the canonical table — old entries may have corrupted children
+        // and stale `result` caches from previous generations
+        Self.canonicalNodes.removeAll(keepingCapacity: true)
+        Self.canonicalNodes[Self.dead.id] = Self.dead
+        Self.canonicalNodes[Self.alive.id] = Self.alive
+
+        // Rebuild the tree from the grid
+        root = Self.construct(grid: grid, xStart: 0, xEnd: xCount, yStart: 0, yEnd: yCount)
+        rootCenterZeroNode = Self.getZeroNode(at: root.level - 1)
+        
+        print("[Hashlife synchronizeState] Population after sync: \(root.population)")
+        print("[Hashlife synchronizeState] Root level after sync: \(root.level)")
     }
     
     // This should only apply to leaf (level 0) nodes in the quadtree:
@@ -146,7 +123,8 @@ public final class Hashlife: LifeAlgorithm {
 //    }
     
     // This should only apply to leaf (level 0) nodes in the quadtree:
-    @inlinable @inline(__always)
+    @inlinable
+    @inline(__always)
     func applyLifeRules(for node: HLNode,
                         n0: HLNode,
                         n1: HLNode,
@@ -299,21 +277,14 @@ public final class Hashlife: LifeAlgorithm {
         return join(nw: nw, ne: ne, sw: sw, se: se)
     }
     
-//    private func updateCells(node: HLNode, xStart: Int, yStart: Int, size: Int) {
-//        if node.level == 0 {
-////            grid[yStart][xStart].nextState = node.population == 1
-//            grid[yStart][xStart].nextState = (node === Self.alive)
-//            grid[yStart][xStart].update()
-//        } else {
-//            let half = size / 2
-//            
-//            // TODO: Make these 4 calls concurrent ???
-//            updateCells(node: node.nw!, xStart: xStart,         yStart: yStart,        size: half)
-//            updateCells(node: node.ne!, xStart: xStart + half,  yStart: yStart,        size: half)
-//            updateCells(node: node.sw!, xStart: xStart,         yStart: yStart + half, size: half)
-//            updateCells(node: node.se!, xStart: xStart + half,  yStart: yStart + half, size: half)
-//        }
-//    }
+    public static func center(node: HLNode, zeroNode: HLNode) -> HLNode {
+        let nw = join(nw: zeroNode, ne: zeroNode, sw: zeroNode, se: node.nw!)
+        let ne = join(nw: zeroNode, ne: zeroNode, sw: node.ne!, se: zeroNode)
+        let sw = join(nw: zeroNode, ne: node.sw!, sw: zeroNode, se: zeroNode)
+        let se = join(nw: node.se!, ne: zeroNode, sw: zeroNode, se: zeroNode)
+        
+        return join(nw: nw, ne: ne, sw: sw, se: se)
+    }
     
     private func updateCells(node: HLNode, xStart: Int, yStart: Int, size: Int) {
         if node.level == 1 {
@@ -329,7 +300,7 @@ public final class Hashlife: LifeAlgorithm {
             grid[yStart + 1][xStart + 1].nextState = (node.se! === Self.alive)
             grid[yStart + 1][xStart + 1].update()
         } else {
-            let half = size / 2
+            let half = size >> 1
             
             // TODO: Make these 4 calls concurrent ???
             updateCells(node: node.nw!, xStart: xStart,         yStart: yStart,        size: half)
@@ -342,7 +313,7 @@ public final class Hashlife: LifeAlgorithm {
     public func update(generation: UInt64) -> UInt64 {
         updateQueue.sync {
             // Compute next generation:
-            let centeredRoot = Self.center(node: root)
+            let centeredRoot = Self.center(node: root, zeroNode: rootCenterZeroNode)
             root = nextGeneration(for: centeredRoot)
             updateCells(node: root, xStart: 0, yStart: 0, size: xCount)
         }

@@ -29,18 +29,6 @@ public struct NodeKey: Hashable {
 }
 
 public final class HLNode {
-//    public static func computeHash(level: UInt64,
-//                                   nw: HLNode? = nil,
-//                                   ne: HLNode? = nil,
-//                                   sw: HLNode? = nil,
-//                                   se: HLNode? = nil) -> UInt64 {
-//        return level &+ 2
-//                     &+ 5131830419411 &* nw!.id
-//                     &+ 3758991985019 &* ne!.id
-//                     &+ 8973110871315 &* sw!.id
-//                     &+ 4318490180473 &* se!.id
-//    }
-    
     /*
         ObjectIdentifier-based comparison helpers
         Slower due to re-hashing on every lookup, but here for completeness:
@@ -65,11 +53,11 @@ public final class HLNode {
     
     public let id: NodeKey
     public let level: UInt64
-    public var population: UInt64
-    public var nw: HLNode?
-    public var ne: HLNode?
-    public var sw: HLNode?
-    public var se: HLNode?
+    public let population: UInt64
+    public let nw: HLNode?
+    public let ne: HLNode?
+    public let sw: HLNode?
+    public let se: HLNode?
     
     public var result: HLNode?  // cached nextGeneration output
     
@@ -101,12 +89,5 @@ public final class HLNode {
                               (self.sw?.population ?? 0) +
                               (self.se?.population ?? 0)
         }
-    }
-    
-    public func synchronizePopulation() {
-        self.population = (self.nw?.population ?? 0) +
-                          (self.ne?.population ?? 0) +
-                          (self.sw?.population ?? 0) +
-                          (self.se?.population ?? 0)
     }
 }

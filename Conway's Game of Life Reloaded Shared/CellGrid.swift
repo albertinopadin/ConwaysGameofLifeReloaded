@@ -207,6 +207,8 @@ final class CellGrid {
                     }
                 }
             }
+            
+            algorithm.synchronizeState()
         }
         print("Run time for touchedCell: \(Double(t)/1_000_000) ms")
     }
@@ -262,13 +264,10 @@ final class CellGrid {
                     self.grid[x][y].makeDead()
                 }
             }
+            
+            generation = 0
+            algorithm.synchronizeState()
         }
-        
-//        grid.lazy.joined().forEach({ $0.makeDead() })
-        
-        generation = 0
-        
-        algorithm.synchronizeState()
     }
     
     func shadowSpaceship(at point: CGPoint, type: SpaceshipType) {
@@ -278,11 +277,13 @@ final class CellGrid {
     }
     
     func placeSpaceship(at point: CGPoint, type: SpaceshipType) {
-        resetShadowed()
-        let spaceshipPoints = spaceshipFactory!.createSpaceship(at: point, type: type)
-        createPattern(with: spaceshipPoints)
-        
-        algorithm.synchronizeState()
+        updateQueue.sync(flags: .barrier) {
+            resetShadowed()
+            let spaceshipPoints = spaceshipFactory!.createSpaceship(at: point, type: type)
+            createPattern(with: spaceshipPoints)
+            
+            algorithm.synchronizeState()
+        }
     }
     
     final func randomState(liveProbability: Double) {
@@ -301,18 +302,11 @@ final class CellGrid {
                             }
                         }
                     }
+                    
+                    algorithm.synchronizeState()
                 }
-                
-//                grid.lazy.joined().forEach { cell in
-//                    let randInt = Int.random(in: 0...100)
-//                    if randInt <= liveProb {
-//                        cell.makeLive()
-//                    }
-//                }
             }
         }
-        
-        algorithm.synchronizeState()
     }
     
     final func makeAllLive() {
@@ -322,9 +316,9 @@ final class CellGrid {
                     self.grid[x][y].makeLive()
                 }
             }
+            
+            algorithm.synchronizeState()
         }
-        
-        algorithm.synchronizeState()
     }
     
 }
