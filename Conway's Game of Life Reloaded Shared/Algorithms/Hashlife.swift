@@ -23,27 +23,105 @@ public final class Hashlife: LifeAlgorithm {
     var root: HLNode  // Is this right???
     var rootCenterZeroNode: HLNode
     
+    let paddedSize: Int  // Next power-of-2 >= max(xCount, yCount)
+    let needsBoundsCheck: Bool  // True only when paddedSize > xCount or yCount
+    
+    // Rounds up to the next power of 2 using a bit-twiddling trick:
+    // Subtracts 1 (so exact powers of 2 don't double), then smears the highest set bit
+    // down through all lower bits via successive right-shifts and ORs, producing a
+    // value of the form 2^k - 1. Adding 1 back yields the next power of 2.
+    private static func nextPowerOf2(_ n: Int) -> Int {
+        var v = n - 1
+        v |= v >> 1
+        v |= v >> 2
+        v |= v >> 4
+        v |= v >> 8
+        v |= v >> 16
+        v |= v >> 32
+        return v + 1
+    }
+    
     init(grid: ContiguousArray<ContiguousArray<Cell>>, xCount: Int, yCount: Int, queue: DispatchQueue) {
         self.grid = grid
         self.xCount = xCount
         self.yCount = yCount
         self.updateQueue = queue
         
+        self.paddedSize = Self.nextPowerOf2(max(xCount, yCount))
+        self.needsBoundsCheck = (paddedSize != xCount || paddedSize != yCount)
+        
         Self.canonicalNodes[Self.dead.id] = Self.dead
         Self.canonicalNodes[Self.alive.id] = Self.alive
         
-        self.root = Self.construct(grid: grid, xStart: 0, xEnd: xCount, yStart: 0, yEnd: yCount)
+        if needsBoundsCheck {
+            self.root = Self.construct(grid: grid,
+                                       gridWidth: xCount,
+                                       gridHeight: yCount,
+                                       xStart: 0,
+                                       xEnd: paddedSize,
+                                       yStart: 0,
+                                       yEnd: paddedSize)
+        } else {
+            self.root = Self.constructUnchecked(grid: grid, xStart: 0, xEnd: paddedSize, yStart: 0, yEnd: paddedSize)
+        }
         
         self.rootCenterZeroNode = Self.getZeroNode(at: root.level - 1)
         
         print("[Hashlife init] Root level: \(self.root.level)")
     }
     
+    // Builds the quadtree from the flat cell grid. The quadtree always covers a
+    // paddedSize × paddedSize square (a power of 2), which may be larger than the
+    // actual grid. Regions outside gridWidth × gridHeight are treated as dead cells.
+    // This allows arbitrary (non-power-of-2, non-square) grid dimensions.
     private static func construct(grid: ContiguousArray<ContiguousArray<Cell>>,
+                                  gridWidth: Int,
+                                  gridHeight: Int,
                                   xStart: Int,
                                   xEnd: Int,
                                   yStart: Int,
                                   yEnd: Int) -> HLNode {
+        // Entirely outside the real grid → return an all-dead subtree:
+        if xStart >= gridWidth || yStart >= gridHeight {
+            let size = xEnd - xStart
+            var level: UInt64 = 0
+            var s = size
+            while s > 1 { s >>= 1; level += 1 }
+            return getZeroNode(at: level)
+        }
+
+        if xEnd - xStart == 2 {
+            // Bounds-check each cell; out-of-bounds → dead:
+            let nw = (xStart < gridWidth && yStart < gridHeight && grid[yStart][xStart].alive) ? Self.alive : Self.dead
+            let ne = (xStart + 1 < gridWidth && yStart < gridHeight && grid[yStart][xStart + 1].alive) ? Self.alive : Self.dead
+            let sw = (xStart < gridWidth && yStart + 1 < gridHeight && grid[yStart + 1][xStart].alive) ? Self.alive : Self.dead
+            let se = (xStart + 1 < gridWidth && yStart + 1 < gridHeight && grid[yStart + 1][xStart + 1].alive) ?
+                Self.alive : Self.dead
+            return join(nw: nw, ne: ne, sw: sw, se: se)
+        }
+
+        let half = (xEnd - xStart) >> 1
+        let xMid = xStart + half
+        let yMid = yStart + half
+
+        let nw = construct(grid: grid, gridWidth: gridWidth, gridHeight: gridHeight,
+                           xStart: xStart, xEnd: xMid, yStart: yStart, yEnd: yMid)
+        let ne = construct(grid: grid, gridWidth: gridWidth, gridHeight: gridHeight,
+                           xStart: xMid, xEnd: xEnd, yStart: yStart, yEnd: yMid)
+        let sw = construct(grid: grid, gridWidth: gridWidth, gridHeight: gridHeight,
+                           xStart: xStart, xEnd: xMid, yStart: yMid, yEnd: yEnd)
+        let se = construct(grid: grid, gridWidth: gridWidth, gridHeight: gridHeight,
+                           xStart: xMid, xEnd: xEnd, yStart: yMid, yEnd: yEnd)
+
+        return join(nw: nw, ne: ne, sw: sw, se: se)
+    }
+    
+    // Fast path: no bounds checking. Only valid when paddedSize == xCount == yCount.
+    private static func constructUnchecked(grid: ContiguousArray<ContiguousArray<Cell>>,
+                                           xStart: Int,
+                                           xEnd: Int,
+                                           yStart: Int,
+                                           yEnd: Int) -> HLNode {
         if xEnd - xStart == 2 {
             let nw = grid[yStart    ][xStart    ].alive ? Self.alive : Self.dead
             let ne = grid[yStart    ][xStart + 1].alive ? Self.alive : Self.dead
@@ -60,28 +138,28 @@ public final class Hashlife: LifeAlgorithm {
         let nwStartY = yStart
         let nwEndY = yStart + yCount
         
-        let nw = construct(grid: grid, xStart: nwStartX, xEnd: nwEndX, yStart: nwStartY, yEnd: nwEndY)
+        let nw = constructUnchecked(grid: grid, xStart: nwStartX, xEnd: nwEndX, yStart: nwStartY, yEnd: nwEndY)
         
         let neStartX = nwEndX
         let neEndX = neStartX + xCount
         let neStartY = yStart
         let neEndY = neStartY + yCount
         
-        let ne = construct(grid: grid, xStart: neStartX, xEnd: neEndX, yStart: neStartY, yEnd: neEndY)
+        let ne = constructUnchecked(grid: grid, xStart: neStartX, xEnd: neEndX, yStart: neStartY, yEnd: neEndY)
         
         let swStartX = nwStartX
         let swEndX = swStartX + xCount
         let swStartY = nwEndY
         let swEndY = swStartY + yCount
         
-        let sw = construct(grid: grid, xStart: swStartX, xEnd: swEndX, yStart: swStartY, yEnd: swEndY)
+        let sw = constructUnchecked(grid: grid, xStart: swStartX, xEnd: swEndX, yStart: swStartY, yEnd: swEndY)
         
         let seStartX = neStartX
         let seEndX = seStartX + xCount
         let seStartY = swStartY
         let seEndY = seStartY + yCount
         
-        let se = construct(grid: grid, xStart: seStartX, xEnd: seEndX, yStart: seStartY, yEnd: seEndY)
+        let se = constructUnchecked(grid: grid, xStart: seStartX, xEnd: seEndX, yStart: seStartY, yEnd: seEndY)
         
         return join(nw: nw, ne: ne, sw: sw, se: se)
     }
@@ -108,7 +186,17 @@ public final class Hashlife: LifeAlgorithm {
         Self.canonicalNodes[Self.alive.id] = Self.alive
 
         // Rebuild the tree from the grid
-        root = Self.construct(grid: grid, xStart: 0, xEnd: xCount, yStart: 0, yEnd: yCount)
+        if needsBoundsCheck {
+            root = Self.construct(grid: grid,
+                                  gridWidth: xCount,
+                                  gridHeight: yCount,
+                                  xStart: 0,
+                                  xEnd: paddedSize,
+                                  yStart: 0,
+                                  yEnd: paddedSize)
+        } else {
+            root = Self.constructUnchecked(grid: grid, xStart: 0, xEnd: paddedSize, yStart: 0, yEnd: paddedSize)
+        }
         rootCenterZeroNode = Self.getZeroNode(at: root.level - 1)
         
         print("[Hashlife synchronizeState] Population after sync: \(root.population)")
@@ -286,7 +374,42 @@ public final class Hashlife: LifeAlgorithm {
         return join(nw: nw, ne: ne, sw: sw, se: se)
     }
     
-    private func updateCells(node: HLNode, xStart: Int, yStart: Int, size: Int) {
+    private func updateCellsBoundsChecked(node: HLNode, xStart: Int, yStart: Int, size: Int) {
+        if xStart >= xCount || yStart >= yCount { return }
+        
+        if node.level == 1 {
+            if xStart < xCount && yStart < yCount {
+                grid[yStart][xStart].nextState = (node.nw! === Self.alive)
+                grid[yStart][xStart].update()
+            }
+            
+            if xStart + 1 < xCount && yStart < yCount {
+                grid[yStart][xStart + 1].nextState = (node.ne! === Self.alive)
+                grid[yStart][xStart + 1].update()
+            }
+            
+            if xStart < xCount && yStart + 1 < yCount {
+                grid[yStart + 1][xStart].nextState = (node.sw! === Self.alive)
+                grid[yStart + 1][xStart].update()
+            }
+            
+            if xStart + 1 < xCount && yStart + 1 < yCount {
+                grid[yStart + 1][xStart + 1].nextState = (node.se! === Self.alive)
+                grid[yStart + 1][xStart + 1].update()
+            }
+        } else {
+            let half = size >> 1
+            
+            // TODO: Make these 4 calls concurrent ???
+            updateCellsBoundsChecked(node: node.nw!, xStart: xStart,         yStart: yStart,        size: half)
+            updateCellsBoundsChecked(node: node.ne!, xStart: xStart + half,  yStart: yStart,        size: half)
+            updateCellsBoundsChecked(node: node.sw!, xStart: xStart,         yStart: yStart + half, size: half)
+            updateCellsBoundsChecked(node: node.se!, xStart: xStart + half,  yStart: yStart + half, size: half)
+        }
+    }
+    
+    // Fast path: no bounds checking. Only valid when paddedSize == xCount == yCount
+    private func updateCellsUnchecked(node: HLNode, xStart: Int, yStart: Int, size: Int) {
         if node.level == 1 {
             grid[yStart][xStart].nextState = (node.nw! === Self.alive)
             grid[yStart][xStart].update()
@@ -303,10 +426,10 @@ public final class Hashlife: LifeAlgorithm {
             let half = size >> 1
             
             // TODO: Make these 4 calls concurrent ???
-            updateCells(node: node.nw!, xStart: xStart,         yStart: yStart,        size: half)
-            updateCells(node: node.ne!, xStart: xStart + half,  yStart: yStart,        size: half)
-            updateCells(node: node.sw!, xStart: xStart,         yStart: yStart + half, size: half)
-            updateCells(node: node.se!, xStart: xStart + half,  yStart: yStart + half, size: half)
+            updateCellsUnchecked(node: node.nw!, xStart: xStart,         yStart: yStart,        size: half)
+            updateCellsUnchecked(node: node.ne!, xStart: xStart + half,  yStart: yStart,        size: half)
+            updateCellsUnchecked(node: node.sw!, xStart: xStart,         yStart: yStart + half, size: half)
+            updateCellsUnchecked(node: node.se!, xStart: xStart + half,  yStart: yStart + half, size: half)
         }
     }
     
@@ -315,7 +438,12 @@ public final class Hashlife: LifeAlgorithm {
             // Compute next generation:
             let centeredRoot = Self.center(node: root, zeroNode: rootCenterZeroNode)
             root = nextGeneration(for: centeredRoot)
-            updateCells(node: root, xStart: 0, yStart: 0, size: xCount)
+            
+            if needsBoundsCheck {
+                updateCellsBoundsChecked(node: root, xStart: 0, yStart: 0, size: paddedSize)
+            } else {
+                updateCellsUnchecked(node: root, xStart: 0, yStart: 0, size: paddedSize)
+            }
         }
         
         return generation + 1

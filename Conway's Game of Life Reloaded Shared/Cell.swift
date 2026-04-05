@@ -1,6 +1,6 @@
 //
 //  Cell.swift
-//  Conway's Game of Life Reloaded iOS
+//  Conway's Game of Life Reloaded
 //
 //  Created by Albertino Padin on 4/15/20.
 //  Copyright © 2020 Albertino Padin. All rights reserved.

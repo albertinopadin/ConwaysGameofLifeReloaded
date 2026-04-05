@@ -1,6 +1,6 @@
 //
 //  CellGrid.swift
-//  Conway's Game of Life Reloaded iOS
+//  Conway's Game of Life Reloaded
 //
 //  Created by Albertino Padin on 4/15/20.
 //  Copyright © 2020 Albertino Padin. All rights reserved.
@@ -168,7 +168,10 @@ final class CellGrid {
     @inlinable
     @inline(__always)
     final func updateCells() -> UInt64 {
-        generation = algorithm.update(generation: generation)
+        let t = timeit {
+            generation = algorithm.update(generation: generation)
+        }
+        print("[updateCells] Algorithm took \(Double(t)/1_000_000) ms")
         return generation
     }
 

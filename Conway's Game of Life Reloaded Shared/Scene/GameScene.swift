@@ -20,8 +20,8 @@ class GameScene: SKScene {
 //    let defaultCellSize: CGFloat = 23.0
     let defaultCellSize: CGFloat = 6.0
     
-    static let defaultXCells: Int = 1 << 9
-    static let defaultYCells: Int = 1 << 9
+//    static let defaultXCells: Int = 1 << 9
+//    static let defaultYCells: Int = 1 << 9
     
     // Can run @ 120 FPS
 //    static let defaultXCells: Int = 100
@@ -34,6 +34,9 @@ class GameScene: SKScene {
     // Can run @80-120 FPS:
 //    static let defaultXCells: Int = 400
 //    static let defaultYCells: Int = 400
+    
+    static let defaultXCells: Int = 500
+    static let defaultYCells: Int = 500
     
     // Can run @40-60 FPS:
 //    static let defaultXCells: Int = 600
@@ -157,7 +160,7 @@ class GameScene: SKScene {
                 previousTime = currentTime
                 gameDelegate?.setGeneration(generation)
             }
-            print("Run time: \(Double(t)/1_000_000) ms")
+            print("Update Cells Run time: \(Double(t)/1_000_000) ms")
         }
     }
     
